@@ -1,4 +1,6 @@
 {
+  "gameSpeed": 1,
+  "productionRate": 1,
   "teams": [
     {
       "id": 0,

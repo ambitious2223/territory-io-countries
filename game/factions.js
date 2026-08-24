@@ -35,6 +35,8 @@ export function getFaction(id) {
   return factions.find(f => f.id === id);
 }
 
+export function getFactionById(id) { return factions.find(f => f.id === id) || null; }
+
 export function getActiveFactions() {
   return factions.filter(f => f.supporters.size > 0);
 }
@@ -93,9 +95,62 @@ export function updateTerritoryCount(factionId, count) {
 }
 
 export function getFactionIdByKeyword(keyword) {
+  if (!keyword) return -1;
   const lower = keyword.toLowerCase().trim();
   const faction = factions.find(f => f.commentKeyword === lower);
   return faction ? faction.id : -1;
+}
+
+export function addFaction(data) {
+  const maxId = factions.reduce((max, f) => Math.max(max, f.id), -1);
+  const newId = maxId + 1;
+  const faction = {
+    id: newId,
+    name: data.name || 'Team ' + newId,
+    color: data.color || '#888888',
+    icon: data.icon || '⚪',
+    commentKeyword: (data.name || 'team' + newId).toLowerCase(),
+    troopPool: 0,
+    supporters: new Map(),
+    stats: { totalDeployed: 0, territoriesHeld: 0, peakTroops: 0 }
+  };
+  factions.push(faction);
+  return faction;
+}
+
+export function removeFaction(id) {
+  const idx = factions.findIndex(f => f.id === id);
+  if (idx === -1) return false;
+  factions.splice(idx, 1);
+  return true;
+}
+
+export function copyFaction(id) {
+  const src = getFaction(id);
+  if (!src) return null;
+  const maxId = factions.reduce((max, f) => Math.max(max, f.id), -1);
+  const newId = maxId + 1;
+  const copy = {
+    ...src,
+    id: newId,
+    name: src.name + ' Copy',
+    commentKeyword: src.commentKeyword + newId,
+    troopPool: 0,
+    supporters: new Map(),
+    stats: { totalDeployed: 0, territoriesHeld: 0, peakTroops: 0 }
+  };
+  factions.push(copy);
+  return copy;
+}
+
+export function updateFaction(id, data) {
+  const f = getFaction(id);
+  if (!f) return null;
+  if (data.name !== undefined) f.name = data.name;
+  if (data.color !== undefined) f.color = data.color;
+  if (data.icon !== undefined) f.icon = data.icon;
+  if (data.commentKeyword !== undefined) f.commentKeyword = data.commentKeyword;
+  return f;
 }
 
 export function resetFactions() {
@@ -114,6 +169,23 @@ export function getFactionStats() {
     icon: f.icon,
     pool: f.troopPool,
     supporters: f.supporters.size,
-    stats: { ...f.stats }
+    stats: { ...f.stats },
+    topContributors: getTopContributors(f.id, 5).map(c => ({
+      username: c.username,
+      troopsContributed: c.troopsContributed
+    }))
   }));
+}
+
+export function getMaxPoolDisplay() {
+  return 50;
+}
+
+export function getPoolPercentage(factionId) {
+  return Math.min(1, getPoolSize(factionId) / getMaxPoolDisplay());
+}
+
+export function getPoolTroopsPerSecond(factionId) {
+  const size = getPoolSize(factionId);
+  return size / 10;
 }

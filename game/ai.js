@@ -46,10 +46,7 @@ export function findWeakestEnemy(factionId) {
   return weakest;
 }
 
-export function findBestTarget(factionId, preferStrongest = false) {
-  if (preferStrongest) {
-    return findStrongestEnemy(factionId);
-  }
+export function findNeutralTarget(factionId) {
   const owned = Map.getOwnedTerritories(factionId);
   if (owned.length === 0) return null;
   let bestTarget = null;
@@ -58,9 +55,9 @@ export function findBestTarget(factionId, preferStrongest = false) {
     const neighbors = Map.getNeighbors(territory.id);
     for (const nid of neighbors) {
       const neighbor = Map.getTerritory(nid);
-      if (neighbor.owner === factionId || neighbor.owner === -1) continue;
+      if (neighbor.owner !== -1) continue;
       const dist = Map.distance(territory, neighbor);
-      const score = territory.troops / (dist + 1);
+      const score = territory.troops / (neighbor.troops + 1) * 10 + 1 / (dist + 1);
       if (score > bestScore) {
         bestScore = score;
         bestTarget = { from: territory, to: neighbor };
@@ -68,6 +65,81 @@ export function findBestTarget(factionId, preferStrongest = false) {
     }
   }
   return bestTarget;
+}
+
+export function findBestTarget(factionId, preferStrongest = false) {
+  if (preferStrongest) {
+    return findStrongestEnemy(factionId);
+  }
+  const owned = Map.getOwnedTerritories(factionId);
+  if (owned.length === 0) return null;
+  let bestTarget = null;
+  let bestScore = -Infinity;
+  let hasAdvantageous = false;
+  let fallbackTarget = null;
+  let fallbackScore = Infinity;
+  for (const territory of owned) {
+    const neighbors = Map.getNeighbors(territory.id);
+    for (const nid of neighbors) {
+      const neighbor = Map.getTerritory(nid);
+      if (neighbor.owner === factionId || neighbor.owner === -1) continue;
+      if (neighbor.troops > territory.troops * 2) continue;
+      const dist = Map.distance(territory, neighbor);
+      const troopRatio = territory.troops / (neighbor.troops + 1);
+      const score = (troopRatio * 10) + (1 / (dist + 1)) + (territory.troops * 0.01);
+      if (troopRatio >= 1.5) {
+        hasAdvantageous = true;
+        if (score > bestScore) {
+          bestScore = score;
+          bestTarget = { from: territory, to: neighbor };
+        }
+      } else {
+        if (neighbor.troops < fallbackScore) {
+          fallbackScore = neighbor.troops;
+          fallbackTarget = { from: territory, to: neighbor };
+        }
+      }
+    }
+  }
+  if (hasAdvantageous && bestTarget) return bestTarget;
+  if (fallbackTarget) return fallbackTarget;
+  return findWeakestEnemy(factionId) ? { from: owned[0], to: findWeakestEnemy(factionId) } : null;
+}
+
+export function findFlankTarget(factionId) {
+  const all = Map.getAllTerritories();
+  const enemies = all.filter(t => t.owner !== factionId && t.owner !== -1);
+  const grouped = {};
+  for (const enemy of enemies) {
+    if (!grouped[enemy.owner]) grouped[enemy.owner] = [];
+    grouped[enemy.owner].push(enemy);
+  }
+  const owned = Map.getOwnedTerritories(factionId);
+  if (owned.length === 0) return null;
+  let bestFlank = null;
+  let bestScore = -Infinity;
+  for (const ownerEnemies of Object.values(grouped)) {
+    if (ownerEnemies.length < 2) continue;
+    for (let i = 0; i < ownerEnemies.length; i++) {
+      for (let j = i + 1; j < ownerEnemies.length; j++) {
+        const a = ownerEnemies[i];
+        const b = ownerEnemies[j];
+        const adj = Map.getNeighbors(a.id);
+        if (!adj.includes(b.id)) continue;
+        const weaker = a.troops <= b.troops ? a : b;
+        for (const own of owned) {
+          const dist = Map.distance(own, weaker);
+          const ratio = own.troops / (weaker.troops + 1);
+          const score = ratio * 5 + 1 / (dist + 1);
+          if (score > bestScore && weaker.troops <= own.troops * 2) {
+            bestScore = score;
+            bestFlank = { from: own, to: weaker };
+          }
+        }
+      }
+    }
+  }
+  return bestFlank;
 }
 
 export function deployFromPool(factionId, preferStrongest = false) {

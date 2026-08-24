@@ -5,11 +5,13 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let config = null;
+let initialState = null;
 let adjacencyMap = new Map();
 
 export function loadMap(configPath) {
   const raw = readFileSync(join(configPath || __dirname, '..', 'config', 'map.json'), 'utf-8');
   config = JSON.parse(raw);
+  initialState = JSON.parse(raw).territories.map(t => ({ id: t.id, owner: t.owner, troops: t.troops }));
   buildAdjacencyGraph();
   return config;
 }
@@ -53,7 +55,11 @@ export function setTroops(id, count) {
 
 export function addTroops(id, count) {
   const t = getTerritory(id);
-  if (t) t.troops = Math.min(t.troops + count, t.maxTroops);
+  if (!t) return count;
+  const space = t.maxTroops - t.troops;
+  if (count <= space) { t.troops += count; return 0; }
+  t.troops = t.maxTroops;
+  return count - space;
 }
 
 export function removeTroops(id, count) {
@@ -75,11 +81,20 @@ export function getOwnedTerritories(ownerId) {
 }
 
 export function resetMap() {
-  for (const t of config.territories) {
-    if (t.owner >= 0) {
-      t.troops = 50;
-    } else {
-      t.troops = 80;
-    }
+  if (!initialState) return;
+  for (const init of initialState) {
+    const t = getTerritory(init.id);
+    if (t) { t.owner = init.owner; t.troops = init.troops; }
   }
+}
+
+export function randomizePositions() {
+  const pad = 80;
+  const w = config.canvas.width - pad * 2;
+  const h = config.canvas.height - pad * 2;
+  for (const t of config.territories) {
+    t.x = Math.round(pad + Math.random() * w);
+    t.y = Math.round(pad + Math.random() * h);
+  }
+  buildAdjacencyGraph();
 }
