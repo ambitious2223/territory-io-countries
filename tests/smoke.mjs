@@ -36,6 +36,13 @@ async function main() {
   if (!health.ok) throw new Error('health not ok')
   console.log(`health ok — source=${health.source} state=${health.tiktokState}`)
 
+  const teamsResponse = await fetch(`${URL}/api/teams`)
+  const teamsData = await teamsResponse.json()
+  if (!Array.isArray(teamsData.teams) || teamsData.teams.length < 2) {
+    throw new Error('teams endpoint returned invalid data')
+  }
+  console.log(`teams ok — ${teamsData.teams.length} teams`)
+
   const socket = io(URL, { transports: ['websocket'] })
   await new Promise((resolve, reject) => {
     socket.on('connect', resolve)

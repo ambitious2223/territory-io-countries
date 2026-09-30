@@ -42,11 +42,11 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ---
 
 ## Phase 3 — Teams, flags & i18n
-- [ ] `src/teams.js` model + `config/teams.json`
-- [ ] Join-keyword matcher (number · ISO2 · EN · AR · emoji, fuzzy)
-- [ ] `stores/teamsStore` + `uploadRoutes` + flag upload helper (3:2)
-- [ ] `src/flags.js` image cache
-- [ ] `src/i18n.js` (EN/AR + RTL) and debug **Teams** tab
+- [x] `src/teams.js` model + `config/teams.json` (8 default teams)
+- [x] Join-keyword matcher (number · ISO2 · EN · AR · emoji, fuzzy)
+- [x] `stores/teamsStore` + `httpRoutes` (`GET/PUT /api/teams`, `POST /api/flags`) + 3:2 upload helper
+- [x] Flag image cache (`teamRegistry.js`) + `imageUtils.js` cover-crop
+- [x] `src/i18n.js` (EN/AR + RTL), translation pass on primary UI, debug **Teams** + **Language** tabs
 
 **Verify:** upload a flag, type each keyword variant, correct team resolves.
 

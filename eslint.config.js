@@ -28,6 +28,7 @@ export default [
         AudioContext: 'readonly',
         WebSocket: 'readonly',
         Image: 'readonly',
+        FileReader: 'readonly',
         localStorage: 'readonly',
         navigator: 'readonly'
       }

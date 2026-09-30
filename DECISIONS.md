@@ -91,3 +91,17 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
   Tikora for Phase 8.
 - **Rationale:** An early working fallback de-risks the source abstraction; no extra deps (`ws` already present).
 - **Alternatives:** Defer all non-direct sources to Phase 8.
+
+## D-015 — Shared `config/teams.json` + pure matcher
+- **Context:** Teams must be editable by the streamer and match viewer input on the client.
+- **Decision:** Keep one `config/teams.json` (read/written by the server, imported as the client
+  default) and put all join matching in pure, unit-tested `src/teams.js`.
+- **Rationale:** Single source of truth; the matcher is deterministic and testable without a browser.
+- **Alternatives:** Separate client/server rosters; matching in the socket layer.
+
+## D-016 — Client team registry with server sync + 3:2 flag normalization
+- **Context:** Flags must look consistent and survive restarts/offline.
+- **Decision:** `teamRegistry.js` syncs via `GET/PUT /api/teams` and mirrors to localStorage; uploaded
+  flags are cover-cropped to **3:2** (`imageUtils.js`) before the server validates and stores them.
+- **Rationale:** Consistent presentation, durable data, resilient offline behaviour.
+- **Alternatives:** Store raw uploads (inconsistent aspect); server-side crop (needs an image lib).

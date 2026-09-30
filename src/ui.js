@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 export function updateLeaderboard(marbles) {
   const container = document.getElementById('leaderboard');
   const sorted = marbles
@@ -25,18 +27,18 @@ export function updateGameOver(winner, duration, supporters, tileCount, dominati
   const panel = document.getElementById('game-over-panel');
   panel.classList.add('visible');
 
-  document.getElementById('go-winner').textContent = winner ? winner.name : 'No one';
+  document.getElementById('go-winner').textContent = winner ? winner.name : '—';
   document.getElementById('go-winner').style.color = winner ? winner.color : '#888';
-  document.getElementById('go-kills').textContent = winner ? `Total Kills: ${winner.kills}` : '';
-  document.getElementById('go-tiles').textContent = winner ? `Tiles: ${tileCount} (${Math.round(domination * 100)}%)` : '';
-  document.getElementById('go-duration').textContent = `Match Duration: ${formatDuration(duration)}`;
+  document.getElementById('go-kills').textContent = winner ? `${t('gameover.kills')}: ${winner.kills}` : '';
+  document.getElementById('go-tiles').textContent = winner ? `${t('gameover.tiles')}: ${tileCount} (${Math.round(domination * 100)}%)` : '';
+  document.getElementById('go-duration').textContent = `${t('gameover.duration')}: ${formatDuration(duration)}`;
 
   const reasonEl = document.getElementById('go-reason');
   if (reasonEl) {
     const reasons = {
-      domination: 'Dominated the arena',
-      timeout: 'Highest territory at time expiry',
-      elimination: 'Last marble standing',
+      domination: t('gameover.domination'),
+      timeout: t('gameover.timeout'),
+      elimination: t('gameover.elimination'),
     };
     reasonEl.textContent = reasons[winReason] || '';
   }
@@ -48,7 +50,7 @@ export function hideGameOver() {
 
 export function updateControlBar(game) {
   const pauseBtn = document.getElementById('btn-pause');
-  pauseBtn.textContent = game.paused ? 'Play' : 'Pause';
+  pauseBtn.textContent = game.paused ? t('control.play') : t('control.pause');
   pauseBtn.classList.toggle('active', game.paused);
 
   document.getElementById('btn-1x').classList.toggle('speed-active', game.speed === 1);
@@ -56,7 +58,7 @@ export function updateControlBar(game) {
   document.getElementById('btn-4x').classList.toggle('speed-active', game.speed === 4);
 
   document.getElementById('btn-debug').classList.toggle('active', game.debugMode);
-  document.getElementById('btn-mute').textContent = game.audio.enabled ? 'Mute' : 'Unmute';
+  document.getElementById('btn-mute').textContent = game.audio.enabled ? t('control.mute') : t('control.unmute');
   document.getElementById('btn-mute').classList.toggle('active', !game.audio.enabled);
 }
 

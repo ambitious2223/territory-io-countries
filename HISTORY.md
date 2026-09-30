@@ -4,6 +4,26 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Phase 3: teams, flags & i18n
+
+**Done**
+- `config/teams.json` (8 default teams) + `server/stores/teamsStore.js` (atomic).
+- `server/uploads.js` (magic-byte validation) and `server/httpRoutes.js`
+  (`GET/PUT /api/teams`, `POST /api/flags`); refactored `server/index.js` to use it.
+- `src/teams.js` pure matcher (number · ISO2 · EN · AR · emoji, fuzzy; Arabic normalization).
+- `src/teamRegistry.js` (server sync + localStorage fallback + flag cache),
+  `src/imageUtils.js` (3:2 cover-crop), `src/teamsPanel.js` debug **Teams** editor.
+- `src/i18n.js` (EN/AR + RTL), language selector, localized primary UI.
+
+**Verified**
+- `npm run lint` clean · `npm test` 31 passed · `npm run build` ok · `npm run smoke` PASS
+  (health + teams endpoint + socket event).
+
+**Next**
+- Phase 4: spawn viewer avatar marbles (photo + name + team colour), active cap + queue, AI fill.
+
+---
+
 ## 2026-09-30 — Phase 1: bridge server + auto-connect
 
 **Done**

@@ -5,6 +5,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 
 export const ROOT = join(here, '..')
 export const CONFIG_PATH = join(ROOT, '.tiktok-config.json')
+export const TEAMS_PATH = join(ROOT, 'config', 'teams.json')
 export const PUBLIC_DIR = join(ROOT, 'public')
 export const DIST_DIR = join(ROOT, 'dist')
 export const UPLOADS_DIR = join(ROOT, 'public', 'flags')
