@@ -13,6 +13,29 @@ feed their nation's power. Built as an **OBS browser-source overlay**.
 
 ---
 
+## Status — v1.0.0
+
+All planned phases (0–9) are complete and every gate is green: `npm run lint`, `npm test`
+(73 unit tests), `npm run build`, and `npm run smoke`.
+
+**Shipped**
+
+- TikTok bridge with **auto-connect** and three sources: Direct (`tiktok-live-connector`),
+  **TikFinity** (`ws://127.0.0.1:21213`) and **Tikora** hub (relay `ws://127.0.0.1:27016/`).
+- Teams 2–12 with streamer-uploaded 3:2 flags and multilingual join keywords
+  (number · ISO2 · English · Arabic · emoji, fuzzy matching).
+- Viewer avatar marbles with profile photos, a hard cap + reinforcement queue, and AI fill.
+- Camera pan/zoom **join cinematic** with a profile-photo intro card and adjustable blur.
+- Territory + sword combat, gift-dominant scoring, a live team scoreboard, auto-looping timed
+  rounds, and persisted all-time winners.
+- Gift → power-up mappings with an in-app content editor.
+- Full English + Arabic (RTL) UI.
+
+**Before going live** (not testable in CI): a visual/browser pass via `npm run dev`, a real Direct
+connect with your username, and a Tikora relay test against a running Tikora install.
+
+---
+
 ## Quick start
 
 ```bash
@@ -55,15 +78,15 @@ TERRITORY WITH SWORDS/
 │   ├── connectionManager.js
 │   ├── directBridge.js   # tiktok-live-connector
 │   ├── tikfinityBridge.js# ws://127.0.0.1:21213
-│   ├── tikoraHub.js      # Tikora hub relay
 │   ├── normalize.js      # Unified event schema
-│   ├── stores/           # JSON persistence (atomic writes)
-│   ├── uploadRoutes.js   # Flag image uploads -> public/flags
-│   └── mock.js
+│   ├── httpRoutes.js     # /health + /api/{teams,flags,winners,mappings,tikora,mock-event}
+│   ├── uploads.js        # Flag image validation + save -> public/flags
+│   ├── mock.js
+│   └── stores/           # JSON persistence (atomic writes)
 ├── public/
 │   └── flags/            # Streamer-uploaded flag images
-├── src/                  # Game engine + bridge client + systems
-├── config/               # Default teams / map / settings JSON
+├── src/                  # Game engine, systems, bridge client, i18n, Tikora client
+├── config/               # teams.json, mappings.json (+ winners.json at runtime)
 ├── tikora.manifest.json  # Effects Tikora reads
 ├── .tiktok-config.json   # Auto-connect configuration
 └── docs: README, AGENTS, GUARDRAILS, ARCHITECTURE, GAME_DESIGN,
