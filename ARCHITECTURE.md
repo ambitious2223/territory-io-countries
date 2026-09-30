@@ -12,17 +12,21 @@
                                               │ tiktok-event / tiktok:status
 ┌─────────────────────────────────────────────▼────────────────────┐
 │ Bridge server (:3020) — Node + Express + Socket.IO              │
-│   connectionManager  (auto | direct | tikfinity | tikora)        │
-│   directBridge · tikfinityBridge · tikoraHub                    │
-│   normalize (one event schema) · uploadRoutes                    │
-│   stores/ (config, teams, settings, mappings, winners)          │
+│   connectionManager  (auto | direct | tikfinity | mock)          │
+│   directBridge · tikfinityBridge · httpRoutes · uploads          │
+│   normalize (one event schema)                                   │
+│   stores/ (config, teams, mappings, winners)                     │
 └──────────────────────────────────────────────────────────────────┘
-        ▲ ws 127.0.0.1:21213 (TikFinity)   ▲ ws 127.0.0.1:27016 (Tikora)
+        ▲ ws 127.0.0.1:21213 (TikFinity)
+
+  Tikora (client-side): src/tikora.js loads hub-client.js
+        ▲ ws 127.0.0.1:27016 — effects only, not chat
 ```
 
 - No TikTok OAuth or API key required — username-based connection.
 - The frontend is a static Vite bundle; the server also serves `dist/` for production.
-- The server is the only component that talks to TikTok. The client is source-agnostic.
+- The server is the only component that talks to TikTok for **chat events**. The client is
+  source-agnostic. Tikora is a **client-side effect hub**, not a bridge source (see BRIDGE.md §6).
 
 ---
 
@@ -42,31 +46,44 @@
 
 | Module | Responsibility |
 | --- | --- |
-| `main.js` | Bootstrap: create `Game`, connect bridge client, start loop |
+| `main.js` | Bootstrap: create `Game`, connect bridge client, init panels, start loop |
 | `game.js` | Loop, lifecycle/round state machine, combat/territory orchestration, input |
 | `config.js` | All tunable constants (canvas, grid, camera, scoring, cinematic) |
-| `grid.js` | Tile ownership, fill progress, enclosure fill, zone init, drawing |
-| `map.js` | Wall/map generation and zone layout for N teams |
+| `grid.js` | Tile ownership, fill progress, enclosure fill, drawing |
+| `map.js` | Wall/map generation |
+| `zones.js` | Generic contiguous zone layout for N teams (2–12) |
 | `marble.js` | Viewer avatar marble: movement, claim, HP, power-ups, rendering |
 | `sword.js` | Orbital blade geometry, rotation, drawing |
 | `combat.js` | Blade↔marble and blade↔blade collision, damage events |
 | `territory.js` | Elimination colour-conversion wave |
+| `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
 | `vfx.js` | Floating combat text |
-| `audio.js` | Procedural panned sound engine |
+| `audio.js` | Procedural panned SFX (join, gift, capture, victory) |
 | `ai.js` | Steering for AI-fill marbles |
 | `analytics.js` | Per-viewer and per-team stats |
 | `renderer.js` | Camera (pan/zoom/shake) + shared draw helpers |
-| `ui.js` | DOM HUD, control bar, debug panel, game-over, i18n wiring |
+| `viewerManager.js` | Viewer/bot roster, active cap + reinforcement queue |
+| `ui.js` | DOM HUD, control bar, debug panels, game-over, i18n wiring |
 | `debug.js` | Canvas debug overlay (vectors, hitboxes, FPS) |
 | `teams.js` | Team model + join-keyword matcher (pure) |
-| `flags.js` | Flag registry + image cache |
+| `teamRegistry.js` | Team sync via `/api/teams`, localStorage, flag images |
+| `teamsPanel.js` | Teams editor UI |
 | `scoring.js` | Interaction → score engine (pure) |
+| `round.js` | Round lifecycle state machine |
+| `scoreboard.js` | Team scoreboard rendering |
+| `winnersStore.js` | Winners persistence + sync |
+| `mappings.js` | Gift-mapping matcher (pure) |
+| `mappingsStore.js` | Mapping persistence + sync |
+| `mappingsPanel.js` | Gift-mapping editor UI |
 | `joinCinematic.js` | Camera intro queue for new joiners |
 | `giftEffects.js` | Gift → power-up effect executor |
+| `tikora.js` | Tikora effect hub (manifest + served `hub-client.js`) |
+| `tikoraClient.js` | Loads Tikora's `hub-client.js` over the relay |
+| `imageUtils.js` | Image load + 3:2 cover-crop |
+| `utils.js` | Shared helpers |
 | `net/bridgeClient.js` | Socket transport + connection status |
 | `i18n.js` | EN/AR dictionaries + `t()` |
-| `mock.js` | In-browser mock event triggers for testing |
 
 ---
 
@@ -75,14 +92,15 @@
 | Module | Responsibility |
 | --- | --- |
 | `server/index.js` | Express + Socket.IO + static + boot-time auto-connect |
-| `connectionManager.js` | Source selection, retries, fallback, dedupe gate |
+| `connectionManager.js` | Source selection (`auto/direct/tikfinity/mock`), retries, fallback |
 | `directBridge.js` | `tiktok-live-connector` connection + raw listeners |
 | `tikfinityBridge.js` | TikFinity WebSocket listener + payload routing |
-| `tikoraHub.js` | Tikora `hub-client.js` relay + manifest capability sync |
 | `normalize.js` | Raw payload → unified event schema; like-delta; gift combo/dedupe |
-| `stores/*.js` | Atomic JSON read/write for config, teams, settings, mappings, winners |
-| `uploadRoutes.js` | Flag image upload + validation + static write |
+| `httpRoutes.js` | REST: health, teams, winners, mappings, flags, tikora config, mock |
+| `uploads.js` | Flag image validation + write to `public/flags` |
+| `stores/*.js` | Atomic JSON read/write for config, teams, mappings, winners |
 | `mock.js` | Server-side mock event injection |
+| `constants.js` | Paths, ports, modes, retry/dedupe constants |
 
 See [BRIDGE.md](./BRIDGE.md) for the event contracts.
 
@@ -160,11 +178,10 @@ intros, focus, and shake all feed the same transform. HUD is never transformed.
 
 | Store | File | Contents |
 | --- | --- | --- |
-| Config | `.tiktok-config.json` | username, mode, host/port |
+| Config | `.tiktok-config.json` | username, mode, host/port, Tikora settings |
 | Teams | `config/teams.json` | roster, flags, colours, aliases |
-| Settings | `config/settings.json` | round length, scoring weights, caps |
 | Mappings | `config/mappings.json` | gift → power-up rules |
-| Winners | `config/winners.json` | all-time team + viewer winners |
+| Winners | `config/winners.json` | all-time team + viewer winners (created at runtime) |
 
 All stores use **atomic write** (write temp → rename). The client mirrors to localStorage and
 re-syncs when the server is reachable.

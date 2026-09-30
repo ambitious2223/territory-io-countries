@@ -4,6 +4,18 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-09-30
+
+### Fixed
+- Removed the phantom `tikora` value from `server/constants.js` `MODES`; the bridge chat sources are
+  `auto | direct | tikfinity | mock`. Previously a `tikora` mode silently fell back to Direct.
+
+### Changed
+- Reconciled docs with shipped behaviour: **Tikora is a client-side effect hub**, not a bridge chat
+  source (updated README, AGENTS, ARCHITECTURE, BRIDGE, TESTING and DECISIONS; added D-022).
+- Corrected stale module/file references (module responsibility tables, TESTING coverage list,
+  repository maps, persistence stores).
+
 ## [1.0.0] - 2026-09-30
 
 ### Added
@@ -74,4 +86,4 @@ this project aims to follow [Semantic Versioning](https://semver.org/).
 ### Added
 - Initial planning and design baseline for the TikTok-integrated rework.
 - Confirmed architecture: Vite + vanilla-JS canvas frontend (:1935) and a Node bridge
-  server (:3020) with direct / TikFinity / Tikora TikTok sources.
+  server (:3020) with Direct / TikFinity chat sources; Tikora integrated as an effect hub.

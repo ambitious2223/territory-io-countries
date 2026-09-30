@@ -4,6 +4,23 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Docs/code reconciliation (1.0.1)
+
+**Done**
+- Confirmed Tikora is implemented **client-side** (`src/tikora.js` + `tikoraClient.js` load Tikora's
+  `hub-client.js`), not as a bridge chat source; `connectionManager` only handles
+  `auto | direct | tikfinity | mock`.
+- Removed the phantom `tikora` mode from `server/constants.js` `MODES`.
+- Aligned docs with code: README status, AGENTS (fixed decisions + architecture), ARCHITECTURE
+  (diagram + module tables + persistence), BRIDGE (sources/modes/API/Tikora section), TESTING
+  (coverage + QA), and DECISIONS (D-003 refined, D-022 added).
+- Released **1.0.1**.
+
+**Verified**
+- `npm run lint` clean · `npm test` 73 passed · `npm run smoke` PASS.
+
+---
+
 ## 2026-09-30 — Phase 9: polish & release 1.0.0
 
 **Done**

@@ -5,7 +5,7 @@ commenting, then fight for land with orbital swords while likes, follows, shares
 feed their nation's power. Built as an **OBS browser-source overlay**.
 
 - **Frontend:** HTML5 Canvas, vanilla JS (ES modules), bundled by Vite
-- **Bridge server:** Node.js + Express + Socket.IO (`tiktok-live-connector`, TikFinity fallback, Tikora hub)
+- **Bridge server:** Node.js + Express + Socket.IO (Direct + TikFinity chat sources, Mock; Tikora effect hub)
 - **Persistence:** on-disk JSON stores with localStorage fallback
 - **Languages:** English (default) + Arabic (RTL)
 
@@ -20,8 +20,10 @@ All planned phases (0–9) are complete and every gate is green: `npm run lint`,
 
 **Shipped**
 
-- TikTok bridge with **auto-connect** and three sources: Direct (`tiktok-live-connector`),
-  **TikFinity** (`ws://127.0.0.1:21213`) and **Tikora** hub (relay `ws://127.0.0.1:27016/`).
+- TikTok bridge with **auto-connect**: **Direct** (`tiktok-live-connector`) + **TikFinity**
+  (`ws://127.0.0.1:21213`) chat sources with auto-fallback, plus **Mock** for offline.
+- **Tikora** integration as a **client-side effect hub** (loads `hub-client.js` over
+  `ws://127.0.0.1:27016`), independent of the active chat source.
 - Teams 2–12 with streamer-uploaded 3:2 flags and multilingual join keywords
   (number · ISO2 · English · Arabic · emoji, fuzzy matching).
 - Viewer avatar marbles with profile photos, a hard cap + reinforcement queue, and AI fill.

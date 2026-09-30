@@ -33,7 +33,8 @@ Non-negotiable rules for every contribution. If a rule blocks you, raise it as a
 - **Camera:** world layers (grid, marbles, swords, particles) are transformed by the camera;
   HUD is always screen-space. Camera pan/zoom is pure presentation — never gameplay state.
 - **Bridge boundary:** the client only ever consumes the unified event schema. Raw TikTok /
-  TikFinity / Tikora payloads are normalized on the server before they cross the socket.
+  TikFinity payloads are normalized on the server before they cross the socket. Tikora is a
+  client-side effect hub (not a chat source) and routes effects through the shared executor.
 
 ---
 

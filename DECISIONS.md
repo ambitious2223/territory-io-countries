@@ -4,6 +4,15 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-022 — Tikora is an effect hub, not a bridge chat source
+- **Context:** Docs listed Tikora beside Direct/TikFinity as a chat source with a `tikora` connection
+  mode, but `connectionManager` never implemented that mode and Tikora only delivers mapped effects.
+- **Decision:** Remove `tikora` from `server/constants.js` `MODES`; the bridge chat sources are
+  `auto | direct | tikfinity | mock`. Tikora runs in the client (`src/tikora.js`) via the served
+  `hub-client.js`, independently of the active chat source.
+- **Rationale:** Matches shipped behaviour; avoids a phantom mode that silently fell back to Direct.
+- **Alternatives:** Implement a status-only `tikora` mode (ambiguous; carries no chat events).
+
 ## D-001 — Evolve the existing vanilla-JS canvas game
 - **Context:** A working Canvas engine (grid, marbles, swords, territory, audio, VFX) already exists.
 - **Decision:** Extend it in place rather than rewriting in React.
@@ -16,10 +25,12 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Minimal churn, maximum reused value.
 - **Alternatives:** Capture-the-flag rewrite; pure painting with no combat.
 
-## D-003 — Tri-source bridge with auto-connect
-- **Context:** Reference apps use direct `tiktok-live-connector`, TikFinity fallback, and Tikora hub.
-- **Decision:** Support all three plus Mock, each with its own debug tab; auto-connect on server boot.
-- **Rationale:** Robustness (fallback) and compatibility (Tikora/Stream Deck users).
+## D-003 — Bridge chat sources + auto-connect; Tikora as a client-side effect hub
+- **Context:** Reference apps use direct `tiktok-live-connector`, a TikFinity fallback, and a Tikora hub.
+- **Decision:** Support **Direct + TikFinity chat sources plus Mock** (auto-fallback) on the bridge,
+  each with debug controls; integrate **Tikora as a client-side effect hub** (not a chat source).
+- **Rationale:** Robustness (fallback) and compatibility (Tikora/Stream Deck users) without treating
+  Tikora as something it is not — it only routes mapped effects.
 - **Alternatives:** Direct only; TikFinity only.
 
 ## D-004 — Reuse the draw-with-viewers bridge server (port 3020)

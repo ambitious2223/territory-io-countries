@@ -20,10 +20,16 @@
 
 ### Required unit coverage (pure modules)
 - `src/teams.js` — join-keyword matcher: number, ISO2, EN, AR, emoji, fuzzy, negatives.
-- `src/map.js` — zone generation for N = 2…12 (contiguous, non-overlapping, full coverage).
+- `src/zones.js` — zone generation for N = 2…12 (contiguous, non-overlapping, full coverage).
 - `src/scoring.js` — each source weight, gift scaling, round settlement/tie-break.
+- `src/round.js` — countdown → playing → intermission transitions.
+- `src/viewerManager.js` — viewer cap + reinforcement-queue ordering.
+- `src/joinCinematic.js` — cinematic queue sequencing.
+- `src/mappings.js` — gift-rule matching (first match wins).
+- `src/tikoraClient.js` — relay → `hub-client.js` URL derivation + manifest shape.
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
-- `server/connectionManager.js` — mode selection, fallback count, retry scheduling.
+- `server/mock.js` — mock event construction.
+- `server/uploads.js` — flag image validation.
 
 ---
 
@@ -54,6 +60,9 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Event rate-limits and dedupe suppress spam (rapid repeat gift/like).
 - [ ] Round runs 3:00, announces the correct winner, auto-resets.
 - [ ] Manual End / Next / Pause override the auto-loop.
+- [ ] Debug → **Winners** lists persisted winners after a round.
+- [ ] Editing a **scoring weight** changes the next round's settlement.
+- [ ] Tikora Hub connect/disconnect works independently of the chat source.
 - [ ] Arabic UI renders RTL with no clipped text; all strings translated.
 - [ ] FPS stays ≥ 58 with the avatar cap reached (Diagnostics tab).
 - [ ] No secrets, uploads, `node_modules/` or `dist/` staged in git.

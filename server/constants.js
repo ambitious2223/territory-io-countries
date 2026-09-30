@@ -24,7 +24,7 @@ export const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:1935'
   .map((origin) => origin.trim())
   .filter(Boolean)
 
-export const MODES = ['auto', 'direct', 'tikfinity', 'tikora', 'mock']
+export const MODES = ['auto', 'direct', 'tikfinity', 'mock']
 
 export const MAX_SOURCE_FAILS = 2
 export const BRIDGE_RETRY_MS = 10000

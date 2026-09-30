@@ -28,7 +28,8 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Bundler | Vite |
 | Bridge server | Node.js + Express + Socket.IO, port **3020** |
 | App port | **1935** |
-| Bridge sources | **Direct** `tiktok-live-connector`, **TikFinity** WebSocket, **Tikora** hub — all three, each with a debug tab |
+| Bridge chat sources | **Direct** `tiktok-live-connector` + **TikFinity** WebSocket (auto-fallback, + Mock), each with debug controls |
+| Tikora | **Client-side effect hub** (not a chat source): loads `hub-client.js`, runs in `src/tikora.js` |
 | Auto-connect | Bridge connects on boot from `.tiktok-config.json` |
 | Teams | **2–12**, streamer-configured from a default 8-slot roster |
 | Viewer model | **One avatar marble per viewer**, hard cap **~24** active, overflow queued |
@@ -50,16 +51,17 @@ If a change conflicts with the table above, stop and raise it — do not just im
 ```
 OBS / browser
   └── Vite app (:1935): canvas engine + DOM HUD + debug panel
-        └── net/bridgeClient.js  (socket.io-client)
-              │  emits: tiktok-event, tiktok:status
-              ▼
-Bridge server (:3020): Express + Socket.IO
-  ├── connectionManager  — modes: auto | direct | tikfinity | tikora
-  ├── directBridge       — tiktok-live-connector
-  ├── tikfinityBridge    — ws://127.0.0.1:21213
-  ├── tikoraHub          — relay ws://127.0.0.1:27016 (hub-client.js)
-  ├── normalize          — one unified event schema
-  └── stores/            — JSON persistence (config, teams, settings, mappings, winners)
+        ├── net/bridgeClient.js  (socket.io-client)
+        │     │  receives: tiktok-event, tiktok:status
+        │     ▼
+        │   Bridge server (:3020): Express + Socket.IO
+        │     ├── connectionManager — modes: auto | direct | tikfinity | mock
+        │     ├── directBridge      — tiktok-live-connector
+        │     ├── tikfinityBridge   — ws://127.0.0.1:21213
+        │     ├── normalize         — one unified event schema
+        │     └── httpRoutes/stores — REST + JSON persistence
+        └── tikora.js / tikoraClient.js — client-side effect hub
+              └── hub-client.js relay ws://127.0.0.1:27016 (effects only)
 ```
 
 Details, socket event contracts and data flow: [ARCHITECTURE.md](./ARCHITECTURE.md).
@@ -71,7 +73,7 @@ Details, socket event contracts and data flow: [ARCHITECTURE.md](./ARCHITECTURE.
 ```
 server/    bridge + persistence (never import game rendering)
 src/       game engine, systems, UI, bridge client, i18n
-config/    default JSON (teams.json, settings.json, mappings.json)
+config/    default JSON (teams.json, mappings.json; winners.json written at runtime)
 public/    static assets; public/flags/ = uploaded flags
 docs       *.md files at the repo root
 ```
