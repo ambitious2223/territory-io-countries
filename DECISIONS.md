@@ -99,6 +99,14 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Single source of truth; the matcher is deterministic and testable without a browser.
 - **Alternatives:** Separate client/server rosters; matching in the socket layer.
 
+## D-020 — Declarative gift→effect mappings with a pure matcher
+- **Context:** Gifts must drive power-ups, configured by the streamer without code changes.
+- **Decision:** Store ordered rules in `config/mappings.json` (`giftName` contains / `giftId` /
+  `minCoins` → effect + params); match with a pure `matchMapping` (first match wins); execute via a
+  registry (`giftEffects.js`) that targets the gifter's team marble (spawning one if needed).
+- **Rationale:** Data-driven and testable; the same registry can later back the Tikora manifest effects.
+- **Alternatives:** Hardcoded gift handling; per-gift code branches.
+
 ## D-019 — Combined-score rounds with gift-dominant weighting
 - **Context:** The streamer wants timed rounds decided by territory **plus** interaction, with gifts
   dominant and everything tunable.

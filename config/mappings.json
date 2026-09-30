@@ -1,0 +1,21 @@
+{
+  "effects": [
+    "overcharge",
+    "shield",
+    "boost",
+    "heal",
+    "colorbomb",
+    "area_convert",
+    "spawn",
+    "instant_claim"
+  ],
+  "mappings": [
+    { "id": "rose_shield", "enabled": true, "match": { "giftName": "Rose" }, "effect": "shield", "params": {} },
+    { "id": "heart_boost", "enabled": true, "match": { "giftName": "Heart" }, "effect": "boost", "params": { "duration": 5 } },
+    { "id": "coffee_heal", "enabled": true, "match": { "giftName": "Coffee" }, "effect": "heal", "params": { "amount": 40 } },
+    { "id": "lion_spawn", "enabled": true, "match": { "giftName": "Lion" }, "effect": "spawn", "params": {} },
+    { "id": "universe_area", "enabled": true, "match": { "minCoins": 1000 }, "effect": "area_convert", "params": { "radius": 5 } },
+    { "id": "big_colorbomb", "enabled": true, "match": { "minCoins": 100 }, "effect": "colorbomb", "params": { "radius": 3 } },
+    { "id": "any_gift_overcharge", "enabled": false, "match": { "minCoins": 1 }, "effect": "overcharge", "params": { "duration": 5 } }
+  ]
+}

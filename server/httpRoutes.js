@@ -1,5 +1,6 @@
 import { getTeamsConfig, saveTeamsConfig, updateTeam } from './stores/teamsStore.js'
 import { getWinners, addWinner, clearWinners } from './stores/winnersStore.js'
+import { getMappingsConfig, saveMappingsConfig } from './stores/mappingsStore.js'
 import { saveFlagImage } from './uploads.js'
 import { buildMockEvent } from './mock.js'
 
@@ -43,6 +44,19 @@ export function registerHttpRoutes(app, { manager, getClientCount }) {
 
   app.delete('/api/winners', (req, res) => {
     res.json(clearWinners(req.query.board))
+  })
+
+  app.get('/api/mappings', (_req, res) => {
+    res.json(getMappingsConfig())
+  })
+
+  app.put('/api/mappings', (req, res) => {
+    const body = req.body || {}
+    if (!Array.isArray(body.mappings)) {
+      res.status(400).json({ error: 'Invalid mappings payload' })
+      return
+    }
+    res.json(saveMappingsConfig(body))
   })
 
   app.post('/api/flags', (req, res) => {

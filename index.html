@@ -535,6 +535,55 @@
       color: #ff5555;
     }
 
+    /* === MAPPINGS EDITOR === */
+    .mapping-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 0;
+      border-bottom: 1px solid #1c1c1c;
+    }
+    .mapping-input {
+      width: 0;
+      flex: 1;
+      min-width: 0;
+      background: #111;
+      border: 1px solid #333;
+      color: #ddd;
+      font-size: 9px;
+      padding: 2px 3px;
+      font-family: inherit;
+    }
+    .mapping-coins {
+      width: 40px;
+      background: #111;
+      border: 1px solid #333;
+      color: #ddd;
+      font-size: 9px;
+      padding: 2px 3px;
+      font-family: inherit;
+    }
+    .mapping-select {
+      width: 78px;
+      background: #111;
+      border: 1px solid #333;
+      color: #ddd;
+      font-size: 9px;
+      padding: 2px;
+      font-family: inherit;
+    }
+    .mapping-remove {
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 11px;
+      padding: 0 2px;
+    }
+    .mapping-remove:hover {
+      color: #ff5555;
+    }
+
     /* === RIGHT MARGIN (empty) === */
     .right-margin {
       grid-row: 1 / -1;
@@ -685,6 +734,14 @@
         <div class="debug-row" style="gap:6px;margin-top:6px;">
           <button class="ctrl-btn" id="btn-teams-add" style="flex:1;" data-i18n="debug.addTeam">Add Team</button>
           <button class="ctrl-btn" id="btn-teams-save" style="flex:1;" data-i18n="debug.save">Save</button>
+        </div>
+      </div>
+      <div class="debug-section">
+        <h5 data-i18n="debug.content">Content — Gift Mappings</h5>
+        <div id="mappings-panel-body"></div>
+        <div class="debug-row" style="gap:6px;margin-top:6px;">
+          <button class="ctrl-btn" id="btn-mappings-add" style="flex:1;" data-i18n="debug.addMapping">Add</button>
+          <button class="ctrl-btn" id="btn-mappings-save" style="flex:1;" data-i18n="debug.save">Save</button>
         </div>
       </div>
       <div class="debug-section">

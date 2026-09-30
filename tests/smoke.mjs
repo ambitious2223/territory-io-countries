@@ -50,6 +50,13 @@ async function main() {
   }
   console.log('winners ok')
 
+  const mappingsResponse = await fetch(`${URL}/api/mappings`)
+  const mappingsData = await mappingsResponse.json()
+  if (!Array.isArray(mappingsData.mappings)) {
+    throw new Error('mappings endpoint returned invalid data')
+  }
+  console.log(`mappings ok — ${mappingsData.mappings.length} rules`)
+
   const socket = io(URL, { transports: ['websocket'] })
   await new Promise((resolve, reject) => {
     socket.on('connect', resolve)

@@ -86,9 +86,10 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ---
 
 ## Phase 7 — Gift → power-up mappings
-- [ ] `stores/mappingsStore` + `config/mappings.json`
-- [ ] Content-tab mappings editor (trigger → effect + params)
-- [ ] `giftEffects.js` executor + new effects (area-convert, boost, freeze, spawn, giant/shrink, instant-claim)
+- [x] `stores/mappingsStore` + `config/mappings.json` + `GET/PUT /api/mappings`
+- [x] Content-tab mappings editor (gift name / min coins → effect) + Add/Save
+- [x] `giftEffects.js` executor with 8 effects (overcharge, shield, boost, heal, colorbomb, area-convert, spawn, instant-claim)
+- [x] Game wiring: matching gift triggers the effect for the gifter's team
 
 **Verify:** map a gift to an effect; sending it triggers the effect; params respected.
 

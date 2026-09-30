@@ -5,6 +5,8 @@ import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
 import { getTeams, loadFromServer, subscribe } from './teamRegistry.js';
 import { setBaseUrl, loadWinners } from './winnersStore.js';
+import { initMappingsPanel } from './mappingsPanel.js';
+import { setBaseUrl as setMappingsBaseUrl, loadFromServer as loadMappings } from './mappingsStore.js';
 
 const canvas = document.getElementById('game-canvas');
 canvas.width = 1200;
@@ -46,10 +48,13 @@ initConnectionPanel(game);
 initViewersPanel(game);
 initCinematicPanel(game);
 initTeamsPanel(game);
+initMappingsPanel();
 initLanguageSelector();
 
 setBaseUrl(bridge.url);
+setMappingsBaseUrl(bridge.url);
 bridge.connect();
 loadFromServer(bridge.url);
 loadWinners();
+loadMappings();
 game.start();

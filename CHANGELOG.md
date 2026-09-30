@@ -44,6 +44,12 @@ this project aims to follow [Semantic Versioning](https://semver.org/).
 - Manual **Start / End / Auto** round controls in the control bar.
 - Winners persistence: `server/stores/winnersStore.js` + `GET/POST/DELETE /api/winners` and a
   client mirror (`src/winnersStore.js`) with localStorage fallback; winners saved on round end.
+- Gift → power-up mappings: `config/mappings.json` defaults, `server/stores/mappingsStore.js` +
+  `GET/PUT /api/mappings`, pure `matchMapping` (`src/mappings.js`), and a client store
+  (`src/mappingsStore.js`) with localStorage fallback.
+- `src/giftEffects.js` executor with eight effects (overcharge, shield, boost, heal, colorbomb,
+  area-convert, spawn ally, instant-claim); matching gifts trigger the effect for the gifter's team.
+- Debug **Content — Gift Mappings** editor (enable, gift name, min coins, effect, add/remove, save).
 
 ### Changed
 - Project re-scoped from "Territory With Swords" (local AI battle) to

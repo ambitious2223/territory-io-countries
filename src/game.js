@@ -7,6 +7,9 @@ import { ScoringEngine } from './scoring.js';
 import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
 import { addWinner } from './winnersStore.js';
+import { matchMapping } from './mappings.js';
+import { getMappings } from './mappingsStore.js';
+import { executeGiftEffect } from './giftEffects.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
 import { TerritoryManager } from './territory.js';
@@ -299,6 +302,10 @@ export class Game {
       this.scoring.registerUser(event.userId ?? event.username, result.viewer.teamId);
     }
     this.scoring.applyEvent(event);
+    if (event && event.type === 'gift') {
+      const mapping = matchMapping(getMappings(), event);
+      if (mapping) executeGiftEffect(this, mapping, event);
+    }
   }
 
   spawnViewerMarble(profile, team) {

@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Phase 7: gift → power-up mappings
+
+**Done**
+- `config/mappings.json` defaults, `server/stores/mappingsStore.js`, `GET/PUT /api/mappings`.
+- `src/mappings.js` pure matcher (`giftName`/`giftId`/`minCoins`, first-match) + client store
+  `src/mappingsStore.js` with localStorage fallback.
+- `src/giftEffects.js` registry + executor (8 effects) targeting the gifter's team marble.
+- Game wiring: gift events run `matchMapping` → `executeGiftEffect`.
+- Debug **Content** mappings editor; tests for matcher + executor.
+
+**Verified**
+- `npm run lint` clean · `npm test` 69 passed · `npm run build` ok · `npm run smoke` PASS
+  (health + teams + winners + mappings + socket).
+
+**Next**
+- Phase 8: TikFinity Connect sub-tab + Tikora hub (manifest + relay).
+
+---
+
 ## 2026-09-30 — Phase 6: scoring, rounds, scoreboard, winners
 
 **Done**
