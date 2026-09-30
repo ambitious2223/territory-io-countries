@@ -1,5 +1,3 @@
-import { CONFIG } from './config.js';
-
 export class TerritoryManager {
   constructor(grid) {
     this.grid = grid;

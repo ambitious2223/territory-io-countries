@@ -75,3 +75,19 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Decision:** Publish our effect list and consume mapped effects over the hub relay.
 - **Rationale:** Interoperability with Tikora's Game Hub without a hard dependency.
 - **Alternatives:** Skip Tikora.
+
+## D-013 — Modern toolchain (Vite 8, Vitest, ESLint flat config)
+- **Context:** The original dev dependency was Vite 5 with known `esbuild` advisories.
+- **Decision:** Upgrade to Vite `8.3.1`, add Vitest for unit tests and ESLint (flat config) as the
+  code-health gate, and add `@eslint/js`.
+- **Rationale:** Clears all `npm audit` advisories (0) and provides the lint/test gates required by
+  [GUARDRAILS.md](./GUARDRAILS.md); Node 24 supports the new major.
+- **Alternatives:** Stay on Vite 5 (vulnerable); skip lint/tests (fails the definition of done).
+
+## D-014 — Bridge event source abstraction + TikFinity in Phase 1
+- **Context:** TikFinity was planned for Phase 8, but the adapter is small and was needed to prove
+  the fallback path.
+- **Decision:** Ship `directBridge` and `tikfinityBridge` together behind `connectionManager`; keep
+  Tikora for Phase 8.
+- **Rationale:** An early working fallback de-risks the source abstraction; no extra deps (`ws` already present).
+- **Alternatives:** Defer all non-direct sources to Phase 8.

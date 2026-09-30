@@ -17,6 +17,7 @@ import {
   updateLeaderboard, updateGameOver, hideGameOver,
   updateControlBar, updatePauseOverlay,
   initControls, initDebugPanel, updateDebugPanel,
+  updateConnectionPanel,
   getSelectedMap,
 } from './ui.js';
 
@@ -308,7 +309,7 @@ export class Game {
       this.analytics.recordDamage(attacker, victim, amount);
     }
 
-    for (const { killer, victim, x, y } of kills) {
+    for (const { killer, victim, x } of kills) {
       this._sweepKiller = x;
       this.territory.convertWave(victim.color, killer.color);
       this.camera.shake(8, 0.18);
@@ -379,6 +380,7 @@ export class Game {
     updateControlBar(this);
     updatePauseOverlay(this.paused);
     updateDebugPanel(this, this.particles, this.marbles, this.grid);
+    updateConnectionPanel(this);
 
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);

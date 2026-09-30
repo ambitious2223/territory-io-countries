@@ -7,33 +7,35 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
-## Phase 0 — Documentation & repo (current)
+## Phase 0 — Documentation & repo
 - [x] Author full docs set (README, AGENTS, GUARDRAILS, ARCHITECTURE, GAME_DESIGN, BRIDGE, PLANS, TESTING, DECISIONS, HISTORY, CHANGELOG)
 - [x] Define fixed decisions and guardrails
 - [x] Connect workspace to `ambitious2223/territory-io-countries` and publish `master`
 - [x] Add `.gitignore`
-- [ ] Add npm scripts (`dev`/`server`/`client`/`test`/`smoke`/`lint`)
+- [x] Add npm scripts (`dev`/`server`/`client`/`test`/`smoke`/`lint`)
+- [x] Toolchain: Vite 8, Vitest, ESLint flat config, `@eslint/js`; 0 audit vulnerabilities
 
 **Verify:** docs render on GitHub; `npm run dev` still boots the existing game.
 
 ---
 
 ## Phase 1 — Bridge server scaffold + auto-connect
-- [ ] `server/index.js` (Express + Socket.IO + static), `/health`
-- [ ] `connectionManager` with modes + retries + fallback
-- [ ] `directBridge` (`tiktok-live-connector`)
-- [ ] `server/mock.js` + `/api/mock-event`
-- [ ] `src/net/bridgeClient.js` + status UI in the debug Connect tab
-- [ ] Auto-connect on boot from `.tiktok-config.json`
+- [x] `server/index.js` (Express + Socket.IO + static), `/health`
+- [x] `connectionManager` with modes + retries + fallback
+- [x] `directBridge` (`tiktok-live-connector`)
+- [x] `tikfinityBridge` (ws `21213`) + mode routing
+- [x] `server/mock.js` + `/api/mock-event`
+- [x] `src/net/bridgeClient.js` + status UI in the debug Connect tab
+- [x] Auto-connect on boot from `.tiktok-config.json`
 
 **Verify:** with no username, Mock events reach the browser; with a username, status = `live`.
 
 ---
 
 ## Phase 2 — Event normalization
-- [ ] `normalize.js`: unified schema, like-delta, gift combo/dedupe, user extraction
-- [ ] Chat/gift/like/follow/share/member from Direct
-- [ ] Bounded dedupe set + rate-limit helpers
+- [x] `normalize.js`: unified schema, like-delta, gift combo/dedupe, user extraction
+- [x] Chat/gift/like/follow/share/member from Direct + TikFinity
+- [~] Bounded dedupe set done; rate-limit helpers pending
 
 **Verify:** unit tests for normalize; live chat/gift appear correctly.
 
@@ -90,7 +92,8 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ---
 
 ## Phase 8 — TikFinity & Tikora tabs
-- [ ] `tikfinityBridge.js` (ws 21213) + Connect sub-tab
+- [x] `tikfinityBridge.js` (ws 21213) + mode routing (done in Phase 1)
+- [ ] TikFinity Connect sub-tab
 - [ ] `tikora.manifest.json` + `tikoraHub.js` + Connect sub-tab
 - [ ] `/api/tikora/config` env resolution
 

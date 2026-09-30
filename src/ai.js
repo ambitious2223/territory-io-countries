@@ -1,5 +1,3 @@
-import { CONFIG } from './config.js';
-
-export function updateMarbleAI(marble, allMarbles, grid) {
+export function updateMarbleAI(marble, allMarbles, _grid) {
   marble.setAllMarbles(allMarbles);
 }

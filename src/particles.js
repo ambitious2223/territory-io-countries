@@ -89,7 +89,7 @@ export class ParticleSystem {
     }
   }
 
-  emitTrail(x, y, color) {
+  emitTrail(x, y, _color) {
     const p = this._acquire();
     if (!p) return;
     p.activate(

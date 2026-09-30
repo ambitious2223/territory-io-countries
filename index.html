@@ -489,6 +489,43 @@
     </div>
     <div class="debug-body" id="debug-body">
       <div class="debug-section">
+        <h5>Connection</h5>
+        <div class="debug-row"><span>Bridge</span><span class="val" id="dbg-conn-bridge">--</span></div>
+        <div class="debug-row"><span>State</span><span class="val" id="dbg-conn-state">idle</span></div>
+        <div class="debug-row"><span>Source</span><span class="val" id="dbg-conn-source">none</span></div>
+        <div class="debug-row"><span>Events</span><span class="val" id="dbg-conn-events">0</span></div>
+        <div class="debug-row"><span>Error</span><span class="val" id="dbg-conn-error">-</span></div>
+        <div class="debug-row" style="gap:6px;margin-top:6px;">
+          <input id="conn-username" placeholder="tiktok username" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
+          <select id="conn-mode" style="background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">
+            <option value="auto">Auto</option>
+            <option value="direct">Direct</option>
+            <option value="tikfinity">TikFinity</option>
+            <option value="mock">Mock</option>
+          </select>
+        </div>
+        <div class="debug-row" style="gap:6px;margin-top:6px;">
+          <button class="ctrl-btn" id="btn-conn-connect" style="flex:1;">Connect</button>
+          <button class="ctrl-btn" id="btn-conn-disconnect" style="flex:1;">Disconnect</button>
+        </div>
+      </div>
+      <div class="debug-section">
+        <h5>Mock Event</h5>
+        <div class="debug-row" style="gap:6px;">
+          <select id="mock-type" style="background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">
+            <option value="chat">chat</option>
+            <option value="gift">gift</option>
+            <option value="like">like</option>
+            <option value="follow">follow</option>
+            <option value="share">share</option>
+            <option value="member">member</option>
+          </select>
+          <input id="mock-username" placeholder="viewer" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
+          <input id="mock-value" placeholder="1" value="1" style="width:38px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
+        </div>
+        <button class="ctrl-btn" id="btn-mock-inject" style="width:100%;margin-top:6px;">Inject</button>
+      </div>
+      <div class="debug-section">
         <h5>Performance</h5>
         <div class="debug-row"><span>FPS</span><span class="val" id="dbg-fps">--</span></div>
         <div class="debug-row"><span>Frame Time</span><span class="val" id="dbg-frametime">--</span></div>

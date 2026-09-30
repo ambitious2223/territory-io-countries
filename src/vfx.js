@@ -81,11 +81,11 @@ export class VFXSystem {
     this.addText(x, y - 20, 'INTERRUPTED!', '#FF8C00', 0.8, 14);
   }
 
-  addEliminatedText(x, y, name) {
+  addEliminatedText(x, y, _name) {
     this.addText(x, y - 20, 'ELIMINATED!', '#8B0000', 0.8, 18);
   }
 
-  addDominationText(x, y, name) {
+  addDominationText(x, y, _name) {
     this.addText(x, y - 20, 'DOMINATION!', '#FFD700', 0.8, 22);
   }
 

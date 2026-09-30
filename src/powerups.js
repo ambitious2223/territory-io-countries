@@ -1,6 +1,4 @@
 import { CONFIG } from './config.js';
-import { randomRange } from './utils.js';
-import { WALL } from './map.js';
 
 export class PowerUp {
   constructor(x, y, type) {

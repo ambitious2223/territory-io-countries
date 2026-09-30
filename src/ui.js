@@ -184,6 +184,44 @@ export function updateDebugPanel(game, particles, marbles, grid) {
   tileContainer.innerHTML = html;
 }
 
+export function initConnectionPanel(game) {
+  const connectBtn = document.getElementById('btn-conn-connect');
+  if (!connectBtn) return;
+
+  connectBtn.addEventListener('click', () => {
+    const username = document.getElementById('conn-username').value.trim();
+    const mode = document.getElementById('conn-mode').value;
+    game.bridge?.requestConnect({ username, mode });
+  });
+
+  document.getElementById('btn-conn-disconnect').addEventListener('click', () => {
+    game.bridge?.requestDisconnect();
+  });
+
+  document.getElementById('btn-mock-inject').addEventListener('click', () => {
+    const body = {
+      type: document.getElementById('mock-type').value,
+      username: document.getElementById('mock-username').value.trim() || 'mock_viewer',
+      value: Number(document.getElementById('mock-value').value) || 1,
+    };
+    game.bridge?.injectMock(body);
+  });
+}
+
+export function updateConnectionPanel(game) {
+  if (!game.debugMode) return;
+  const state = game.bridgeState || {};
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+  set('dbg-conn-bridge', state.bridgeOk ? 'online' : 'offline');
+  set('dbg-conn-state', state.tiktokState || 'idle');
+  set('dbg-conn-source', state.source || 'none');
+  set('dbg-conn-events', game.eventCount ?? 0);
+  set('dbg-conn-error', state.lastError || '-');
+}
+
 function formatDuration(seconds) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
