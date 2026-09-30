@@ -3,7 +3,7 @@ import { matchMapping } from '../src/mappings.js'
 import { executeGiftEffect } from '../src/giftEffects.js'
 
 const MAPPINGS = [
-  { id: 'a', enabled: true, match: { giftName: 'Rose' }, effect: 'shield', params: {} },
+  { id: 'a', enabled: true, match: { giftName: 'Rose' }, effect: 'overcharge', params: {} },
   { id: 'b', enabled: false, match: { giftName: 'Heart' }, effect: 'boost', params: {} },
   { id: 'c', enabled: true, match: { minCoins: 1000 }, effect: 'area_convert', params: {} },
   { id: 'd', enabled: true, match: { minCoins: 100 }, effect: 'colorbomb', params: {} },
@@ -32,7 +32,7 @@ describe('matchMapping', () => {
   })
 
   it('ignores rules with no condition', () => {
-    expect(matchMapping([{ id: 'x', enabled: true, match: {}, effect: 'shield' }], { type: 'gift', coins: 10 })).toBeNull()
+    expect(matchMapping([{ id: 'x', enabled: true, match: {}, effect: 'overcharge' }], { type: 'gift', coins: 10 })).toBeNull()
   })
 })
 
@@ -59,9 +59,9 @@ describe('executeGiftEffect', () => {
       camera: { shake: vi.fn() },
       spawnViewerMarble: vi.fn(),
     }
-    const result = executeGiftEffect(game, { effect: 'shield', params: {} }, { type: 'gift', userId: 'u' })
-    expect(result).toBe('shield')
-    expect(marble.applyPowerup).toHaveBeenCalledWith('shield', expect.any(Number))
+    const result = executeGiftEffect(game, { effect: 'overcharge', params: {} }, { type: 'gift', userId: 'u' })
+    expect(result).toBe('overcharge')
+    expect(marble.applyPowerup).toHaveBeenCalledWith('overcharge', expect.any(Number))
   })
 
   it('returns null when the gifter has no team', () => {
@@ -71,6 +71,6 @@ describe('executeGiftEffect', () => {
       scoring: { teamOf: () => null },
       viewers: { viewers: new Map() },
     }
-    expect(executeGiftEffect(game, { effect: 'shield' }, { type: 'gift', userId: 'ghost' })).toBeNull()
+    expect(executeGiftEffect(game, { effect: 'overcharge' }, { type: 'gift', userId: 'ghost' })).toBeNull()
   })
 })

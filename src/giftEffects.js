@@ -39,22 +39,9 @@ const EFFECTS = {
     marble.applyPowerup('overcharge', toNumber(ctx.params.duration, CONFIG.POWERUP_OVERCHARGE_DURATION))
     return { x: marble.x, y: marble.y }
   },
-  shield(ctx) {
-    const marble = ensureMarble(ctx)
-    marble.applyPowerup('shield', toNumber(ctx.params.duration, CONFIG.POWERUP_SHIELD_DURATION))
-    return { x: marble.x, y: marble.y }
-  },
   boost(ctx) {
     const marble = ensureMarble(ctx)
     marble.applyPowerup('overcharge', toNumber(ctx.params.duration, 4))
-    return { x: marble.x, y: marble.y }
-  },
-  heal(ctx) {
-    const amount = toNumber(ctx.params.amount, 50)
-    for (const marble of teamMarbles(ctx)) {
-      marble.hp = Math.min(marble.maxHp, marble.hp + amount)
-    }
-    const marble = ensureMarble(ctx)
     return { x: marble.x, y: marble.y }
   },
   colorbomb(ctx) {

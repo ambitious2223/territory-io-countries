@@ -1,8 +1,9 @@
 # Territory With Flags
 
-An interactive **TikTok LIVE** territory-conquest game. Viewers join countries/teams by
-commenting, then fight for land with orbital swords while likes, follows, shares and gifts
-feed their nation's power. Built as an **OBS browser-source overlay**.
+An interactive **TikTok LIVE** territory-conquest game. Viewers join a country/team by
+commenting and become a **single ball** that pours out of their nation's **home base** to slowly
+convert the neutral arena tile by tile. Borders creep forward and get eaten back; the nation
+holding the **most land** when the timer runs out wins. Built as an **OBS browser-source overlay**.
 
 - **Frontend:** HTML5 Canvas, vanilla JS (ES modules), bundled by Vite
 - **Bridge server:** Node.js + Express + Socket.IO (Direct + TikFinity chat sources, Mock; Tikora effect hub)
@@ -13,24 +14,30 @@ feed their nation's power. Built as an **OBS browser-source overlay**.
 
 ---
 
-## Status — v1.0.0
+## Status — v2.0.0
 
-All planned phases (0–9) are complete and every gate is green: `npm run lint`, `npm test`
-(73 unit tests), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (80 tests incl. a headless game-loop test),
+`npm run build`, and `npm run smoke`.
 
 **Shipped**
 
+- **Conquest core:** neutral arena, one **home base per nation**, one **ball per viewer**; balls
+  **slow-convert** adjacent tiles so borders creep and get eaten. No swords, no HP — territory is
+  the only conflict.
+- **Conquerable bases / last stand:** a nation at zero tiles is **eliminated** for the round.
+- **Win by land:** most territory at time-up, or an immediate 65% **domination** win.
 - TikTok bridge with **auto-connect**: **Direct** (`tiktok-live-connector`) + **TikFinity**
   (`ws://127.0.0.1:21213`) chat sources with auto-fallback, plus **Mock** for offline.
 - **Tikora** integration as a **client-side effect hub** (loads `hub-client.js` over
   `ws://127.0.0.1:27016`), independent of the active chat source.
-- Teams 2–12 with streamer-uploaded 3:2 flags and multilingual join keywords
+- Nations 2–12 with streamer-uploaded 3:2 flags and multilingual join keywords
   (number · ISO2 · English · Arabic · emoji, fuzzy matching).
-- Viewer avatar marbles with profile photos, a hard cap + reinforcement queue, and AI fill.
+- Balls with profile photos, a hard cap + reinforcement queue, and AI fill.
+- **Presentation:** nation scoreboard (territory %, active balls, leader crown), a live **Conquest
+  feed**, on-canvas **base banners** and thick nation **borders**.
 - Camera pan/zoom **join cinematic** with a profile-photo intro card and adjustable blur.
-- Territory + sword combat, gift-dominant scoring, a live team scoreboard, auto-looping timed
-  rounds, and persisted all-time winners.
-- Gift → power-up mappings with an in-app content editor.
+- Gift → power-up mappings (overcharge, color bomb, area convert, spawn ally, instant claim) with
+  an in-app editor; auto-looping timed rounds and persisted all-time winners.
 - Full English + Arabic (RTL) UI.
 
 **Before going live** (not testable in CI): a visual/browser pass via `npm run dev`, a real Direct

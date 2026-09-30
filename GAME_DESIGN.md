@@ -2,18 +2,21 @@
 
 ## 1. Concept
 
-Colour-coded nations fight for a shared arena. Viewers pick a country/team and spawn as an
-**avatar marble** with an **orbital sword**. Marbles roam, claim grid tiles for their nation,
-and eliminate rivals. Interaction (likes, comments, follows, shares, gifts) feeds each team's
-power and score. At the end of the timed round the nation with the highest **combined** score
-(territory + interaction) wins.
+The arena starts **neutral**. Each team (a country/nation) owns a small, clearly-marked **home
+base** with its flag and name. When a viewer joins, they become a single **ball** that pours out
+of their base and expands the nation's border tile by tile. Balls slowly **convert** the tiles
+they stand on; where two nations meet, borders creep forward and get eaten back. Interaction
+(likes, comments, follows, shares, gifts) feeds power-ups and a live score, but the round is won
+by **land**. A nation that loses every tile is **eliminated** for the round.
+
+The only "combat" is territory: no swords, no HP, no knockback.
 
 ---
 
 ## 2. Teams & flags
 
 - **2–12 teams**, streamer-configured. Ships with a default 8-slot roster.
-- Each team: `{ id, index, name {en,ar}, iso2, emoji, color, flagImage, aliases }`.
+- Each team: `{ id, index, name {en,ar}, iso2, emoji, color, flagImage, aliases, eliminated }`.
 - **Flags are streamer-uploaded images** stored in `public/flags/`, saved at a consistent
   **3:2** aspect via the upload helper (drag/drop → crop → base64 POST → server write).
 - Each team's territory colour derives from its flag (auto dominant-colour pick, manually
@@ -28,58 +31,74 @@ A viewer joins by commenting **any** of:
 5. **flag emoji** (`🇸🇦`)
 
 Matching is tolerant: case-insensitive, diacritics/tatweel stripped, alef/maqsura folded,
-leading `@` ignored, fuzzy prefix/Levenshtein fallback. Unmatched comments get a rate-limited
-hint. First join is free; **switching teams costs a gift** and transfers a share of score;
-otherwise a viewer is locked to their team for the round.
+leading `@` ignored, fuzzy prefix/Levenshtein fallback. Joins appear in the **Conquest feed**.
+Eliminated nations stop accepting joins until the next round.
 
 ---
 
 ## 3. Viewer representation
 
-- One **avatar marble per viewer**, showing their profile photo (circular), name and team colour.
+- One **ball per viewer**, showing their profile photo (circular), name and team colour.
 - **Global cap ~24 active** (debug slider). Overflow joins a per-team **reinforcement queue**;
-  a queued viewer spawns when an active marble dies.
-- **AI fill** (optional) tops up thin teams.
+  a queued viewer spawns when an active ball is removed (elimination / cap change).
+- Balls leave their nation's **home base** and never fight directly — they only spread colour.
+- **AI fill** (optional) tops up thin nations so a quiet room stays alive.
 - **Mock mode** simulates viewers for offline testing.
 
 ### Join cinematic
-When a viewer joins, the camera **pans/zooms** from the arena edge to the spawn point over
+When a viewer joins, the camera **pans/zooms** from the arena edge to that nation's base over
 ~1.2 s and shows a card with their photo, name and flag. Multiple joins play sequentially with
 a skip. A **blur percentage slider** (0–100, debug panel) blurs the backdrop during the intro.
 
 ---
 
-## 4. Movement, combat & territory
+## 4. Movement & territory
 
-- Marbles path to the nearest frontier tile, stand on it while a **claim ring** fills, and are
-  **interrupted** if a rival contests them.
-- **Orbital swords** deal damage on blade→marble contact; blade→blade contact deflects.
-- Eliminated marbles respawn from the queue; **territory stays with the team**.
-- Eliminating a rival triggers a **colour-conversion wave** over the victim's tiles.
-- `autoFillEnclosures` claims areas fully surrounded by a team's colour.
+- The world is a neutral grid; each nation starts with a compact **base block** (default 4×4).
+- A ball targets the nearest useful **frontier tile** of its nation's border, preferring tiles
+  that touch friendly land (cohesive shape) and enemy land (pressure). Targets are **spread**
+  across balls so they don't stack.
+- On arrival the ball **converts** the tile over `TILE_CONVERT_TIME` (neutral) or
+  `TILE_CONVERT_ENEMY_TIME` (enemy land); the tile fills with the nation's colour as the meter
+  completes, then the ball immediately claims the next adjacent tile. The border grows as a
+  front; **more balls and faster movement = faster expansion**.
+- Two nations fighting over a tile **cancel** each other's in-progress conversion — conflict is
+  localised and bloodless.
+- `autoFillEnclosures` instantly claims any pocket fully surrounded by a nation's colour.
+- A nation whose tile count reaches **0 is eliminated**: its balls vanish and it stops spawning.
+
+### Bases
+Each base is drawn with its flag/emoji and name banner. Bases are **conquerable** — an aggressive
+neighbour can eat a base and wipe the nation out (a last stand, not a safe haven).
 
 ---
 
-## 5. Scoring (gift-dominant)
+## 5. Interaction & power-ups
 
-Every team accumulates a live score. Defaults (all tunable in the debug panel):
+Every team accumulates a live **score** from interaction (displayed in the debug panel):
 
 | Source | Default effect |
 | --- | --- |
-| **Gift** | `coins × GIFT_PER_COIN` — **dominant** |
+| **Gift** | `coins × GIFT_PER_COIN` |
 | Like | small trickle per tap |
 | Comment | points per unique commenter |
 | Follow | one-time bonus |
 | Share | one-time bonus |
-| Territory | tiles held, evaluated at round end |
+| Territory | tiles held (shown as % on the scoreboard) |
 
 **Anti-abuse:** per-user rate limits, follow/share cooldowns, unique-commenter set, like-delta
 reconstruction, gift `msgId` dedupe, gift-streak combo rule.
 
 ### Gifts → power-ups
-A **mappings UI** maps each gift (by id, name, or min coins) to a power-up/action with tunable
-params. Effects extend the base roster: overcharge, shield, colour-bomb, area-convert, speed
-boost, freeze, spawn-reinforcement, giant/shrink, instant-claim.
+A **mappings UI** maps each gift (by id, name, or min coins) to a power-up with tunable params:
+- **Overcharge** — a ball moves and converts noticeably faster for N seconds.
+- **Speed Boost** — alias of overcharge for quick gift rules.
+- **Color Bomb / Area Convert** — instantly paints a radius around the gifter's ball.
+- **Spawn Ally** — adds an AI ball to the nation.
+- **Instant Claim** — temporary overcharge, used for "instant" style gifts.
+
+Only these effects exist now that HP/shields are gone; the mappings UI, the Tikora manifest and
+`config/mappings.json` all reflect the same list.
 
 ---
 
@@ -90,16 +109,23 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 ```
 
 - **Auto-loop** on by default; the control bar always allows **manual start/end/next**.
-- At round end the winning team is computed from **combined** score, celebrated with VFX/audio,
-  saved to the winners store, and zones/territories reset for the next round.
+- At round end the **winner is the nation holding the most tiles** (tie-break: most active
+  balls). The result is celebrated with VFX/audio, written to the Conquest feed, saved to the
+  winners store, and the arena resets to neutral + fresh bases.
+- A nation that reaches **65%** of the arena triggers an immediate **domination** win.
 
 ---
 
 ## 7. HUD & presentation
 
-- Left sidebar: live team scoreboard (flag, territory %, score, join count).
+- Left sidebar: live **nation scoreboard** — rank, flag, territory %, active balls, leader crown;
+  eliminated nations are struck through.
+- Right sidebar: live **Conquest feed** — joins, eliminations and the winner.
+- On-canvas: nation **base banners**; balls show their name; the current conversion arc shows on
+  the ball doing the work; thick nation **borders** separate territories.
 - Top bar: pause, speed, round timer, map select, debug, mute, restart.
-- Floating **debug panel** tabs: Connect · Teams · Content · Game · Winners · Diagnostics.
+- Floating **debug panel** tabs: Connect · Tikora · Viewers · Cinematic · Mock · Language ·
+  Teams · Content · Winners · Scoring · Diagnostics.
 - **i18n:** English default, full **Arabic + RTL** for all UI; Arabic join aliases always work.
 
 ---
@@ -110,11 +136,11 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 | --- | --- |
 | Canvas | 1200×800 |
 | Grid | 24×16 tiles (50 px) |
-| Teams | 2–12 (default 8) |
-| Marble radius / speed | 18 px / 1.5 px·frame |
-| Marble health | 100 |
-| Sword length / orbit / spin | 30 / 40 / 0.05 rad·frame |
-| Sword damage | 25 |
-| Active marble cap | 24 |
+| Nations | 2–12 (default 8) |
+| Home base | 4×4 tiles, spread across the arena |
+| Ball radius / speed | 15 px / 1.8 px·frame |
+| Tile convert time | 0.55 s neutral · 1.15 s enemy |
+| Borders | 3 px, nation colour (darkened) |
+| Active ball cap | 24 |
 | Round / intermission | 180 s / 20 s |
-| Gift score per coin | 1 |
+| Win | Most territory (or 65% domination) |

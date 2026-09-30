@@ -95,6 +95,21 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 10 — Conquest redesign
+- [x] Neutral arena + spread **home bases**; thick nation **borders**
+- [x] **Slow-convert** capture (adjacent tiles), contested-tile cancellation
+- [x] Remove swords/HP/knockback/kills; territory is the only conflict
+- [x] **Conquerable** bases with per-nation **elimination**
+- [x] **Win by land** (most territory / 65% domination)
+- [x] Nation scoreboard + **Conquest feed** + base banners (EN/AR)
+- [x] Mappings/manifest/gift effects reconciled; dead modules removed
+- [x] Tests for base layout + slow-convert; lint/test/build/smoke green; released **2.0.0**
+
+**Verify:** nations expand from their bases, borders creep and get eaten, a wiped nation is
+eliminated, and the land leader wins at time-up.
+
+---
+
 ## Phase 8 — TikFinity & Tikora tabs
 - [x] `tikfinityBridge.js` (ws 21213) + mode routing (done in Phase 1)
 - [x] TikFinity host/port fields in the Connect panel

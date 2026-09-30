@@ -62,12 +62,12 @@ export class VFXSystem {
   addPickupText(x, y, type) {
     const labels = {
       overcharge: 'OVERCHARGED!',
-      shield: 'SHIELDED!',
+      boost: 'SPEED BOOST!',
       colorbomb: 'COLOR BOMB!',
     };
     const colors = {
       overcharge: '#FFFF00',
-      shield: '#00FFEE',
+      boost: '#00FFEE',
       colorbomb: '#FF4444',
     };
     this.addText(x, y - 20, labels[type] || type.toUpperCase(), colors[type] || '#fff');

@@ -56,7 +56,7 @@ export class ViewerManager {
   handleEvent(event, teams) {
     if (!event || event.type !== 'chat') return null
     const team = matchTeam(teams, event.message)
-    if (!team) return null
+    if (!team || team.eliminated) return null
     const id = String(event.userId || event.username || '')
     if (!id || this.viewers.has(id)) return null
 
@@ -115,7 +115,18 @@ export class ViewerManager {
     for (const team of teams) this.spawnBotIfEmpty(team)
   }
 
+  handleTeamEliminated(teamId) {
+    for (const viewer of this.viewers.values()) {
+      if (viewer.teamId === teamId) {
+        viewer.marble = null
+        viewer.queued = false
+      }
+    }
+    this.dequeue()
+  }
+
   spawnBotIfEmpty(team) {
+    if (team.eliminated) return null
     if (this.countTeam(team.id) > 0) return null
     const bot = {
       id: `ai_${team.id}`,

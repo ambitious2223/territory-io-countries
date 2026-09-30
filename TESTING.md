@@ -20,7 +20,8 @@
 
 ### Required unit coverage (pure modules)
 - `src/teams.js` — join-keyword matcher: number, ISO2, EN, AR, emoji, fuzzy, negatives.
-- `src/zones.js` — zone generation for N = 2…12 (contiguous, non-overlapping, full coverage).
+- `src/zones.js` — home-base layout for N = 2…12 (one full base per nation, rest neutral).
+- `src/marble.js` + `src/grid.js` — ball slow-convert (frontier → convert → ownership flip).
 - `src/scoring.js` — each source weight, gift scaling, round settlement/tie-break.
 - `src/round.js` — countdown → playing → intermission transitions.
 - `src/viewerManager.js` — viewer cap + reinforcement-queue ordering.
@@ -56,12 +57,16 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Flag upload saves a 3:2 image and appears on the team card.
 - [ ] 30 mock joins: ≤ 24 active, the rest queued and swapped in on death.
 - [ ] Join cinematic pans/zooms to spawn; blur slider changes the backdrop.
-- [ ] Likes/comments/follows/shares/gifts each increase the right team's score.
+- [ ] The arena starts neutral with one visible home base per nation.
+- [ ] Balls pour out of their base and slowly convert adjacent tiles; borders creep/eat.
+- [ ] A nation reduced to zero tiles is eliminated (greyed scoreboard) and stops spawning.
+- [ ] The land leader wins at time-up; 65% triggers an immediate domination win.
+- [ ] Conquest feed shows joins, eliminations and the winner (EN and AR).
+- [ ] Likes/comments/follows/shares/gifts feed the interaction score / power-ups.
 - [ ] Event rate-limits and dedupe suppress spam (rapid repeat gift/like).
-- [ ] Round runs 3:00, announces the correct winner, auto-resets.
+- [ ] Round runs 3:00 and auto-resets to neutral + fresh bases.
 - [ ] Manual End / Next / Pause override the auto-loop.
 - [ ] Debug → **Winners** lists persisted winners after a round.
-- [ ] Editing a **scoring weight** changes the next round's settlement.
 - [ ] Tikora Hub connect/disconnect works independently of the chat source.
 - [ ] Arabic UI renders RTL with no clipped text; all strings translated.
 - [ ] FPS stays ≥ 58 with the avatar cap reached (Diagnostics tab).

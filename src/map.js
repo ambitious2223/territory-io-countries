@@ -1,5 +1,3 @@
-import { CONFIG } from './config.js';
-
 const WALL = 'WALL';
 
 function clearSpawns(walls, spawnTiles, rows, cols) {
@@ -14,24 +12,6 @@ function clearSpawns(walls, spawnTiles, rows, cols) {
       }
     }
   }
-}
-
-function defaultSpawnTiles(cols, rows) {
-  const zoneMap = CONFIG.ZONE_LAYOUT;
-  const zoneRows = zoneMap.length;
-  const zoneCols = zoneMap[0].length;
-  const tilesPerZoneCol = cols / zoneCols;
-  const tilesPerZoneRow = rows / zoneRows;
-  const tiles = [];
-  for (let zr = 0; zr < zoneRows; zr++) {
-    for (let zc = 0; zc < zoneCols; zc++) {
-      tiles.push({
-        row: Math.floor(zr * tilesPerZoneRow + tilesPerZoneRow / 2),
-        col: Math.floor(zc * tilesPerZoneCol + tilesPerZoneCol / 2),
-      });
-    }
-  }
-  return tiles;
 }
 
 export function generateMap(name, cols, rows, spawnTiles = null) {
@@ -80,8 +60,7 @@ export function generateMap(name, cols, rows, spawnTiles = null) {
     }
   }
 
-  const tiles = spawnTiles && spawnTiles.length ? spawnTiles : defaultSpawnTiles(cols, rows);
-  clearSpawns(walls, tiles, rows, cols);
+  if (spawnTiles && spawnTiles.length) clearSpawns(walls, spawnTiles, rows, cols);
   return walls;
 }
 

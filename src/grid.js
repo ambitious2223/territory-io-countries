@@ -1,5 +1,8 @@
 import { CONFIG } from './config.js';
 import { WALL } from './map.js';
+import { shade } from './utils.js';
+
+const DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
 export class Grid {
   constructor() {
@@ -8,7 +11,7 @@ export class Grid {
     this.tileSize = CONFIG.TILE_SIZE;
     this.tiles = [];
     this.owners = [];
-    this.fillProgress = [];
+    this.convert = [];
     this.walls = null;
     this.claimableTiles = 0;
   }
@@ -17,78 +20,74 @@ export class Grid {
     this.walls = walls;
     this.tiles = [];
     this.owners = [];
-    this.fillProgress = [];
+    this.convert = [];
     this.claimableTiles = 0;
-
-    const zoneMap = CONFIG.ZONE_LAYOUT;
-    const zoneRows = zoneMap.length;
-    const zoneCols = zoneMap[0].length;
-    const tilesPerZoneCol = this.cols / zoneCols;
-    const tilesPerZoneRow = this.rows / zoneRows;
 
     for (let r = 0; r < this.rows; r++) {
       this.tiles[r] = [];
       this.owners[r] = [];
-      this.fillProgress[r] = [];
+      this.convert[r] = [];
       for (let c = 0; c < this.cols; c++) {
         if (walls[r][c]) {
           this.tiles[r][c] = WALL;
           this.owners[r][c] = WALL;
-          this.fillProgress[r][c] = 1.0;
+          this.convert[r][c] = null;
         } else {
-          let color;
+          let color = CONFIG.NEUTRAL_COLOR;
           if (layout && colors) {
             const teamIndex = layout[r][c];
-            color = teamIndex >= 0 && teamIndex < colors.length ? colors[teamIndex] : CONFIG.NEUTRAL_COLOR;
-          } else {
-            const zr = Math.floor(r / tilesPerZoneRow);
-            const zc = Math.floor(c / tilesPerZoneCol);
-            color = CONFIG.COLORS[zoneMap[zr][zc]];
+            if (teamIndex >= 0 && teamIndex < colors.length) color = colors[teamIndex];
           }
           this.tiles[r][c] = color;
           this.owners[r][c] = color;
-          this.fillProgress[r][c] = 1.0;
+          this.convert[r][c] = null;
           this.claimableTiles++;
         }
       }
     }
   }
 
+  inBounds(row, col) {
+    return row >= 0 && row < this.rows && col >= 0 && col < this.cols;
+  }
+
   isWall(row, col) {
-    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return true;
+    if (!this.inBounds(row, col)) return true;
     return this.owners[row][col] === WALL;
   }
 
   getTile(row, col) {
-    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return null;
+    if (!this.inBounds(row, col)) return null;
     return this.tiles[row][col];
   }
 
   getOwner(row, col) {
-    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return null;
+    if (!this.inBounds(row, col)) return null;
     return this.owners[row][col];
   }
 
   paintTile(row, col, color) {
-    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return;
+    if (!this.inBounds(row, col)) return;
     if (this.owners[row][col] === WALL) return;
-    if (this.tiles[row][col] !== color) {
-      this.tiles[row][col] = color;
-      this.owners[row][col] = color;
-      this.fillProgress[row][col] = 1.0;
-    }
+    this.tiles[row][col] = color;
+    this.owners[row][col] = color;
+    this.convert[row][col] = null;
   }
 
-  setFillProgress(row, col, progress) {
-    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return;
+  setConvert(row, col, color, progress) {
+    if (!this.inBounds(row, col)) return;
     if (this.owners[row][col] === WALL) return;
-    this.fillProgress[row][col] = Math.max(0, Math.min(1, progress));
-    this.tiles[row][col] = this.owners[row][col];
+    this.convert[row][col] = { color, progress: Math.max(0, Math.min(1, progress)) };
   }
 
-  getFillProgress(row, col) {
-    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return 0;
-    return this.fillProgress[row][col];
+  getConvert(row, col) {
+    if (!this.inBounds(row, col)) return null;
+    return this.convert[row][col];
+  }
+
+  clearConvert(row, col) {
+    if (!this.inBounds(row, col)) return;
+    this.convert[row][col] = null;
   }
 
   worldToGrid(x, y) {
@@ -122,40 +121,25 @@ export class Grid {
   }
 
   isAdjacentOwned(row, col, color) {
-    const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    for (const [dr, dc] of dirs) {
-      const nr = row + dr;
-      const nc = col + dc;
-      if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols) {
-        if (this.owners[nr][nc] === color) return true;
-      }
+    for (const [dr, dc] of DIRS) {
+      if (this.getOwner(row + dr, col + dc) === color) return true;
     }
     return false;
   }
 
   getFriendlyNeighborCount(row, col, color) {
     let count = 0;
-    const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    for (const [dr, dc] of dirs) {
-      const nr = row + dr;
-      const nc = col + dc;
-      if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols) {
-        if (this.owners[nr][nc] === color) count++;
-      }
+    for (const [dr, dc] of DIRS) {
+      if (this.getOwner(row + dr, col + dc) === color) count++;
     }
     return count;
   }
 
   getEnemyNeighborCount(row, col, color) {
     let count = 0;
-    const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    for (const [dr, dc] of dirs) {
-      const nr = row + dr;
-      const nc = col + dc;
-      if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols) {
-        const owner = this.owners[nr][nc];
-        if (owner !== color && owner !== null && owner !== WALL) count++;
-      }
+    for (const [dr, dc] of DIRS) {
+      const owner = this.getOwner(row + dr, col + dc);
+      if (owner !== null && owner !== color && owner !== WALL && owner !== CONFIG.NEUTRAL_COLOR) count++;
     }
     return count;
   }
@@ -164,7 +148,7 @@ export class Grid {
     const owner = this.getOwner(row, col);
     if (owner === WALL) return 'wall';
     if (owner === color) return 'own';
-    if (owner === null) return 'neutral';
+    if (owner === CONFIG.NEUTRAL_COLOR) return 'neutral';
     return 'enemy';
   }
 
@@ -172,9 +156,9 @@ export class Grid {
     const frontier = [];
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
-        if (this.owners[r][c] !== color && this.owners[r][c] !== WALL && this.isAdjacentOwned(r, c, color)) {
-          frontier.push({ row: r, col: c });
-        }
+        const owner = this.owners[r][c];
+        if (owner === color || owner === WALL) continue;
+        if (this.isAdjacentOwned(r, c, color)) frontier.push({ row: r, col: c });
       }
     }
     return frontier;
@@ -183,10 +167,7 @@ export class Grid {
   autoFillEnclosures(color) {
     const visited = [];
     for (let r = 0; r < this.rows; r++) {
-      visited[r] = [];
-      for (let c = 0; c < this.cols; c++) {
-        visited[r][c] = false;
-      }
+      visited[r] = new Array(this.cols).fill(false);
     }
 
     const queue = [];
@@ -202,15 +183,13 @@ export class Grid {
 
     while (queue.length > 0) {
       const { row, col } = queue.shift();
-      const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-      for (const [dr, dc] of dirs) {
+      for (const [dr, dc] of DIRS) {
         const nr = row + dr;
         const nc = col + dc;
-        if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols) {
-          if (!visited[nr][nc] && this.owners[nr][nc] !== color && this.owners[nr][nc] !== WALL) {
-            visited[nr][nc] = true;
-            queue.push({ row: nr, col: nc });
-          }
+        if (!this.inBounds(nr, nc)) continue;
+        if (!visited[nr][nc] && this.owners[nr][nc] !== color && this.owners[nr][nc] !== WALL) {
+          visited[nr][nc] = true;
+          queue.push({ row: nr, col: nc });
         }
       }
     }
@@ -231,11 +210,9 @@ export class Grid {
     let painted = 0;
     for (let r = cy - radius; r <= cy + radius; r++) {
       for (let c = cx - radius; c <= cx + radius; c++) {
-        if (r >= 0 && r < this.rows && c >= 0 && c < this.cols) {
-          if (this.owners[r][c] !== WALL && this.owners[r][c] !== color) {
-            this.paintTile(r, c, color);
-            painted++;
-          }
+        if (this.inBounds(r, c) && this.owners[r][c] !== WALL && this.owners[r][c] !== color) {
+          this.paintTile(r, c, color);
+          painted++;
         }
       }
     }
@@ -258,72 +235,75 @@ export class Grid {
   }
 
   draw(ctx) {
+    const size = this.tileSize;
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         const owner = this.owners[r][c];
-        const fill = this.fillProgress[r][c];
-        const tx = c * this.tileSize;
-        const ty = r * this.tileSize;
+        const tx = c * size;
+        const ty = r * size;
 
         if (owner === WALL) {
-          ctx.fillStyle = CONFIG.WALL_COLOR;
-          ctx.fillRect(tx, ty, this.tileSize, this.tileSize);
-
-          ctx.fillStyle = CONFIG.WALL_HIGHLIGHT;
-          ctx.fillRect(tx + 2, ty + 2, this.tileSize - 4, 2);
-          ctx.fillRect(tx + 2, ty + 2, 2, this.tileSize - 4);
-
-          ctx.fillStyle = 'rgba(0,0,0,0.3)';
-          ctx.fillRect(tx + this.tileSize - 4, ty + 4, 2, this.tileSize - 6);
-          ctx.fillRect(tx + 4, ty + this.tileSize - 4, this.tileSize - 6, 2);
-
-          ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-          ctx.lineWidth = 1;
-          for (let i = 0; i < this.tileSize; i += 10) {
-            ctx.beginPath();
-            ctx.moveTo(tx + i, ty);
-            ctx.lineTo(tx, ty + i);
-            ctx.stroke();
-          }
+          this.drawWall(ctx, tx, ty, size);
           continue;
         }
 
-        const baseColor = '#1a1a1a';
+        ctx.fillStyle = owner;
+        ctx.fillRect(tx, ty, size, size);
 
-        if (fill >= 1) {
-          ctx.fillStyle = owner;
-        } else if (fill > 0) {
-          ctx.fillStyle = baseColor;
-          ctx.fillRect(tx, ty, this.tileSize, this.tileSize);
-          ctx.fillStyle = owner;
-          ctx.globalAlpha = fill;
-          const sw = this.tileSize * fill;
-          const sh = this.tileSize * fill;
-          const sx = tx + (this.tileSize - sw) / 2;
-          const sy = ty + (this.tileSize - sh) / 2;
-          ctx.fillRect(sx, sy, sw, sh);
+        const conv = this.convert[r][c];
+        if (conv) {
+          const inset = Math.min(size * 0.45, (size * (1 - conv.progress)) / 2);
+          ctx.globalAlpha = 0.85;
+          ctx.fillStyle = conv.color;
+          ctx.fillRect(tx + inset, ty + inset, size - inset * 2, size - inset * 2);
           ctx.globalAlpha = 1;
-          continue;
-        } else {
-          ctx.fillStyle = baseColor;
         }
-        ctx.fillRect(tx, ty, this.tileSize, this.tileSize);
       }
     }
 
-    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-    ctx.lineWidth = 0.5;
-    for (let r = 0; r <= this.rows; r++) {
-      ctx.beginPath();
-      ctx.moveTo(0, r * this.tileSize);
-      ctx.lineTo(this.cols * this.tileSize, r * this.tileSize);
-      ctx.stroke();
-    }
-    for (let c = 0; c <= this.cols; c++) {
-      ctx.beginPath();
-      ctx.moveTo(c * this.tileSize, 0);
-      ctx.lineTo(c * this.tileSize, this.rows * this.tileSize);
-      ctx.stroke();
+    this.drawBorders(ctx);
+  }
+
+  drawWall(ctx, tx, ty, size) {
+    ctx.fillStyle = CONFIG.WALL_COLOR;
+    ctx.fillRect(tx, ty, size, size);
+    ctx.fillStyle = CONFIG.WALL_HIGHLIGHT;
+    ctx.fillRect(tx + 2, ty + 2, size - 4, 2);
+    ctx.fillRect(tx + 2, ty + 2, 2, size - 4);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(tx + size - 4, ty + 4, 2, size - 6);
+    ctx.fillRect(tx + 4, ty + size - 4, size - 6, 2);
+  }
+
+  drawBorders(ctx) {
+    const size = this.tileSize;
+    const width = CONFIG.BORDER_WIDTH;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const owner = this.owners[r][c];
+        if (owner === WALL || owner === CONFIG.NEUTRAL_COLOR) continue;
+
+        const right = this.getOwner(r, c + 1);
+        const down = this.getOwner(r + 1, c);
+        const color = shade(owner, -0.25);
+        ctx.strokeStyle = color;
+
+        if (right !== owner && right !== null) {
+          ctx.beginPath();
+          ctx.moveTo((c + 1) * size, r * size);
+          ctx.lineTo((c + 1) * size, (r + 1) * size);
+          ctx.stroke();
+        }
+        if (down !== owner && down !== null) {
+          ctx.beginPath();
+          ctx.moveTo(c * size, (r + 1) * size);
+          ctx.lineTo((c + 1) * size, (r + 1) * size);
+          ctx.stroke();
+        }
+      }
     }
   }
 }

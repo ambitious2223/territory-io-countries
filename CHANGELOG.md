@@ -4,6 +4,32 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] - 2026-09-30
+
+### Changed
+- **Conquest redesign.** The arena now starts **neutral** with one compact **home base** per
+  nation; each viewer is a single **ball** that pours out and **slow-converts** adjacent tiles, so
+  borders creep forward and get eaten back. More balls and higher movement/conversion speed =
+  faster expansion.
+- Rounds are now won by **most territory** at time-up (or an immediate **65% domination**),
+  instead of a combined interaction score.
+- A nation whose tile count reaches **0 is eliminated** and stops spawning for the round
+  (conquerable home bases — a last stand, not a safe haven).
+- HUD: nation **scoreboard** now shows territory % and active balls with a leader crown; added a
+  live right-side **Conquest feed**; on-canvas **base banners** and thick nation **borders**.
+
+### Removed
+- Swords, HP, knockback, kills and PvP damage — `src/sword.js`, `src/combat.js`,
+  `src/territory.js` (conversion waves) and `src/ai.js` are gone. The mappings UI, Tikora manifest
+  and `config/mappings.json` drop the now-meaningless `shield`/`heal` effects.
+
+### Added
+- `src/feed.js` — the Conquest feed (joins, eliminations, winner) with EN/AR strings.
+- `Grid` slow-convert API (`setConvert`/`getConvert`/`clearConvert`) and nation-border rendering.
+- `src/zones.js` now generates spread **home-base** layouts for 2–12 nations.
+- Unit tests for base layout and ball slow-convert (`tests/zones.test.js`, `tests/convert.test.js`)
+  plus a headless game-loop smoke test (`tests/runtime.test.js`).
+
 ## [1.0.1] - 2026-09-30
 
 ### Fixed

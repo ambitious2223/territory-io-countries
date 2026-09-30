@@ -94,13 +94,13 @@ export class AudioEngine {
     return pan;
   }
 
-  playClaim(x = CONFIG.CANVAS_WIDTH / 2, combo = 0) {
+  playClaim(x = CONFIG.CANVAS_WIDTH / 2) {
     if (!this._canPlay()) return;
     const v = this._acquireVoice(0.08);
     if (!v) return;
     const t = this.ctx.currentTime;
 
-    const pitch = CONFIG.COMBO_BASE_PITCH + combo * CONFIG.COMBO_PITCH_INCREMENT;
+    const pitch = CONFIG.CLAIM_PITCH;
 
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
@@ -132,7 +132,6 @@ export class AudioEngine {
 
     const arpeggios = {
       overcharge: [523, 659, 784],
-      shield:     [440, 554, 659],
       colorbomb:  [392, 494, 587],
     };
     const notes = arpeggios[type] || [523, 659, 784];
@@ -203,34 +202,6 @@ export class AudioEngine {
     v.addNode(noisePan);
     noise.start(t);
     noise.stop(t + 0.12);
-  }
-
-  playInterruption(x = CONFIG.CANVAS_WIDTH / 2) {
-    if (!this._canPlay()) return;
-    const v = this._acquireVoice(0.1);
-    if (!v) return;
-    const t = this.ctx.currentTime;
-    const pan = this._createPan(x);
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(300, t);
-    osc.frequency.exponentialRampToValueAtTime(80, t + 0.08);
-
-    gain.gain.setValueAtTime(0.2, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
-
-    osc.connect(gain);
-    gain.connect(pan);
-
-    v.addNode(osc);
-    v.addNode(gain);
-    v.addNode(pan);
-
-    osc.start(t);
-    osc.stop(t + 0.1);
   }
 
   playElimination(x = CONFIG.CANVAS_WIDTH / 2) {
@@ -311,106 +282,6 @@ export class AudioEngine {
       osc.stop(noteT + 0.35);
       osc2.stop(noteT + 0.35);
     }
-  }
-
-  startSweep(x = CONFIG.CANVAS_WIDTH / 2) {
-    if (!this._canPlay()) return;
-    const v = this._acquireVoice(1.8);
-    if (!v) return;
-    const t = this.ctx.currentTime;
-    const pan = this._createPan(x);
-
-    const osc = this.ctx.createOscillator();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(120, t);
-
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(200, t);
-    filter.frequency.linearRampToValueAtTime(1200, t + 1.5);
-    filter.Q.value = 2;
-
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0.04, t);
-    gain.gain.linearRampToValueAtTime(0.08, t + 0.5);
-    gain.gain.linearRampToValueAtTime(0.04, t + 1.0);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.8);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(pan);
-
-    v.addNode(osc);
-    v.addNode(filter);
-    v.addNode(gain);
-    v.addNode(pan);
-
-    osc.start(t);
-    osc.stop(t + 1.8);
-  }
-
-  playDeflect(x = CONFIG.CANVAS_WIDTH / 2) {
-    if (!this._canPlay()) return;
-    const v = this._acquireVoice(0.1);
-    if (!v) return;
-    const t = this.ctx.currentTime;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    const pan = this._createPan(x);
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1200, t);
-    osc.frequency.exponentialRampToValueAtTime(2400, t + 0.08);
-
-    gain.gain.setValueAtTime(0.18, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
-
-    osc.connect(gain);
-    gain.connect(pan);
-
-    v.addNode(osc);
-    v.addNode(gain);
-    v.addNode(pan);
-
-    osc.start(t);
-    osc.stop(t + 0.1);
-  }
-
-  playHit(x = CONFIG.CANVAS_WIDTH / 2) {
-    if (!this._canPlay()) return;
-    const v = this._acquireVoice(0.18);
-    if (!v) return;
-    const t = this.ctx.currentTime;
-
-    const osc = this.ctx.createOscillator();
-    const filter = this.ctx.createBiquadFilter();
-    const gain = this.ctx.createGain();
-    const pan = this._createPan(x);
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(150, t);
-    osc.frequency.exponentialRampToValueAtTime(40, t + 0.15);
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(400, t);
-    filter.frequency.exponentialRampToValueAtTime(80, t + 0.15);
-    filter.Q.value = 1.5;
-
-    gain.gain.setValueAtTime(0.25, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(pan);
-
-    v.addNode(osc);
-    v.addNode(filter);
-    v.addNode(gain);
-    v.addNode(pan);
-
-    osc.start(t);
-    osc.stop(t + 0.18);
   }
 
   playJoin(x = CONFIG.CANVAS_WIDTH / 2) {

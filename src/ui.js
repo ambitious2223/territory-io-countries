@@ -8,37 +8,15 @@ function escapeHtml(value) {
   });
 }
 
-export function updateLeaderboard(marbles) {
-  const container = document.getElementById('leaderboard');
-  const sorted = marbles
-    .slice()
-    .sort((a, b) => {
-      if (a.alive !== b.alive) return a.alive ? -1 : 1;
-      return b.kills - a.kills;
-    });
-
-  let html = '';
-  for (let i = 0; i < sorted.length; i++) {
-    const m = sorted[i];
-    const cls = m.alive ? 'lb-entry' : (m.eliminated ? 'lb-entry eliminated-removed' : 'lb-entry eliminated');
-    html += `<div class="${cls}">
-      <span class="lb-rank">${i + 1}</span>
-      <span class="lb-dot" style="background:${m.color}"></span>
-      <span class="lb-name">${m.name}</span>
-      <span class="lb-kills">${m.kills}</span>
-    </div>`;
-  }
-  container.innerHTML = html;
-}
-
-export function updateGameOver(winner, duration, supporters, tileCount, domination, winReason) {
+export function updateGameOver(winner, duration, tileCount, domination, winReason) {
   const panel = document.getElementById('game-over-panel');
   panel.classList.add('visible');
 
   document.getElementById('go-winner').textContent = winner ? winner.name : '—';
   document.getElementById('go-winner').style.color = winner ? winner.color : '#888';
-  document.getElementById('go-kills').textContent = winner ? `${t('gameover.kills')}: ${winner.kills}` : '';
-  document.getElementById('go-tiles').textContent = winner ? `${t('gameover.tiles')}: ${tileCount} (${Math.round(domination * 100)}%)` : '';
+  document.getElementById('go-tiles').textContent = winner
+    ? `${t('gameover.tiles')}: ${tileCount} (${Math.round(domination * 100)}%)`
+    : '';
   document.getElementById('go-duration').textContent = `${t('gameover.duration')}: ${formatDuration(duration)}`;
 
   const reasonEl = document.getElementById('go-reason');
@@ -179,7 +157,7 @@ export function initDebugPanel() {
   });
 }
 
-export function updateDebugPanel(game, particles, marbles, grid) {
+export function updateDebugPanel(game, particles, grid) {
   if (!game.debugMode) return;
 
   document.getElementById('dbg-fps').textContent = game.fps;
@@ -190,16 +168,12 @@ export function updateDebugPanel(game, particles, marbles, grid) {
   document.getElementById('dbg-walls').textContent = grid.claimableTiles + ' / ' + (grid.rows * grid.cols);
 
   const tileContainer = document.getElementById('dbg-tiles');
-  const counts = {};
-  for (const m of marbles) {
-    counts[m.color] = (counts[m.color] || 0) + grid.countTiles(m.color);
-  }
   let html = '';
-  for (const m of marbles) {
-    const c = counts[m.color] || 0;
+  for (const team of game.teams) {
+    const count = grid.countTiles(team.color);
     html += `<div class="debug-tile-item">
-      <span class="debug-tile-dot" style="background:${m.color}"></span>
-      <span>${m.name.slice(0, 5)}:${c}</span>
+      <span class="debug-tile-dot" style="background:${team.color}"></span>
+      <span>${escapeHtml((team.name?.en || '').slice(0, 5))}:${count}</span>
     </div>`;
   }
   tileContainer.innerHTML = html;

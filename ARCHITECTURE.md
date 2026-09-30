@@ -5,8 +5,8 @@
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │ OBS browser source / browser (:1935)                             │
-│   Canvas engine (grid, marbles, swords, territory, particles)    │
-│   DOM HUD (scoreboard, timer, control bar, debug panel, i18n)    │
+│   Canvas engine (grid, bases, balls, borders, particles)         │
+│   DOM HUD (scoreboard, conquest feed, timer, debug panel, i18n)  │
 │   net/bridgeClient.js ── socket.io-client ──┐                    │
 └─────────────────────────────────────────────┼────────────────────┘
                                               │ tiktok-event / tiktok:status
@@ -47,21 +47,18 @@
 | Module | Responsibility |
 | --- | --- |
 | `main.js` | Bootstrap: create `Game`, connect bridge client, init panels, start loop |
-| `game.js` | Loop, lifecycle/round state machine, combat/territory orchestration, input |
-| `config.js` | All tunable constants (canvas, grid, camera, scoring, cinematic) |
-| `grid.js` | Tile ownership, fill progress, enclosure fill, drawing |
+| `game.js` | Loop, round state machine, base setup, elimination, rendering orchestration, input |
+| `config.js` | All tunable constants (canvas, grid, convert, camera, scoring, cinematic) |
+| `grid.js` | Tile ownership, slow-convert state, enclosure fill, nation borders, drawing |
 | `map.js` | Wall/map generation |
-| `zones.js` | Generic contiguous zone layout for N teams (2–12) |
-| `marble.js` | Viewer avatar marble: movement, claim, HP, power-ups, rendering |
-| `sword.js` | Orbital blade geometry, rotation, drawing |
-| `combat.js` | Blade↔marble and blade↔blade collision, damage events |
-| `territory.js` | Elimination colour-conversion wave |
+| `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
+| `marble.js` | Viewer ball: frontier targeting + slow-convert, rendering |
+| `feed.js` | Conquest feed (joins / eliminations / winner) DOM list |
 | `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
-| `vfx.js` | Floating combat text |
-| `audio.js` | Procedural panned SFX (join, gift, capture, victory) |
-| `ai.js` | Steering for AI-fill marbles |
-| `analytics.js` | Per-viewer and per-team stats |
+| `vfx.js` | Floating event text |
+| `audio.js` | Procedural panned SFX (join, gift, claim, elimination, victory) |
+| `analytics.js` | Round duration tracking |
 | `renderer.js` | Camera (pan/zoom/shake) + shared draw helpers |
 | `viewerManager.js` | Viewer/bot roster, active cap + reinforcement queue |
 | `ui.js` | DOM HUD, control bar, debug panels, game-over, i18n wiring |
@@ -110,8 +107,8 @@ See [BRIDGE.md](./BRIDGE.md) for the event contracts.
 
 ```
 Bridge source → normalize() → io.emit('tiktok-event', evt)
-  → bridgeClient → Teams.assign(evt) + Scoring.apply(evt)
-    → Game state (marbles, teams, queues) → render()/HUD
+  → bridgeClient → ViewerManager.handleEvent(evt) + Scoring.applyEvent(evt)
+    → Game state (balls, nations, queues, feed) → render()/HUD
 ```
 
 Round flow:
@@ -129,15 +126,15 @@ IDLE → COUNTDOWN → PLAYING → ROUND_END → INTERMISSION → (auto) COUNTDO
 render()
   ctx.clear
   camera.apply()            # pan/zoom/shake; world space begins
-    grid.draw
+    grid.draw               # tiles + in-progress converts + nation borders
+    drawBases               # flag/emoji + name banner per nation
     powerups.draw
     particles.draw
-    swords.draw (alive marbles)
-    marbles.draw (avatar + name + hp)
+    balls.draw (avatar + name + convert arc)
     vfx.draw
     debug.draw (if enabled)
   camera.restore()
-  HUD (DOM): scoreboard, timer, control bar, pause overlay
+  HUD (DOM): nation scoreboard, conquest feed, timer, control bar, pause overlay
 ```
 
 **Camera:** a single `Camera` object owns `zoom`, `pan`, `target`, easing and shake. Cinematic
@@ -145,14 +142,12 @@ intros, focus, and shake all feed the same transform. HUD is never transformed.
 
 ---
 
-## 7. Collision strategy
+## 7. Capture strategy
 
-| Pair | Method |
-| --- | --- |
-| Blade → Marble | blade tip point-in-circle + blade segment-circle |
-| Blade → Blade | segment–segment intersection (deflect, no damage) |
-| Marble → boundary/wall | AABB clamp + velocity reflection against grid walls |
-| Power-up → Marble | circle–circle |
+There is no combat. A `Grid` tile is captured by an adjacent ball filling a convert meter
+(`Tile.convert = { color, progress }`); completing it flips ownership. Contested tiles restart
+the meter for whichever nation reaches it next. `autoFillEnclosures` converts fully surrounded
+pockets instantly, and a nation at zero tiles is eliminated.
 
 ---
 

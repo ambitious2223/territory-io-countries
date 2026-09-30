@@ -1,8 +1,6 @@
 export const EFFECT_OPTIONS = [
   { key: 'overcharge', label: 'Overcharge' },
-  { key: 'shield', label: 'Shield' },
   { key: 'boost', label: 'Speed Boost' },
-  { key: 'heal', label: 'Heal' },
   { key: 'colorbomb', label: 'Color Bomb' },
   { key: 'area_convert', label: 'Area Convert' },
   { key: 'spawn', label: 'Spawn Ally' },
@@ -34,7 +32,7 @@ export function createMapping() {
     id: `map_${Date.now().toString(36)}`,
     enabled: true,
     match: { giftName: '' },
-    effect: 'shield',
+    effect: 'overcharge',
     params: {},
   }
 }

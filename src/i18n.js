@@ -1,6 +1,10 @@
 const EN = {
   'app.title': 'Territory With Flags',
-  'sidebar.leaderboard': 'Leaderboard',
+  'sidebar.leaderboard': 'Nations',
+  'sidebar.conquest': 'Conquest',
+  'feed.joined': '{name} joined {team}',
+  'feed.eliminated': '{team} was wiped out!',
+  'feed.winner': '{team} wins with {tiles} tiles!',
   'control.pause': 'Pause',
   'control.play': 'Play',
   'control.speed': 'Speed:',
@@ -15,12 +19,10 @@ const EN = {
   'gameover.title': 'VICTORY',
   'gameover.playAgain': 'Play Again',
   'gameover.hint': 'or press R to restart',
-  'gameover.kills': 'Total Kills',
-  'gameover.tiles': 'Tiles',
+  'gameover.tiles': 'Territory',
   'gameover.duration': 'Match Duration',
   'gameover.domination': 'Dominated the arena',
-  'gameover.timeout': 'Highest territory at time expiry',
-  'gameover.elimination': 'Last marble standing',
+  'gameover.timeout': 'Most territory at time-up',
   'debug.header': 'Debug',
   'debug.connection': 'Connection',
   'debug.tikora': 'Tikora Hub',
@@ -67,7 +69,11 @@ const EN = {
 
 const AR = {
   'app.title': 'إقليم الأعلام',
-  'sidebar.leaderboard': 'لوحة الصدارة',
+  'sidebar.leaderboard': 'الدول',
+  'sidebar.conquest': 'الغزو',
+  'feed.joined': '{name} انضم إلى {team}',
+  'feed.eliminated': 'تم القضاء على {team}!',
+  'feed.winner': '{team} يفوز بـ {tiles} مربعاً!',
   'control.pause': 'إيقاف',
   'control.play': 'تشغيل',
   'control.speed': 'السرعة:',
@@ -82,12 +88,10 @@ const AR = {
   'gameover.title': 'الفوز',
   'gameover.playAgain': 'العب مرة أخرى',
   'gameover.hint': 'أو اضغط R لإعادة التشغيل',
-  'gameover.kills': 'إجمالي القتلى',
-  'gameover.tiles': 'المربعات',
+  'gameover.tiles': 'الأراضي',
   'gameover.duration': 'مدة المباراة',
   'gameover.domination': 'سيطر على الساحة',
-  'gameover.timeout': 'أعلى أراضٍ عند انتهاء الوقت',
-  'gameover.elimination': 'آخر لاعب صامد',
+  'gameover.timeout': 'أكبر مساحة عند انتهاء الوقت',
   'debug.header': 'تصحيح',
   'debug.connection': 'الاتصال',
   'debug.tikora': 'مركز تيكورا',
@@ -149,6 +153,12 @@ function readLanguage() {
 
 export function t(key, fallback) {
   return DICTIONARIES[language]?.[key] ?? EN[key] ?? fallback ?? key
+}
+
+export function tf(key, params = {}) {
+  return t(key).replace(/\{(\w+)\}/g, (match, name) => (
+    params[name] === undefined ? match : String(params[name])
+  ))
 }
 
 export function getLanguage() {

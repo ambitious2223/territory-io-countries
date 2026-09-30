@@ -9,9 +9,10 @@ Orientation for any AI agent or human contributor working in this repository. Re
 
 A real-time **TikTok LIVE** territory-conquest game. Viewers comment a **country/team**
 (number, ISO2, English name, Arabic name, or flag emoji) to join a nation. Each joined viewer
-spawns as an **avatar marble** carrying an orbital sword. Marbles claim grid tiles for their
-team; territorial colour spreads across the arena. Likes, comments, follows, shares and gifts
-feed a **gift-dominant score**. A timed round decides the winning nation; rounds **auto-loop**.
+becomes a single **ball** that pours out of their nation's **home base** and **slow-converts**
+adjacent grid tiles, so borders creep forward and get eaten back. There is no sword combat — the
+only conflict is territory. Likes, comments, follows, shares and gifts feed power-ups and a
+tunable interaction score. A timed round is won by **most territory**; rounds **auto-loop**.
 
 It is shipped as an **OBS browser source** overlay and is designed around a streamer running
 it locally next to a live TikTok.
@@ -32,12 +33,14 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Tikora | **Client-side effect hub** (not a chat source): loads `hub-client.js`, runs in `src/tikora.js` |
 | Auto-connect | Bridge connects on boot from `.tiktok-config.json` |
 | Teams | **2–12**, streamer-configured from a default 8-slot roster |
-| Viewer model | **One avatar marble per viewer**, hard cap **~24** active, overflow queued |
+| Viewer model | **One ball per viewer**, hard cap **~24** active, overflow queued |
 | Join inputs | number · ISO2 · English name · Arabic name · flag emoji (fuzzy) |
 | Flags | **Streamer-uploaded images**, consistent 3:2 save + upload helper |
-| Scoring | **Gift-dominant**, every weight tunable in the debug panel |
+| Combat | **None** — no swords/HP; conflict is territory only |
+| Territory | **Home bases + adjacent slow-convert**; borders creep and get eaten |
+| Scoring | Gift/interaction score is tunable, but the round is won by **land** |
 | Round | **3 min** + ~**20 s** intermission, auto-loop, manual override always available |
-| Win | Highest **combined** score (territory + interaction) at time-up |
+| Win | **Most territory** at time-up (or 65% domination) |
 | Persistence | Server JSON stores (atomic) **+ localStorage fallback** |
 | i18n | English default, **full Arabic + RTL** for all UI |
 | Gifts | Mapped to power-ups via a **mappings UI** |

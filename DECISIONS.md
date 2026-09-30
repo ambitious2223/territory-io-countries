@@ -13,6 +13,19 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Matches shipped behaviour; avoids a phantom mode that silently fell back to Direct.
 - **Alternatives:** Implement a status-only `tikora` mode (ambiguous; carries no chat events).
 
+## D-023 — Conquest redesign: home bases + slow border convert; swords removed
+- **Context:** The sword/marble arena read as chaos — every ball path-found to a frontier tile,
+  stood in a claim ring, got interrupted, while orbital blades spun and kills fired whole-map
+  conversion waves. There was no stable "home" and no continuous border.
+- **Decision:** Rebuild the loop around **home bases + adjacent slow-convert**. The arena starts
+  neutral; each nation has a compact base and balls pour out, converting adjacent tiles over time
+  so borders creep and get eaten. Remove `combat.js`, `sword.js`, `territory.js`, `ai.js` and all
+  HP/knockback/kills. Add `feed.js` (conquest feed) and per-nation base banners. Rounds are won by
+  **most territory** (or 65% domination); a nation at zero tiles is **eliminated**.
+- **Rationale:** Reads clearly on a stream, makes ball count and movement/conversion speed the
+  levers the streamer asked for, and removes noisy micro-combat.
+- **Alternatives:** Keep swords as a secondary layer; paper.io continuous paint; splix trail+fill.
+
 ## D-001 — Evolve the existing vanilla-JS canvas game
 - **Context:** A working Canvas engine (grid, marbles, swords, territory, audio, VFX) already exists.
 - **Decision:** Extend it in place rather than rewriting in React.

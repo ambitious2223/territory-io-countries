@@ -25,13 +25,13 @@ Non-negotiable rules for every contribution. If a rule blocks you, raise it as a
   - rendering only draws; `update()` only mutates; never mix them.
   - game logic never lives in the bridge server; bridge/socket code never lives in the renderer.
   - persistence only touches `server/stores/` (or the client's localStorage fallback mirror).
-- **Entity management:** marbles live in one array on the `Game` instance; dead marbles are
+- **Entity management:** balls live in one array on the `Game` instance; eliminated balls are
   filtered out, not mutated in place. The grid is the single source of truth for territory.
 - **Game loop discipline:** `requestAnimationFrame` is the only animation driver. All state
   mutation happens in `update()`; all drawing in `render()`. Never draw from `update()`, never
   mutate state from `render()`.
-- **Camera:** world layers (grid, marbles, swords, particles) are transformed by the camera;
-  HUD is always screen-space. Camera pan/zoom is pure presentation — never gameplay state.
+- **Camera:** world layers (grid, bases, borders, balls, particles) are transformed by the
+  camera; HUD is always screen-space. Camera pan/zoom is pure presentation — never gameplay state.
 - **Bridge boundary:** the client only ever consumes the unified event schema. Raw TikTok /
   TikFinity payloads are normalized on the server before they cross the socket. Tikora is a
   client-side effect hub (not a chat source) and routes effects through the shared executor.
@@ -53,9 +53,9 @@ Non-negotiable rules for every contribution. If a rule blocks you, raise it as a
 
 ## 4. Performance rules
 
-- **Target:** solid 60 FPS on mid-range hardware with the maximum active marbles.
-- **Budgets:** ≤ 26 sworded marbles, grid ≤ 24×16 (384 tiles), particle pool ≤ 250.
-- **No allocation in the hot loop** — reuse/pool objects (particles, troop projectiles, vectors).
+- **Target:** solid 60 FPS on mid-range hardware with the maximum active balls.
+- **Budgets:** ≤ 26 balls, grid ≤ 24×16 (384 tiles), particle pool ≤ 250.
+- **No allocation in the hot loop** — reuse/pool objects (particles, vectors, per-frame sets).
 - **Redraw only what changed** (dirty-tile flag on the grid).
 - **Batch socket emissions** — never emit per particle or per frame; aggregate and flush.
 - **Cache avatar/flag `Image` objects**; never load an image inside the render loop.
@@ -65,8 +65,8 @@ Non-negotiable rules for every contribution. If a rule blocks you, raise it as a
 
 ## 5. Testing rules
 
-- **Pure logic must be unit-tested** (Vitest): join-keyword matcher, zone generator, scoring,
-  event normalization, like-delta, team assignment, round settlement.
+- **Pure logic must be unit-tested** (Vitest): join-keyword matcher, home-base layout, ball
+  slow-convert, scoring, event normalization, like-delta, team assignment, round settlement.
 - **Test after every feature** — run the game (or **Mock mode**) and verify visually.
 - **Zero console errors** before moving on.
 - **Smoke test** (`npm run smoke`) must pass for any bridge/socket change.
@@ -92,8 +92,8 @@ Non-negotiable rules for every contribution. If a rule blocks you, raise it as a
 
 - `src/renderer.js` — only canvas drawing and camera transform.
 - `src/game.js` — only orchestration, loop, input, lifecycle.
-- `src/grid.js` / `src/map.js` — only territory data and graph/zone operations.
-- `src/ai.js` — only marble steering decisions.
+- `src/grid.js` / `src/map.js` — only territory data and graph/base operations.
+- `src/marble.js` — only ball targeting, movement and slow-convert behaviour.
 - `src/scoring.js` — only interaction → score math (no DOM, no canvas).
 - `src/teams.js` — only team model and join-keyword matching (pure, unit-tested).
 - `src/net/bridgeClient.js` — only socket transport + status; no game rules.

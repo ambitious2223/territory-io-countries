@@ -1,6 +1,7 @@
 import { CONFIG } from './config.js';
 import { randomRange } from './utils.js';
-import { generateZoneLayout, zoneSpawnTiles } from './zones.js';
+import { tf } from './i18n.js';
+import { generateBaseLayout, baseCentroids, baseSpawnTiles } from './zones.js';
 import { ViewerManager } from './viewerManager.js';
 import { JoinCinematic } from './joinCinematic.js';
 import { ScoringEngine } from './scoring.js';
@@ -13,16 +14,14 @@ import { executeGiftEffect } from './giftEffects.js';
 import { TikoraHub } from './tikora.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
-import { TerritoryManager } from './territory.js';
 import { ParticleSystem } from './particles.js';
-import { processCombat } from './combat.js';
 import { PowerUpManager } from './powerups.js';
 import { AudioEngine } from './audio.js';
 import { Analytics } from './analytics.js';
 import { Camera } from './renderer.js';
 import { DebugOverlay } from './debug.js';
 import { VFXSystem } from './vfx.js';
-import { updateMarbleAI } from './ai.js';
+import { ConquestFeed } from './feed.js';
 import { generateMap } from './map.js';
 import {
   updateTimer, updateGameOver, hideGameOver,
@@ -31,11 +30,6 @@ import {
   updateConnectionPanel, updateViewersPanel, updateCinematicPanel, updateTikoraPanel, updateWinnersPanel,
   getSelectedMap,
 } from './ui.js';
-
-const SUPPORTERS = {
-  marbleLegends: ['Aurelius', 'Zephyrine', 'Ironveil', 'Starfall'],
-  marbleKings: ['Gladius', 'Thornwick', 'Emberlyn', 'Crestfall', 'Duskara'],
-};
 
 export class Game {
   constructor(canvas) {
@@ -46,9 +40,9 @@ export class Game {
     this.cinematic = new JoinCinematic(this.camera);
     this.debug = new DebugOverlay();
     this.grid = new Grid();
-    this.territory = new TerritoryManager(this.grid);
     this.particles = new ParticleSystem();
     this.vfx = new VFXSystem();
+    this.feed = new ConquestFeed();
     this.marbles = [];
     this.powerups = new PowerUpManager();
     this.audio = new AudioEngine();
@@ -58,6 +52,7 @@ export class Game {
     this.zoneLayout = null;
     this.zoneColors = [];
     this.spawnTiles = [];
+    this.baseCenters = [];
     this.walls = null;
     this.winReason = null;
     this.tikora = new TikoraHub(this);
@@ -84,6 +79,7 @@ export class Game {
     this.debugMode = false;
     this.speed = 1;
     this.currentMap = 'Empty';
+    this.territoryCounts = new Map();
 
     this.victoryFillRow = 0;
     this.victoryFillCol = 0;
@@ -93,10 +89,7 @@ export class Game {
     this.fpsTime = 0;
     this.lastFrameTime = 16.67;
 
-    this._sweepKiller = null;
-
     this._bindInput();
-    this._bindAudio();
     initControls(this);
     initDebugPanel();
   }
@@ -135,13 +128,6 @@ export class Game {
     });
   }
 
-  _bindAudio() {
-    this.territory.onSweepStart = () => {
-      this.audio.startSweep(this._sweepKiller || CONFIG.CANVAS_WIDTH / 2);
-    };
-    this.territory.onSweepEnd = () => {};
-  }
-
   togglePause() {
     if (this.gameOver) return;
     this.paused = !this.paused;
@@ -149,41 +135,36 @@ export class Game {
 
   setTeams(teams) {
     this.teams = Array.isArray(teams) && teams.length > 0 ? teams : this.defaultTeams();
+    for (const team of this.teams) team.eliminated = false;
   }
 
   defaultTeams() {
-    const zoneNames = [];
-    for (const row of CONFIG.ZONE_LAYOUT) {
-      for (const zone of row) {
-        if (!zoneNames.includes(zone)) zoneNames.push(zone);
-      }
-    }
-    return zoneNames.map((zone, i) => ({
+    return CONFIG.MARBLE_NAMES.map((name, i) => ({
       id: i + 1,
       index: i + 1,
-      name: { en: CONFIG.MARBLE_NAMES[i] || `Team ${i + 1}`, ar: '' },
+      name: { en: name, ar: '' },
       iso2: '',
       emoji: '',
-      color: CONFIG.COLORS[zone],
+      color: CONFIG.TEAM_COLORS[i % CONFIG.TEAM_COLORS.length],
       flagImage: null,
       aliases: [],
+      eliminated: false,
     }));
   }
 
   setupMatch() {
     if (!this.teams || this.teams.length === 0) this.setTeams(null);
-    const layout = generateZoneLayout(this.teams.length, CONFIG.GRID_ROWS, CONFIG.GRID_COLS);
+    const layout = generateBaseLayout(this.teams.length, CONFIG.GRID_ROWS, CONFIG.GRID_COLS, CONFIG.BASE_SIZE);
     const colors = this.teams.map((team) => team.color);
-    const spawnTiles = zoneSpawnTiles(layout, CONFIG.TILE_SIZE);
+    const spawnTiles = baseSpawnTiles(layout, CONFIG.TILE_SIZE);
     const walls = generateMap(this.currentMap, CONFIG.GRID_COLS, CONFIG.GRID_ROWS, spawnTiles);
     this.zoneLayout = layout;
     this.zoneColors = colors;
     this.spawnTiles = spawnTiles;
+    this.baseCenters = baseCentroids(layout, CONFIG.TILE_SIZE);
     this.walls = walls;
     this.grid = new Grid();
     this.grid.init(walls, layout, colors);
-    this.territory = new TerritoryManager(this.grid);
-    this._bindAudio();
   }
 
   restart() {
@@ -235,18 +216,22 @@ export class Game {
   finishRound(reason) {
     if (this.gameOver) return;
     this.updateTerritoryScores();
-    const board = this.scoring.leaderboard(this.teams.map((team) => team.id));
-    const top = board[0];
-    const team = this.teams.find((entry) => entry.id === top?.teamId);
+    const rows = this.teams
+      .map((team) => ({
+        team,
+        tiles: this.grid.countTiles(team.color),
+        viewers: this.countTeamMarbles(team.id),
+      }))
+      .sort((a, b) => b.tiles - a.tiles || b.viewers - a.viewers);
+    const top = rows[0];
+    const team = top?.team;
     this.gameOver = true;
     this.winReason = reason;
     if (team) {
-      const kills = this.marbles
-        .filter((marble) => marble.teamId === team.id)
-        .reduce((sum, marble) => sum + (marble.kills || 0), 0);
       this.winColor = team.color;
-      this.winner = { name: team.name?.en || 'Winner', color: team.color, kills };
+      this.winner = { name: team.name?.en || 'Winner', color: team.color, tiles: top.tiles };
       this.vfx.addDominationText(CONFIG.CANVAS_WIDTH / 2, CONFIG.CANVAS_HEIGHT / 2, team.name?.en || '');
+      this.feed.push(tf('feed.winner', { team: team.name?.en || '', tiles: top.tiles }), team.color);
       this.saveWinner(team, top);
     }
     this.analytics.updateDuration();
@@ -258,6 +243,7 @@ export class Game {
     this.scoring.reset();
     this.particles.reset();
     this.vfx.reset();
+    this.feed.reset();
     this.marbles = [];
     this.gameOver = false;
     this.winner = null;
@@ -269,11 +255,10 @@ export class Game {
     this.victoryFillCol = 0;
     this.powerups.reset();
     this.analytics.reset();
-    this._sweepKiller = null;
+    for (const team of this.teams) team.eliminated = false;
     if (this.walls) {
+      this.grid = new Grid();
       this.grid.init(this.walls, this.zoneLayout, this.zoneColors);
-      this.territory = new TerritoryManager(this.grid);
-      this._bindAudio();
     }
     hideGameOver();
     this.suppressCinematic = true;
@@ -294,7 +279,7 @@ export class Game {
       name: team.name?.en || '',
       emoji: team.emoji || '',
       color: team.color,
-      score: Math.round(row?.combined || 0),
+      score: row?.tiles || 0,
     });
   }
 
@@ -302,6 +287,10 @@ export class Game {
     const result = this.viewers.handleEvent(event, this.teams);
     if (result && result.viewer) {
       this.scoring.registerUser(event.userId ?? event.username, result.viewer.teamId);
+      this.feed.push(
+        tf('feed.joined', { name: result.viewer.name, team: result.viewer.team.name?.en || '' }),
+        result.viewer.team.color
+      );
     }
     this.scoring.applyEvent(event);
     if (event && event.type === 'gift') {
@@ -324,7 +313,7 @@ export class Game {
     const teamIndex = this.teams.findIndex((entry) => entry.id === team.id);
     const tile = this.spawnTiles[teamIndex] || this.spawnTiles[0] || { row: 0, col: 0 };
     const { x, y } = this.grid.gridToWorld(tile.row, tile.col);
-    const jitter = CONFIG.TILE_SIZE * 0.4;
+    const jitter = CONFIG.TILE_SIZE * 0.35;
     const marble = new Marble(
       x + randomRange(-jitter, jitter),
       y + randomRange(-jitter, jitter),
@@ -332,13 +321,7 @@ export class Game {
       profile.name || 'Viewer',
       { teamId: team.id, viewerId: profile.id, isBot: !!profile.isBot, avatar: profile.avatar }
     );
-    marble.onInterrupt = (m) => {
-      this.camera.shake(4, 0.08);
-      this.audio.playInterruption(m.x);
-      this.vfx.addInterruptText(m.x, m.y);
-    };
     this.marbles.push(marble);
-    this.analytics.registerMarble(marble);
     if (!profile.isBot && !this.suppressCinematic) {
       this.cinematic.enqueue({
         x: marble.x,
@@ -380,6 +363,7 @@ export class Game {
     if (this.gameOver || !this.grid.claimableTiles) return;
     const counts = this.tileCountsByTeam();
     for (const team of this.teams) {
+      if (team.eliminated) continue;
       const ratio = (counts.get(team.id) || 0) / this.grid.claimableTiles;
       if (ratio >= CONFIG.DOMINATION_THRESHOLD) {
         this.finishRound('domination');
@@ -389,19 +373,26 @@ export class Game {
   }
 
   checkElimination() {
-    for (const m of this.marbles) {
-      if (!m.alive || m.eliminated) continue;
-      const tiles = this.grid.countTiles(m.color);
-      if (tiles === 0) {
-        m.zeroTileTimer += 1 / 60 * this.speed;
-        if (m.zeroTileTimer >= CONFIG.ELIMINATION_ZERO_TILE_TIME) {
-          m.eliminated = true;
-          this.vfx.addEliminatedText(m.x, m.y, m.name);
-        }
-      } else {
-        m.zeroTileTimer = 0;
+    if (this.gameOver) return;
+    for (const team of this.teams) {
+      if (team.eliminated) continue;
+      if (this.grid.countTiles(team.color) === 0) this.eliminateTeam(team);
+    }
+  }
+
+  eliminateTeam(team) {
+    team.eliminated = true;
+    this.viewers.handleTeamEliminated(team.id);
+    for (const marble of this.marbles) {
+      if (marble.teamId === team.id) {
+        marble.alive = false;
+        marble.eliminated = true;
       }
     }
+    this.vfx.addEliminatedText(this.baseCenters[this.teams.indexOf(team)]?.x || CONFIG.CANVAS_WIDTH / 2,
+      this.baseCenters[this.teams.indexOf(team)]?.y || CONFIG.CANVAS_HEIGHT / 2, team.name?.en || '');
+    this.feed.push(tf('feed.eliminated', { team: team.name?.en || '' }), team.color);
+    this.audio.playElimination(CONFIG.CANVAS_WIDTH / 2);
   }
 
   loop() {
@@ -451,55 +442,21 @@ export class Game {
       return;
     }
 
-    const alive = this.marbles.filter(m => m.alive && !m.eliminated);
-
+    const alive = this.marbles.filter((m) => m.alive && !m.eliminated);
+    const reserved = new Set();
     for (const m of alive) {
-      updateMarbleAI(m, this.marbles, this.grid);
+      if (m.hasTarget) reserved.add(`${m.targetRow},${m.targetCol}`);
     }
+    for (const m of alive) m.setAllMarbles(alive);
 
     for (const m of alive) {
-      const result = m.update(dt, this.grid, this.marbles);
+      const result = m.update(dt, this.grid, reserved);
       if (result && result.claimed) {
-        this.particles.emitSparks(result.x, result.y, result.color, 4);
-        this.audio.playClaim(result.x, result.combo);
+        this.particles.emitSparks(result.x, result.y, result.color, 3);
+        this.audio.playClaim(result.x);
         const filled = this.grid.autoFillEnclosures(m.color);
-        if (filled > 0) {
-          this.particles.emitSparks(result.x, result.y, result.color, filled * 2);
-        }
+        if (filled > 0) this.particles.emitSparks(result.x, result.y, result.color, filled * 2);
       }
-    }
-
-    const { kills, hits, damageEvents } = processCombat(alive, this.particles);
-
-    for (const hit of hits) {
-      const intensity = hit.blade
-        ? CONFIG.CAMERA_SHAKE_DEFLECT
-        : hit.blocked
-          ? CONFIG.CAMERA_SHAKE_HIT * 0.6
-          : CONFIG.CAMERA_SHAKE_HIT;
-      this.camera.shake(intensity, 0.15);
-
-      if (hit.blocked) {
-        this.audio.playDeflect(hit.x);
-      } else if (hit.blade) {
-        this.audio.playDeflect(hit.x);
-      } else {
-        this.audio.playHit(hit.x);
-      }
-    }
-
-    for (const { attacker, victim, amount } of damageEvents) {
-      this.analytics.recordDamage(attacker, victim, amount);
-    }
-
-    for (const { killer, victim, x } of kills) {
-      this._sweepKiller = x;
-      this.territory.convertWave(victim.color, killer.color);
-      this.camera.shake(8, 0.18);
-      this.analytics.recordKill(killer, victim);
-      this.audio.playElimination(x);
-      this.vfx.addEliminatedText(victim.x, victim.y, victim.name);
-      this.viewers.handleDeath(victim);
     }
 
     const collected = this.powerups.update(dt, this.marbles, this.grid);
@@ -508,32 +465,24 @@ export class Game {
         const { row, col } = this.grid.worldToGrid(marble.x, marble.y);
         const painted = this.grid.paintColorBomb(col, row, marble.color, CONFIG.POWERUP_COLOR_BOMB_RADIUS);
         this.particles.emitSparks(marble.x, marble.y, marble.color, painted * 3);
-        this.camera.shake(14, 0.25);
+        this.camera.shake(12, 0.22);
         this.audio.playColorBomb(marble.x);
         this.vfx.addColorBombText(marble.x, marble.y, painted);
         const filled = this.grid.autoFillEnclosures(marble.color);
-        if (filled > 0) {
-          this.particles.emitSparks(marble.x, marble.y, marble.color, filled * 2);
-        }
+        if (filled > 0) this.particles.emitSparks(marble.x, marble.y, marble.color, filled * 2);
       } else {
-        marble.applyPowerup(powerup.type,
-          powerup.type === 'overcharge' ? CONFIG.POWERUP_OVERCHARGE_DURATION : CONFIG.POWERUP_SHIELD_DURATION);
+        marble.applyPowerup(powerup.type, CONFIG.POWERUP_OVERCHARGE_DURATION);
         this.audio.playPickup(powerup.type, marble.x);
         this.vfx.addPickupText(marble.x, marble.y, powerup.type);
       }
     }
 
-    this.territory.update(dt);
     this.particles.update(dt);
     this.vfx.update(dt);
     this.viewers.update(dt, this.teams);
 
-    for (const m of alive) {
-      this.analytics.updateTerritory(m, this.grid.countTiles(m.color));
-    }
-
-    this.checkDomination();
     this.checkElimination();
+    this.checkDomination();
   }
 
   render() {
@@ -546,12 +495,10 @@ export class Game {
     }
 
     this.grid.draw(this.ctx);
+    this.drawBases(this.ctx);
     this.powerups.draw(this.ctx);
     this.particles.draw(this.ctx);
 
-    for (const m of this.marbles) {
-      if (m.alive && !m.eliminated) m.sword.draw(this.ctx);
-    }
     for (const m of this.marbles) {
       if (m.alive && !m.eliminated) m.draw(this.ctx);
     }
@@ -573,17 +520,56 @@ export class Game {
     updateControlBar(this);
     updateTimer(this.round.timeLeft);
     updatePauseOverlay(this.paused);
-    updateDebugPanel(this, this.particles, this.marbles, this.grid);
+    updateDebugPanel(this, this.particles, this.grid);
     updateConnectionPanel(this);
     updateViewersPanel(this);
     updateCinematicPanel(this);
     updateTikoraPanel(this);
     updateWinnersPanel(this);
+    this.feed.update();
 
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);
-      const domination = tileCount / this.grid.claimableTiles;
-      updateGameOver(this.winner, this.analytics.duration, SUPPORTERS, tileCount, domination, this.winReason);
+      const domination = this.grid.claimableTiles ? tileCount / this.grid.claimableTiles : 0;
+      updateGameOver(this.winner, this.analytics.duration, tileCount, domination, this.winReason);
+    }
+  }
+
+  drawBases(ctx) {
+    for (let i = 0; i < this.teams.length; i++) {
+      const team = this.teams[i];
+      if (team.eliminated) continue;
+      const point = this.baseCenters[i];
+      if (!point) continue;
+      const radius = CONFIG.MARBLE_RADIUS + 4;
+
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius + 6, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = team.color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(team.emoji || (team.name?.en || '?').slice(0, 1).toUpperCase(), point.x, point.y);
+
+      ctx.font = 'bold 12px monospace';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      const label = team.name?.en || '';
+      const w = ctx.measureText(label).width;
+      ctx.fillRect(point.x - w / 2 - 4, point.y + radius + 6, w + 8, 16);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(label, point.x, point.y + radius + 8);
     }
   }
 }

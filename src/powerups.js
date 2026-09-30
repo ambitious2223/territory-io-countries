@@ -12,14 +12,12 @@ export class PowerUp {
 
   getColor() {
     if (this.type === 'overcharge') return '#FFFF00';
-    if (this.type === 'shield') return '#00AAFF';
     if (this.type === 'colorbomb') return '#FF4444';
     return '#ffffff';
   }
 
   getSymbol() {
     if (this.type === 'overcharge') return '\u26A1';
-    if (this.type === 'shield') return '\u2726';
     if (this.type === 'colorbomb') return '\u2605';
     return '?';
   }

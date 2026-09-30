@@ -97,21 +97,20 @@ export class DebugOverlay {
     ctx.fillText('Tile Ownership:', sx + 6, sy + 4);
     sy += 14;
 
-    const counts = {};
-    for (const m of marbles) {
-      counts[m.color] = (counts[m.color] || 0) + grid.countTiles(m.color);
-    }
+    const seen = new Set();
     ctx.font = '9px monospace';
     let col = 0;
     let row = 0;
     for (const m of marbles) {
-      const c = counts[m.color] || 0;
+      if (seen.has(m.color)) continue;
+      seen.add(m.color);
+      const c = grid.countTiles(m.color);
       ctx.fillStyle = m.color;
       const tx = sx + 6 + col * 90;
       const ty = sy + row * 12;
       ctx.fillRect(tx, ty - 8, 6, 6);
       ctx.fillStyle = '#ccc';
-      ctx.fillText(`${m.name.slice(0, 5)}:${c}`, tx + 10, ty);
+      ctx.fillText(`${c}`, tx + 10, ty);
       col++;
       if (col >= 2) { col = 0; row++; }
     }
@@ -157,29 +156,20 @@ export class DebugOverlay {
       ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
       ctx.stroke();
 
-      const tip = m.sword.getBladeTip();
-      const base = m.sword.getBladeBase();
+      if (!m.hasTarget) continue;
+      const tx = (m.targetCol + 0.5) * 50;
+      const ty = (m.targetRow + 0.5) * 50;
 
-      ctx.strokeStyle = 'rgba(255, 255, 0, 0.25)';
+      ctx.strokeStyle = 'rgba(255, 255, 0, 0.4)';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(m.x, m.y, CONFIG.SWORD_ORBIT_RADIUS + CONFIG.SWORD_LENGTH, 0, Math.PI * 2);
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(tx, ty);
       ctx.stroke();
 
-      ctx.strokeStyle = 'rgba(255, 100, 100, 0.6)';
-      ctx.lineWidth = 2;
+      ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
       ctx.beginPath();
-      ctx.moveTo(base.x, base.y);
-      ctx.lineTo(tip.x, tip.y);
-      ctx.stroke();
-
-      ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
-      ctx.beginPath();
-      ctx.arc(tip.x, tip.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = 'rgba(255, 255, 0, 0.6)';
-      ctx.beginPath();
-      ctx.arc(base.x, base.y, 2, 0, Math.PI * 2);
+      ctx.arc(tx, ty, 3, 0, Math.PI * 2);
       ctx.fill();
     }
   }

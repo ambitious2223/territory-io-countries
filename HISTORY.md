@@ -4,6 +4,30 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Conquest redesign (2.0.0)
+
+**Done — all phases**
+1. **World:** config rewritten for bases + slow-convert (removed sword/combat/HP constants);
+   `zones.js` now lays out spread home bases for 2–12 nations; `grid.js` gained a
+   `convert` state array, neutral start and thick nation **borders**.
+2. **Balls:** `marble.js` rewritten — no `Sword`/HP/knockback; balls target a spread frontier
+   tile, travel, then **slow-convert** it (neutral vs enemy time), with in-progress cancellation
+   when contested.
+3. **Round:** `game.js` rewritten — base setup, per-nation **elimination**, **territory-only**
+   win by tiles, base banners, conquest-feed emission; deleted `combat.js`, `sword.js`,
+   `territory.js`, `ai.js`.
+4. **Cleanup:** power-ups trimmed to overcharge + colorbomb; gift effects/UI/manifest/JSON drop
+   `shield`/`heal`; audio loses hit/deflect/interruption/sweep; `utils.js` and `analytics.js`
+   trimmed of dead combat helpers.
+5. **Presentation:** `scoreboard.js` territory-first with crown + eliminated state; new
+   `feed.js` + right-sidebar Conquest feed (EN/AR); base banners on canvas.
+6. **Verify:** new base/convert tests + a headless game-loop test; lint clean; **80 tests pass**; build ok; smoke PASS.
+
+**Status:** shipped as **2.0.0**. Open follow-ups: a visual/browser pass, real Direct connect,
+and a Tikora relay test.
+
+---
+
 ## 2026-09-30 — Docs/code reconciliation (1.0.1)
 
 **Done**
