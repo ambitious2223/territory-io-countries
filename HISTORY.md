@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Phase 8: TikFinity tab + Tikora hub
+
+**Done**
+- TikFinity host/port inputs wired into the Connect panel.
+- `tikora.manifest.json` (8 declared effects) + `src/tikoraClient.js` (loads `hub-client.js`) +
+  `src/tikora.js` (`TikoraHub`: connect, capabilities, effect routing, ack).
+- Refactored `giftEffects.js` to expose `executeEffect(game, key, params, target)` shared by gifts
+  and Tikora.
+- `GET/POST /api/tikora/config`; config persisted in `.tiktok-config.json`; auto-connect on boot
+  when enabled; debug **Tikora Hub** panel.
+
+**Verified**
+- `npm run lint` clean · `npm test` 73 passed · `npm run build` ok · `npm run smoke` PASS.
+
+**Next**
+- Phase 9: polish (VFX/SFX, perf pass), winners HUD, scoring-weight sliders, docs finalise.
+
+---
+
 ## 2026-09-30 — Phase 7: gift → power-up mappings
 
 **Done**

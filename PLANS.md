@@ -97,9 +97,10 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ## Phase 8 — TikFinity & Tikora tabs
 - [x] `tikfinityBridge.js` (ws 21213) + mode routing (done in Phase 1)
-- [ ] TikFinity Connect sub-tab
-- [ ] `tikora.manifest.json` + `tikoraHub.js` + Connect sub-tab
-- [ ] `/api/tikora/config` env resolution
+- [x] TikFinity host/port fields in the Connect panel
+- [x] `tikora.manifest.json` + `src/tikora.js` hub client (loads `hub-client.js`, routes effects)
+- [x] `/api/tikora/config` (env + saved config) and auto-connect when enabled
+- [x] Debug **Tikora Hub** panel (key, relay, status, connect/disconnect)
 
 **Verify:** each source independently drives the game; fallback works.
 

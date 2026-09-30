@@ -99,6 +99,15 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Single source of truth; the matcher is deterministic and testable without a browser.
 - **Alternatives:** Separate client/server rosters; matching in the socket layer.
 
+## D-021 — Tikora hub via manifest + served hub-client, shared effect executor
+- **Context:** Tikora routes streamer-mapped effects to games; the reference app declares a manifest
+  and loads Tikora's own `hub-client.js`.
+- **Decision:** Declare effects in `tikora.manifest.json`; load `hub-client.js` from the relay at
+  runtime (no bundled protocol); route received effects through the same `executeEffect` used by
+  gift mappings; ack each effect. Config lives in `.tiktok-config.json` (+ env), with auto-connect.
+- **Rationale:** Zero dependency on Tikora internals; one effect executor keeps behaviour consistent.
+- **Alternatives:** Reimplement the Tikora protocol; separate effect paths.
+
 ## D-020 — Declarative gift→effect mappings with a pure matcher
 - **Context:** Gifts must drive power-ups, configured by the streamer without code changes.
 - **Decision:** Store ordered rules in `config/mappings.json` (`giftName` contains / `giftId` /

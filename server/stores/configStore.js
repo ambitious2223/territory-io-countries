@@ -7,6 +7,9 @@ const DEFAULTS = {
   autoConnect: true,
   tikfinityHost: '127.0.0.1',
   tikfinityPort: 21213,
+  tikoraEnabled: false,
+  tikoraSlug: '',
+  tikoraKey: '',
   tikoraRelayUrl: 'ws://127.0.0.1:27016/'
 }
 
@@ -32,6 +35,9 @@ export function saveConfig(partial) {
   if (partial.autoConnect !== undefined) clean.autoConnect = Boolean(partial.autoConnect)
   if (partial.tikfinityHost !== undefined) clean.tikfinityHost = String(partial.tikfinityHost)
   if (partial.tikfinityPort !== undefined) clean.tikfinityPort = Number(partial.tikfinityPort) || DEFAULTS.tikfinityPort
+  if (partial.tikoraEnabled !== undefined) clean.tikoraEnabled = Boolean(partial.tikoraEnabled)
+  if (partial.tikoraSlug !== undefined) clean.tikoraSlug = String(partial.tikoraSlug)
+  if (partial.tikoraKey !== undefined) clean.tikoraKey = String(partial.tikoraKey)
   if (partial.tikoraRelayUrl !== undefined) clean.tikoraRelayUrl = String(partial.tikoraRelayUrl)
 
   cache = { ...getConfig(), ...clean }

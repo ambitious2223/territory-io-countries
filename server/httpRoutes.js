@@ -1,8 +1,23 @@
 import { getTeamsConfig, saveTeamsConfig, updateTeam } from './stores/teamsStore.js'
 import { getWinners, addWinner, clearWinners } from './stores/winnersStore.js'
 import { getMappingsConfig, saveMappingsConfig } from './stores/mappingsStore.js'
+import { getConfig, saveConfig } from './stores/configStore.js'
+import { readJson } from './stores/store.js'
+import { TIKORA_MANIFEST_PATH, TIKORA_DEFAULTS } from './constants.js'
 import { saveFlagImage } from './uploads.js'
 import { buildMockEvent } from './mock.js'
+
+function tikoraConfig() {
+  const config = getConfig()
+  const manifest = readJson(TIKORA_MANIFEST_PATH, { slug: TIKORA_DEFAULTS.slug })
+  const key = process.env.TIKORA_KEY || config.tikoraKey || ''
+  return {
+    slug: process.env.TIKORA_SLUG || config.tikoraSlug || manifest.slug || TIKORA_DEFAULTS.slug,
+    key,
+    relayUrl: process.env.TIKORA_RELAY_URL || config.tikoraRelayUrl || TIKORA_DEFAULTS.relayUrl,
+    enabled: Boolean(config.tikoraEnabled) || Boolean(process.env.TIKORA_KEY)
+  }
+}
 
 export function registerHttpRoutes(app, { manager, getClientCount }) {
   app.get('/health', (_req, res) => {
@@ -44,6 +59,16 @@ export function registerHttpRoutes(app, { manager, getClientCount }) {
 
   app.delete('/api/winners', (req, res) => {
     res.json(clearWinners(req.query.board))
+  })
+
+  app.get('/api/tikora/config', (_req, res) => {
+    res.json(tikoraConfig())
+  })
+
+  app.post('/api/tikora/config', (req, res) => {
+    const { enabled, slug, key, relayUrl } = req.body || {}
+    saveConfig({ tikoraEnabled: enabled, tikoraSlug: slug, tikoraKey: key, tikoraRelayUrl: relayUrl })
+    res.json(tikoraConfig())
   })
 
   app.get('/api/mappings', (_req, res) => {

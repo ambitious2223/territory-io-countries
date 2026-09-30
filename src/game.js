@@ -10,6 +10,7 @@ import { addWinner } from './winnersStore.js';
 import { matchMapping } from './mappings.js';
 import { getMappings } from './mappingsStore.js';
 import { executeGiftEffect } from './giftEffects.js';
+import { TikoraHub } from './tikora.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
 import { TerritoryManager } from './territory.js';
@@ -27,7 +28,7 @@ import {
   updateTimer, updateGameOver, hideGameOver,
   updateControlBar, updatePauseOverlay,
   initControls, initDebugPanel, updateDebugPanel,
-  updateConnectionPanel, updateViewersPanel, updateCinematicPanel,
+  updateConnectionPanel, updateViewersPanel, updateCinematicPanel, updateTikoraPanel,
   getSelectedMap,
 } from './ui.js';
 
@@ -59,6 +60,7 @@ export class Game {
     this.spawnTiles = [];
     this.walls = null;
     this.winReason = null;
+    this.tikora = new TikoraHub(this);
     this.scoring = new ScoringEngine(CONFIG.SCORING);
     this.round = new RoundManager({
       roundDuration: CONFIG.ROUND_DURATION,
@@ -564,6 +566,7 @@ export class Game {
     updateConnectionPanel(this);
     updateViewersPanel(this);
     updateCinematicPanel(this);
+    updateTikoraPanel(this);
 
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);

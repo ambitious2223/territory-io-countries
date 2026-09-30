@@ -50,6 +50,12 @@ this project aims to follow [Semantic Versioning](https://semver.org/).
 - `src/giftEffects.js` executor with eight effects (overcharge, shield, boost, heal, colorbomb,
   area-convert, spawn ally, instant-claim); matching gifts trigger the effect for the gifter's team.
 - Debug **Content — Gift Mappings** editor (enable, gift name, min coins, effect, add/remove, save).
+- TikFinity host/port fields in the Connect panel (mode routing already supported).
+- Tikora hub integration: `tikora.manifest.json` declares the game's effects; `src/tikoraClient.js`
+  loads Tikora's `hub-client.js`; `src/tikora.js` connects the relay, advertises capabilities,
+  routes effects via the shared executor and acknowledges them.
+- `GET/POST /api/tikora/config` (env `TIKORA_SLUG`/`TIKORA_KEY`/`TIKORA_RELAY_URL` + saved config)
+  with **auto-connect** when enabled; debug **Tikora Hub** panel (key, relay, status).
 
 ### Changed
 - Project re-scoped from "Territory With Swords" (local AI battle) to

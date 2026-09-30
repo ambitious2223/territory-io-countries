@@ -84,26 +84,32 @@ const EFFECTS = {
 
 export const EFFECT_KEYS = Object.keys(EFFECTS)
 
-export function executeGiftEffect(game, mapping, event) {
-  if (!game || !mapping || !event) return null
-  const userId = String(event.userId ?? event.username ?? '')
-  const team = game.teams.find((entry) => entry.id === game.scoring.teamOf(userId))
-  if (!team) return null
-  const effect = EFFECTS[mapping.effect]
+export function executeEffect(game, effectKey, params = {}, target = {}) {
+  if (!game) return null
+  const effect = EFFECTS[effectKey]
   if (!effect) return null
 
-  const viewer = game.viewers?.viewers.get(userId) || null
-  const ctx = {
-    game,
-    team,
-    event,
-    params: mapping.params || {},
-    marble: viewer?.marble || null,
+  const hasTeam = target.teamId !== undefined && target.teamId !== null
+  const hasUser = target.userId !== undefined && target.userId !== null
+  let team = hasTeam ? game.teams.find((entry) => entry.id === target.teamId) || null : null
+  if (!team && hasUser) {
+    team = game.teams.find((entry) => entry.id === game.scoring.teamOf(String(target.userId))) || null
   }
+  if (!team) return null
+
+  const viewer = hasUser ? game.viewers?.viewers.get(String(target.userId)) || null : null
+  const ctx = { game, team, params, marble: viewer?.marble || null }
 
   const at = effect(ctx)
   if (at && game.vfx) {
-    game.vfx.addPickupText(at.x, at.y, mapping.effect)
+    game.vfx.addPickupText(at.x, at.y, effectKey)
   }
-  return mapping.effect
+  return effectKey
+}
+
+export function executeGiftEffect(game, mapping, event) {
+  if (!mapping || !event) return null
+  return executeEffect(game, mapping.effect, mapping.params || {}, {
+    userId: event.userId ?? event.username,
+  })
 }

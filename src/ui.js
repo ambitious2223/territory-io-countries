@@ -204,7 +204,14 @@ export function initConnectionPanel(game) {
   connectBtn.addEventListener('click', () => {
     const username = document.getElementById('conn-username').value.trim();
     const mode = document.getElementById('conn-mode').value;
-    game.bridge?.requestConnect({ username, mode });
+    const tikfinityHost = document.getElementById('conn-tikfinity-host').value.trim();
+    const tikfinityPort = Number(document.getElementById('conn-tikfinity-port').value) || undefined;
+    game.bridge?.requestConnect({
+      username,
+      mode,
+      tikfinityHost: tikfinityHost || undefined,
+      tikfinityPort,
+    });
   });
 
   document.getElementById('btn-conn-disconnect').addEventListener('click', () => {
@@ -257,6 +264,34 @@ export function initCinematicPanel(game) {
   if (skip) {
     skip.addEventListener('click', () => game.cinematic.skip());
   }
+}
+
+export function initTikoraPanel(game) {
+  const connectBtn = document.getElementById('btn-tikora-connect');
+  if (!connectBtn) return;
+  connectBtn.addEventListener('click', async () => {
+    const key = document.getElementById('tikora-key').value.trim();
+    const relayUrl = document.getElementById('tikora-relay').value.trim() || undefined;
+    try {
+      await fetch(`${game.bridge?.url || ''}/api/tikora/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: true, key, relayUrl }),
+      });
+    } catch {
+      void 0;
+    }
+    game.tikora?.connect({ key, relayUrl });
+  });
+  document.getElementById('btn-tikora-disconnect').addEventListener('click', () => {
+    game.tikora?.disconnect();
+  });
+}
+
+export function updateTikoraPanel(game) {
+  if (!game.debugMode || !game.tikora) return;
+  const el = document.getElementById('dbg-tikora-status');
+  if (el) el.textContent = game.tikora.status;
 }
 
 export function updateCinematicPanel(game) {

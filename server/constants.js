@@ -8,6 +8,12 @@ export const CONFIG_PATH = join(ROOT, '.tiktok-config.json')
 export const TEAMS_PATH = join(ROOT, 'config', 'teams.json')
 export const WINNERS_PATH = join(ROOT, 'config', 'winners.json')
 export const MAPPINGS_PATH = join(ROOT, 'config', 'mappings.json')
+export const TIKORA_MANIFEST_PATH = join(ROOT, 'tikora.manifest.json')
+
+export const TIKORA_DEFAULTS = {
+  relayUrl: 'ws://127.0.0.1:27016/',
+  slug: 'territory-with-flags',
+}
 export const PUBLIC_DIR = join(ROOT, 'public')
 export const DIST_DIR = join(ROOT, 'dist')
 export const UPLOADS_DIR = join(ROOT, 'public', 'flags')
