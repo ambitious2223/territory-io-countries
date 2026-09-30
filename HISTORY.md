@@ -4,6 +4,27 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Ricochet balls (2.1.0)
+
+Paired with the user's rule: *"every ball, whenever it reaches a new pixel, has to bounce back."*
+
+**Done**
+- `marble.js` rewritten from a target-seeking converter to a **confined puck**: straight-line
+  motion, axis-aligned **reflection** off any non-owned tile, contact-accumulated conversion,
+  bounce jitter, substepping to avoid tunnelling, and rescue to the nearest owned tile if an
+  enemy flips the tile under it.
+- `grid.js`: added `blocksAt`, `convertOnHit`, `nearestOwnedTile`; pruned the old targeting and
+  convert API.
+- `config.js`: `CONVERT_HIT_CHUNK` / `CONVERT_ENEMY_HIT_CHUNK` / `BALL_BOUNCE_JITTER` /
+  `BALL_MAX_SUBSTEP`; removed the sit-timer constants.
+- `game.js` / `debug.js` updated for the new event shape; tests rewritten
+  (`tests/convert.test.js`) plus the headless loop test now forces PLAYING and asserts growth.
+
+**Verified**
+- `npm run lint` clean · `npm test` **81 passed** · `npm run build` ok · `npm run smoke` PASS.
+
+---
+
 ## 2026-09-30 — Conquest redesign (2.0.0)
 
 **Done — all phases**

@@ -56,11 +56,6 @@ export class Grid {
     return this.owners[row][col] === WALL;
   }
 
-  getTile(row, col) {
-    if (!this.inBounds(row, col)) return null;
-    return this.tiles[row][col];
-  }
-
   getOwner(row, col) {
     if (!this.inBounds(row, col)) return null;
     return this.owners[row][col];
@@ -71,22 +66,6 @@ export class Grid {
     if (this.owners[row][col] === WALL) return;
     this.tiles[row][col] = color;
     this.owners[row][col] = color;
-    this.convert[row][col] = null;
-  }
-
-  setConvert(row, col, color, progress) {
-    if (!this.inBounds(row, col)) return;
-    if (this.owners[row][col] === WALL) return;
-    this.convert[row][col] = { color, progress: Math.max(0, Math.min(1, progress)) };
-  }
-
-  getConvert(row, col) {
-    if (!this.inBounds(row, col)) return null;
-    return this.convert[row][col];
-  }
-
-  clearConvert(row, col) {
-    if (!this.inBounds(row, col)) return;
     this.convert[row][col] = null;
   }
 
@@ -106,62 +85,43 @@ export class Grid {
     };
   }
 
-  getTileAtWorld(x, y) {
+  blocksAt(x, y, color) {
     const { row, col } = this.worldToGrid(x, y);
-    return this.getTile(row, col);
+    const owner = this.owners[row][col];
+    return owner === WALL || owner !== color;
   }
 
-  paintAtWorld(x, y, color) {
-    const { row, col } = this.worldToGrid(x, y);
-    this.paintTile(row, col, color);
-  }
+  convertOnHit(row, col, color) {
+    if (!this.inBounds(row, col)) return { owned: false };
+    const owner = this.owners[row][col];
+    if (owner === WALL || owner === color) return { owned: false };
 
-  isOwnedBy(row, col, color) {
-    return this.getOwner(row, col) === color;
-  }
+    const chunk = owner === CONFIG.NEUTRAL_COLOR ? CONFIG.CONVERT_HIT_CHUNK : CONFIG.CONVERT_ENEMY_HIT_CHUNK;
+    const current = this.convert[row][col];
+    const progress = current && current.color === color ? current.progress + chunk : chunk;
 
-  isAdjacentOwned(row, col, color) {
-    for (const [dr, dc] of DIRS) {
-      if (this.getOwner(row + dr, col + dc) === color) return true;
+    if (progress >= 1) {
+      this.paintTile(row, col, color);
+      return { owned: true };
     }
-    return false;
+    this.convert[row][col] = { color, progress };
+    return { owned: false };
   }
 
-  getFriendlyNeighborCount(row, col, color) {
-    let count = 0;
-    for (const [dr, dc] of DIRS) {
-      if (this.getOwner(row + dr, col + dc) === color) count++;
-    }
-    return count;
-  }
-
-  getEnemyNeighborCount(row, col, color) {
-    let count = 0;
-    for (const [dr, dc] of DIRS) {
-      const owner = this.getOwner(row + dr, col + dc);
-      if (owner !== null && owner !== color && owner !== WALL && owner !== CONFIG.NEUTRAL_COLOR) count++;
-    }
-    return count;
-  }
-
-  getTileType(row, col, color) {
-    const owner = this.getOwner(row, col);
-    if (owner === WALL) return 'wall';
-    if (owner === color) return 'own';
-    if (owner === CONFIG.NEUTRAL_COLOR) return 'neutral';
-    return 'enemy';
-  }
-
-  getFrontierTiles(color) {
-    const frontier = [];
+  nearestOwnedTile(row, col, color) {
+    let best = null;
+    let bestDist = Infinity;
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
-        const owner = this.owners[r][c];
-        if (owner === color || owner === WALL) continue;
-        if (this.isAdjacentOwned(r, c, color)) frontier.push({ row: r, col: c });
+        if (this.owners[r][c] !== color) continue;
+        const dist = (r - row) * (r - row) + (c - col) * (c - col);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = { row: r, col: c };
+        }
       }
     }
-    return frontier;
+    return best;
   }
 
   autoFillEnclosures(color) {
@@ -219,11 +179,6 @@ export class Grid {
     return painted;
   }
 
-  isValidSpawn(x, y) {
-    const { row, col } = this.worldToGrid(x, y);
-    return !this.isWall(row, col);
-  }
-
   countTiles(color) {
     let count = 0;
     for (let r = 0; r < this.rows; r++) {
@@ -277,8 +232,7 @@ export class Grid {
 
   drawBorders(ctx) {
     const size = this.tileSize;
-    const width = CONFIG.BORDER_WIDTH;
-    ctx.lineWidth = width;
+    ctx.lineWidth = CONFIG.BORDER_WIDTH;
     ctx.lineCap = 'round';
 
     for (let r = 0; r < this.rows; r++) {
@@ -288,8 +242,7 @@ export class Grid {
 
         const right = this.getOwner(r, c + 1);
         const down = this.getOwner(r + 1, c);
-        const color = shade(owner, -0.25);
-        ctx.strokeStyle = color;
+        ctx.strokeStyle = shade(owner, -0.25);
 
         if (right !== owner && right !== null) {
           ctx.beginPath();

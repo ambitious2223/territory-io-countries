@@ -49,10 +49,10 @@
 | `main.js` | Bootstrap: create `Game`, connect bridge client, init panels, start loop |
 | `game.js` | Loop, round state machine, base setup, elimination, rendering orchestration, input |
 | `config.js` | All tunable constants (canvas, grid, convert, camera, scoring, cinematic) |
-| `grid.js` | Tile ownership, slow-convert state, enclosure fill, nation borders, drawing |
+| `grid.js` | Tile ownership, hit-convert state, containment/bounce, enclosure fill, borders |
 | `map.js` | Wall/map generation |
 | `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
-| `marble.js` | Viewer ball: frontier targeting + slow-convert, rendering |
+| `marble.js` | Viewer ball: confined ricochet movement + contact-convert, rendering |
 | `feed.js` | Conquest feed (joins / eliminations / winner) DOM list |
 | `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
@@ -144,10 +144,13 @@ intros, focus, and shake all feed the same transform. HUD is never transformed.
 
 ## 7. Capture strategy
 
-There is no combat. A `Grid` tile is captured by an adjacent ball filling a convert meter
-(`Tile.convert = { color, progress }`); completing it flips ownership. Contested tiles restart
-the meter for whichever nation reaches it next. `autoFillEnclosures` converts fully surrounded
-pockets instantly, and a nation at zero tiles is eliminated.
+There is no combat. A ball is a puck confined to its nation: `Grid.blocksAt(x, y, color)` returns
+true for any tile it does not own, so the ball **reflects** off the border and calls
+`Grid.convertOnHit(row, col, color)` — adding a convert chunk to `Tile.convert = { color,
+progress }`. When the meter fills the tile flips, the walkable region grows, and the ball can
+enter it; another nation hitting the same tile takes the meter over. `autoFillEnclosures` converts
+fully surrounded pockets instantly, `nearestOwnedTile` rescues a ball trapped by a flip, and a
+nation at zero tiles is eliminated.
 
 ---
 

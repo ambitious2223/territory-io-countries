@@ -41,7 +41,8 @@ Eliminated nations stop accepting joins until the next round.
 - One **ball per viewer**, showing their profile photo (circular), name and team colour.
 - **Global cap ~24 active** (debug slider). Overflow joins a per-team **reinforcement queue**;
   a queued viewer spawns when an active ball is removed (elimination / cap change).
-- Balls leave their nation's **home base** and never fight directly — they only spread colour.
+- A ball **bounces around inside its own nation** and never fights directly — it only spreads
+  colour.
 - **AI fill** (optional) tops up thin nations so a quiet room stays alive.
 - **Mock mode** simulates viewers for offline testing.
 
@@ -55,16 +56,20 @@ a skip. A **blur percentage slider** (0–100, debug panel) blurs the backdrop d
 ## 4. Movement & territory
 
 - The world is a neutral grid; each nation starts with a compact **base block** (default 4×4).
-- A ball targets the nearest useful **frontier tile** of its nation's border, preferring tiles
-  that touch friendly land (cohesive shape) and enemy land (pressure). Targets are **spread**
-  across balls so they don't stack.
-- On arrival the ball **converts** the tile over `TILE_CONVERT_TIME` (neutral) or
-  `TILE_CONVERT_ENEMY_TIME` (enemy land); the tile fills with the nation's colour as the meter
-  completes, then the ball immediately claims the next adjacent tile. The border grows as a
-  front; **more balls and faster movement = faster expansion**.
-- Two nations fighting over a tile **cancel** each other's in-progress conversion — conflict is
-  localised and bloodless.
+- A ball is a **puck that never leaves its nation**. It moves in a straight line and, whenever it
+  reaches a tile that is not its own (neutral, enemy or wall), it **claims on contact and ricochets
+  back** — the nation's border is literally the wall it bounces off. This keeps every territory
+  self-contained and its edges crisp.
+- Every contact adds to that tile's slow-convert meter (`CONVERT_HIT_CHUNK` for neutral land,
+  `CONVERT_ENEMY_HIT_CHUNK` for enemy land). When the meter fills the tile flips to the nation,
+  the "box" grows, and balls can then enter it. **Faster balls hit the border more often and more
+  balls cover more border, so speed and viewer count decide how fast a nation expands.**
+- When two nations hit the same tile the **last hit takes over** the meter, so borders clash and
+  get eaten. Balls never pass through foreign land (and never through each other).
+- Each bounce adds a small random angle so balls don't settle into repetitive orbits.
 - `autoFillEnclosures` instantly claims any pocket fully surrounded by a nation's colour.
+- If an enemy converts the tile a ball is standing on, the ball is **snapped to the nearest owned
+  tile** so nothing is stranded in foreign land.
 - A nation whose tile count reaches **0 is eliminated**: its balls vanish and it stops spawning.
 
 ### Bases
@@ -138,8 +143,9 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 | Grid | 24×16 tiles (50 px) |
 | Nations | 2–12 (default 8) |
 | Home base | 4×4 tiles, spread across the arena |
-| Ball radius / speed | 15 px / 1.8 px·frame |
-| Tile convert time | 0.55 s neutral · 1.15 s enemy |
+| Ball radius / speed | 15 px / 2.2 px·frame |
+| Convert per contact | 0.5 neutral · 0.2 enemy (of a tile meter) |
+| Bounce jitter | ±0.35 rad per bounce |
 | Borders | 3 px, nation colour (darkened) |
 | Active ball cap | 24 |
 | Round / intermission | 180 s / 20 s |

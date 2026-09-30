@@ -4,6 +4,24 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.1.0] - 2026-09-30
+
+### Changed
+- **Balls are now confined pucks that ricochet off the border.** A ball never leaves its nation:
+  any tile it does not own (neutral, enemy or wall) is solid, so it claims on contact and bounces
+  back (axis-aligned reflection + a small angle jitter). This keeps every territory self-contained
+  with crisp borders instead of ragged tendrils.
+- Capture is now **accumulated contacts**: each bump adds a chunk to the tile's convert meter
+  (`0.5` neutral, `0.2` enemy); the last nation to hit a contested tile takes the meter over.
+  Faster balls and more balls convert faster.
+- Removed target pathfinding, spread-target reservation and the sit-to-convert timer; a ball
+  stranded by a flip is snapped to its nearest owned tile. Ball-ball collisions remain off.
+
+### Removed
+- `Grid` targeting helpers (`getFrontierTiles`, neighbour counts, `setConvert`/`getConvert`/
+  `clearConvert`, `isOwnedBy`, `getTileType`, `isValidSpawn`, `getTileAtWorld`, `paintAtWorld`) —
+  replaced by `blocksAt`, `convertOnHit` and `nearestOwnedTile`.
+
 ## [2.0.0] - 2026-09-30
 
 ### Changed

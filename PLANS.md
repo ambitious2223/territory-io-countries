@@ -95,6 +95,17 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 11 — Ricochet confinement
+- [x] Balls are confined to their nation and **reflect** off neutral/enemy borders
+- [x] Contact-accumulated conversion (no sit-timer, no pathfinding)
+- [x] Bounce jitter, substep anti-tunnel, trapped-ball rescue; ball-ball collisions off
+- [x] Grid `blocksAt`/`convertOnHit`/`nearestOwnedTile`; dead targeting API pruned
+- [x] Tests updated; lint/test/build/smoke green; released **2.1.0**
+
+**Verify:** balls never leave their colour, borders stay crisp, and hitting the border converts it.
+
+---
+
 ## Phase 10 — Conquest redesign
 - [x] Neutral arena + spread **home bases**; thick nation **borders**
 - [x] **Slow-convert** capture (adjacent tiles), contested-tile cancellation

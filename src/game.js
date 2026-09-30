@@ -443,19 +443,16 @@ export class Game {
     }
 
     const alive = this.marbles.filter((m) => m.alive && !m.eliminated);
-    const reserved = new Set();
-    for (const m of alive) {
-      if (m.hasTarget) reserved.add(`${m.targetRow},${m.targetCol}`);
-    }
-    for (const m of alive) m.setAllMarbles(alive);
 
     for (const m of alive) {
-      const result = m.update(dt, this.grid, reserved);
-      if (result && result.claimed) {
-        this.particles.emitSparks(result.x, result.y, result.color, 3);
-        this.audio.playClaim(result.x);
+      const events = m.update(dt, this.grid);
+      if (!events) continue;
+      for (const event of events) {
+        if (!event.converted) continue;
+        this.particles.emitSparks(event.x, event.y, event.color, 3);
+        this.audio.playClaim(event.x);
         const filled = this.grid.autoFillEnclosures(m.color);
-        if (filled > 0) this.particles.emitSparks(result.x, result.y, result.color, filled * 2);
+        if (filled > 0) this.particles.emitSparks(event.x, event.y, event.color, filled * 2);
       }
     }
 

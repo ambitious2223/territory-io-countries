@@ -5,13 +5,9 @@ export class Marble {
   constructor(x, y, color, name, options = {}) {
     this.x = x;
     this.y = y;
-    this.vx = 0;
-    this.vy = 0;
-    this.radius = CONFIG.MARBLE_RADIUS;
     this.color = color;
     this.name = name;
-    this.alive = true;
-    this.eliminated = false;
+    this.radius = CONFIG.MARBLE_RADIUS;
 
     this.teamId = options.teamId ?? null;
     this.viewerId = options.viewerId ?? null;
@@ -24,20 +20,17 @@ export class Marble {
       this.avatarImage = image;
     }
 
+    this.alive = true;
+    this.eliminated = false;
     this.overcharge = false;
     this.powerupTimer = 0;
-    this.claimedCount = 0;
+    this.conversions = 0;
+    this.bounceFlash = 0;
 
-    this.targetRow = -1;
-    this.targetCol = -1;
-    this.targetX = 0;
-    this.targetY = 0;
-    this.hasTarget = false;
-    this.converting = false;
-    this.convertProgress = 0;
-    this.convertTime = CONFIG.TILE_CONVERT_TIME;
-
-    this._allMarbles = [];
+    const angle = randomRange(0, Math.PI * 2);
+    const speed = CONFIG.MARBLE_SPEED * (1 + randomRange(-CONFIG.BALL_SPAWN_SPEED_JITTER, CONFIG.BALL_SPAWN_SPEED_JITTER));
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
   }
 
   applyPowerup(type, duration) {
@@ -47,15 +40,7 @@ export class Marble {
     }
   }
 
-  setAllMarbles(list) {
-    this._allMarbles = list;
-  }
-
-  _key(row = this.targetRow, col = this.targetCol) {
-    return `${row},${col}`;
-  }
-
-  update(dt, grid, reserved) {
+  update(dt, grid) {
     if (!this.alive || this.eliminated) return null;
 
     if (this.powerupTimer > 0) {
@@ -65,111 +50,91 @@ export class Marble {
         this.powerupTimer = 0;
       }
     }
+    if (this.bounceFlash > 0) this.bounceFlash -= dt;
 
-    if (this.converting) {
-      const conv = grid.getConvert(this.targetRow, this.targetCol);
-      if (!conv || conv.color !== this.color) {
-        this._cancelConvert(grid);
-      }
-    }
-
-    if (this.converting) {
-      const boost = this.overcharge ? CONFIG.CONVERT_OVERCHARGE_MULT : 1;
-      this.convertProgress += (dt / this.convertTime) * boost;
-      if (this.convertProgress >= 1) {
-        grid.paintTile(this.targetRow, this.targetCol, this.color);
-        const x = this.targetX;
-        const y = this.targetY;
-        this.converting = false;
-        this.convertProgress = 0;
-        this.hasTarget = false;
-        this.claimedCount += 1;
-        return { claimed: true, x, y, color: this.color };
-      }
-      grid.setConvert(this.targetRow, this.targetCol, this.color, this.convertProgress);
+    if (!this._rescueIfTrapped(grid)) {
+      this.alive = false;
+      this.eliminated = true;
       return null;
     }
 
-    if (!this.hasTarget) {
-      this._pickTarget(grid, reserved);
-      if (!this.hasTarget) return null;
+    const speedScale = this.overcharge ? CONFIG.BALL_OVERCHARGE_MULT : 1;
+    const travel = Math.sqrt(this.vx * this.vx + this.vy * this.vy) * dt * speedScale;
+    const maxStep = grid.tileSize * CONFIG.BALL_MAX_SUBSTEP;
+    const steps = Math.max(1, Math.ceil(travel / maxStep));
+    const stepDt = (dt * speedScale) / steps;
+
+    const events = [];
+    for (let i = 0; i < steps; i++) {
+      const event = this._moveStep(stepDt, grid);
+      if (event) events.push(event);
     }
-
-    const dx = this.targetX - this.x;
-    const dy = this.targetY - this.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const speed = CONFIG.MARBLE_SPEED * (this.overcharge ? 1.6 : 1);
-
-    if (dist > CONFIG.MARBLE_ARRIVE_DIST) {
-      this.vx = (dx / dist) * speed;
-      this.vy = (dy / dist) * speed;
-      this.x += this.vx * dt;
-      this.y += this.vy * dt;
-      return null;
-    }
-
-    const owner = grid.getOwner(this.targetRow, this.targetCol);
-    if (owner === this.color) {
-      reserved?.delete(this._key());
-      this.hasTarget = false;
-      return null;
-    }
-
-    this.x = this.targetX;
-    this.y = this.targetY;
-    this.vx = 0;
-    this.vy = 0;
-    this.converting = true;
-    this.convertProgress = 0;
-    this.convertTime = owner === CONFIG.NEUTRAL_COLOR
-      ? CONFIG.TILE_CONVERT_TIME
-      : CONFIG.TILE_CONVERT_ENEMY_TIME;
-    reserved?.delete(this._key());
-    grid.setConvert(this.targetRow, this.targetCol, this.color, 0);
-    return null;
+    return events.length ? events : null;
   }
 
-  _cancelConvert(grid) {
-    if (this.targetRow >= 0) grid.clearConvert(this.targetRow, this.targetCol);
-    this.converting = false;
-    this.convertProgress = 0;
-    this.hasTarget = false;
+  _rescueIfTrapped(grid) {
+    const { row, col } = grid.worldToGrid(this.x, this.y);
+    if (grid.getOwner(row, col) === this.color) return true;
+    const tile = grid.nearestOwnedTile(row, col, this.color);
+    if (!tile) return false;
+    const center = grid.gridToWorld(tile.row, tile.col);
+    this.x = center.x;
+    this.y = center.y;
+    return true;
   }
 
-  _pickTarget(grid, reserved) {
-    const frontier = grid.getFrontierTiles(this.color);
-    if (frontier.length === 0) {
-      this.hasTarget = false;
-      return;
-    }
+  _moveStep(dt, grid) {
+    let nx = this.x + this.vx * dt;
+    let ny = this.y + this.vy * dt;
+    let bounced = false;
+    let converted = null;
 
-    let best = null;
-    let bestScore = -Infinity;
-    for (const tile of frontier) {
-      if (reserved && reserved.has(this._key(tile.row, tile.col))) continue;
-      const wx = (tile.col + 0.5) * grid.tileSize;
-      const wy = (tile.row + 0.5) * grid.tileSize;
-      const dist = Math.sqrt((wx - this.x) ** 2 + (wy - this.y) ** 2);
-      const friendly = grid.getFriendlyNeighborCount(tile.row, tile.col, this.color);
-      const enemy = grid.getEnemyNeighborCount(tile.row, tile.col, this.color);
-      const score = -dist
-        + friendly * CONFIG.CLAIM_NEIGHBOR_WEIGHT
-        + enemy * CONFIG.CLAIM_ENEMY_WEIGHT
-        + randomRange(-CONFIG.CLAIM_RANDOM_JITTER, CONFIG.CLAIM_RANDOM_JITTER);
-      if (score > bestScore) {
-        bestScore = score;
-        best = tile;
+    if (grid.blocksAt(nx, this.y, this.color)) {
+      const { row, col } = grid.worldToGrid(nx, this.y);
+      const hit = grid.convertOnHit(row, col, this.color);
+      this.vx = -this.vx;
+      nx = this.x;
+      bounced = true;
+      if (hit.owned) {
+        converted = { row, col };
+        this.conversions += 1;
       }
     }
 
-    if (!best) best = frontier[Math.floor(Math.random() * frontier.length)];
+    if (grid.blocksAt(this.x, ny, this.color)) {
+      const { row, col } = grid.worldToGrid(this.x, ny);
+      const hit = grid.convertOnHit(row, col, this.color);
+      this.vy = -this.vy;
+      ny = this.y;
+      bounced = true;
+      if (hit.owned) {
+        converted = { row, col };
+        this.conversions += 1;
+      }
+    }
 
-    this.targetRow = best.row;
-    this.targetCol = best.col;
-    this.targetX = (best.col + 0.5) * grid.tileSize;
-    this.targetY = (best.row + 0.5) * grid.tileSize;
-    this.hasTarget = true;
-    reserved?.add(this._key());
+    const maxX = grid.cols * grid.tileSize - this.radius;
+    const maxY = grid.rows * grid.tileSize - this.radius;
+    if (nx < this.radius) { nx = this.radius; this.vx = Math.abs(this.vx); bounced = true; }
+    if (nx > maxX) { nx = maxX; this.vx = -Math.abs(this.vx); bounced = true; }
+    if (ny < this.radius) { ny = this.radius; this.vy = Math.abs(this.vy); bounced = true; }
+    if (ny > maxY) { ny = maxY; this.vy = -Math.abs(this.vy); bounced = true; }
+
+    this.x = nx;
+    this.y = ny;
+
+    if (!bounced) return null;
+
+    this._jitter();
+    this.bounceFlash = 0.12;
+    return { bounced: true, converted, x: this.x, y: this.y, color: this.color };
+  }
+
+  _jitter() {
+    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy) || CONFIG.MARBLE_SPEED;
+    const angle = Math.atan2(this.vy, this.vx) + randomRange(-CONFIG.BALL_BOUNCE_JITTER, CONFIG.BALL_BOUNCE_JITTER);
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
   }
 
   draw(ctx) {
@@ -205,12 +170,12 @@ export class Marble {
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.stroke();
 
-    if (this.converting) {
-      const ratio = this.convertProgress / this.convertTime;
-      ctx.strokeStyle = this.color;
-      ctx.lineWidth = 3;
+    if (this.bounceFlash > 0) {
+      const alpha = this.bounceFlash / 0.12;
+      ctx.strokeStyle = hexToRgba('#ffffff', alpha * 0.8);
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius + 5, -Math.PI / 2, -Math.PI / 2 + ratio * Math.PI * 2);
+      ctx.arc(this.x, this.y, this.radius + (1 - alpha) * 8, 0, Math.PI * 2);
       ctx.stroke();
     }
 

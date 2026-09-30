@@ -61,6 +61,8 @@ describe('headless game loop', () => {
     const game = new Game(globalThis.canvas)
     game.setTeams(game.defaultTeams())
     game.start()
+    game.round.state = 'playing'
+    game.round.timer = 180
 
     game.handleBridgeEvent({ type: 'chat', username: 'v0', name: 'Viewer0', message: '1' })
     expect(game.countTeamMarbles(game.teams[0].id)).toBeGreaterThanOrEqual(1)
@@ -68,7 +70,7 @@ describe('headless game loop', () => {
     const before = game.teams.reduce((sum, t) => sum + game.grid.countTiles(t.color), 0)
 
     expect(() => {
-      for (let f = 0; f < 300; f++) {
+      for (let f = 0; f < 1500; f++) {
         game.update(1)
         game.render()
       }

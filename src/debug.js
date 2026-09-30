@@ -156,20 +156,10 @@ export class DebugOverlay {
       ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
       ctx.stroke();
 
-      if (!m.hasTarget) continue;
-      const tx = (m.targetCol + 0.5) * 50;
-      const ty = (m.targetRow + 0.5) * 50;
-
-      ctx.strokeStyle = 'rgba(255, 255, 0, 0.4)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(m.x, m.y);
-      ctx.lineTo(tx, ty);
-      ctx.stroke();
-
+      const speed = Math.sqrt(m.vx * m.vx + m.vy * m.vy) || 1;
       ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
       ctx.beginPath();
-      ctx.arc(tx, ty, 3, 0, Math.PI * 2);
+      ctx.arc(m.x + (m.vx / speed) * m.radius, m.y + (m.vy / speed) * m.radius, 3, 0, Math.PI * 2);
       ctx.fill();
     }
   }

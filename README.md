@@ -14,16 +14,16 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.0.0
+## Status — v2.1.0
 
-Every gate is green: `npm run lint`, `npm test` (80 tests incl. a headless game-loop test),
+Every gate is green: `npm run lint`, `npm test` (81 tests incl. a headless game-loop test),
 `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
-- **Conquest core:** neutral arena, one **home base per nation**, one **ball per viewer**; balls
-  **slow-convert** adjacent tiles so borders creep and get eaten. No swords, no HP — territory is
-  the only conflict.
+- **Conquest core:** neutral arena, one **home base per nation**, one **ball per viewer**. A ball
+  is **confined to its nation** and **ricochets off the border**, adding convert progress on every
+  contact, so borders creep and get eaten. No swords, no HP — territory is the only conflict.
 - **Conquerable bases / last stand:** a nation at zero tiles is **eliminated** for the round.
 - **Win by land:** most territory at time-up, or an immediate 65% **domination** win.
 - TikTok bridge with **auto-connect**: **Direct** (`tiktok-live-connector`) + **TikFinity**

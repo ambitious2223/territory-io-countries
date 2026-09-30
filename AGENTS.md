@@ -9,9 +9,9 @@ Orientation for any AI agent or human contributor working in this repository. Re
 
 A real-time **TikTok LIVE** territory-conquest game. Viewers comment a **country/team**
 (number, ISO2, English name, Arabic name, or flag emoji) to join a nation. Each joined viewer
-becomes a single **ball** that pours out of their nation's **home base** and **slow-converts**
-adjacent grid tiles, so borders creep forward and get eaten back. There is no sword combat — the
-only conflict is territory. Likes, comments, follows, shares and gifts feed power-ups and a
+becomes a single **ball** that pours out of their nation's **home base** and **ricochets off the
+border**, converting tiles on every contact so borders creep forward and get eaten back. There is
+no sword combat — the only conflict is territory. Likes, comments, follows, shares and gifts feed power-ups and a
 tunable interaction score. A timed round is won by **most territory**; rounds **auto-loop**.
 
 It is shipped as an **OBS browser source** overlay and is designed around a streamer running
@@ -37,7 +37,7 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Join inputs | number · ISO2 · English name · Arabic name · flag emoji (fuzzy) |
 | Flags | **Streamer-uploaded images**, consistent 3:2 save + upload helper |
 | Combat | **None** — no swords/HP; conflict is territory only |
-| Territory | **Home bases + adjacent slow-convert**; borders creep and get eaten |
+| Territory | **Home bases + confined ricochet balls**; border contact converts tiles |
 | Scoring | Gift/interaction score is tunable, but the round is won by **land** |
 | Round | **3 min** + ~**20 s** intermission, auto-loop, manual override always available |
 | Win | **Most territory** at time-up (or 65% domination) |

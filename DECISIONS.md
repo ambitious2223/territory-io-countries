@@ -13,6 +13,19 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Matches shipped behaviour; avoids a phantom mode that silently fell back to Direct.
 - **Alternatives:** Implement a status-only `tikora` mode (ambiguous; carries no chat events).
 
+## D-024 — Confined ricochet balls; contact-accumulated conversion
+- **Context:** Balls that marched to the frontier one tile at a time drifted far from their base and
+  left ragged, intermingled borders — it still read as a mess.
+- **Decision:** A ball is a **puck confined to its nation**. `Grid.blocksAt` treats every tile the
+  ball does not own (neutral, enemy, wall) as solid; the ball moves in a straight line, and on each
+  contact it adds a chunk to that tile's convert meter and **reflects** (axis-aligned bounce + a
+  small random-angle jitter). Balls never leave their nation and never pass through each other;
+  a ball stranded by a flip is snapped to the nearest owned tile. Faster balls hit more often and
+  more balls cover more border, so speed and viewer count drive expansion.
+- **Rationale:** Keeps every territory self-contained with crisp borders (the user's goal), makes
+  the border a physical wall, and preserves slow-convert as **accumulated hits**.
+- **Alternatives:** Yo-yo return-to-base trips; splix trail+fill; paper.io continuous paint.
+
 ## D-023 — Conquest redesign: home bases + slow border convert; swords removed
 - **Context:** The sword/marble arena read as chaos — every ball path-found to a frontier tile,
   stood in a claim ring, got interrupted, while orbital blades spun and kills fired whole-map
