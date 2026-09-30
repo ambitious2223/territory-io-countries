@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State.io Live</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0a0a1a;overflow:hidden;display:flex;height:100vh;font-family:'Segoe UI',sans-serif}
+    #canvas-wrap{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
+    canvas{display:block;max-width:100%;max-height:100%}
+    #debug-toggle{position:fixed;top:12px;left:12px;z-index:20;background:#1a1a2e;border:1px solid #333;color:#00ff88;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px}
+    #debug-toggle:hover{background:#252540}
+    #debug{width:380px;min-width:380px;background:#0f0f23;border-left:1px solid #222;display:flex;flex-direction:column;overflow:hidden;transition:margin-right .25s}
+    #debug.collapsed{margin-right:-380px}
+    #debug-header{padding:10px 14px;background:#1a1a2e;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center}
+    #debug-header h2{color:#00ff88;font-size:14px}
+    #debug-close{background:none;border:none;color:#666;cursor:pointer;font-size:18px}
+    #debug-close:hover{color:#fff}
+    .tab-bar{display:flex;background:#12122a;border-bottom:1px solid #222;overflow-x:auto}
+    .tab-btn{padding:10px 16px;background:none;border:none;border-bottom:2px solid transparent;color:#666;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
+    .tab-btn:hover{color:#aaa}
+    .tab-btn.active{color:#00ff88;border-bottom-color:#00ff88}
+    .tab-content{display:none;flex:1;overflow-y:auto;padding:12px}
+    .tab-content.active{display:block}
+    .section{background:#1a1a2e;border-radius:8px;padding:10px;margin-bottom:8px}
+    .section h3{color:#00ff88;font-size:12px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+    .row{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+    .btn{padding:6px 12px;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;transition:opacity .15s}
+    .btn:hover{opacity:.85}
+    .btn-start{background:#00ff88;color:#000}.btn-stop{background:#ff4444;color:#fff}.btn-debug{background:#4488ff;color:#fff}.btn-inject{background:#ffaa00;color:#000}.btn-sm{padding:4px 8px;font-size:10px}
+    input,select{padding:5px 8px;border-radius:4px;border:1px solid #333;background:#0a0a1a;color:#fff;font-size:11px;width:100%}
+    input:focus,select:focus{outline:none;border-color:#00ff88}
+    label{display:block;margin-bottom:2px;color:#888;font-size:10px}
+    .form-group{margin-bottom:6px}
+    .faction-item{display:flex;align-items:center;gap:6px;padding:6px;background:#0a0a1a;border-radius:5px;margin-bottom:4px}
+    .faction-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+    .faction-info{flex:1;font-size:11px}
+    .faction-name{font-weight:600}
+    .faction-pool{color:#888;font-size:10px}
+    .stat-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0;color:#aaa}
+    .stat-row span{color:#00ff88;font-weight:600}
+    #log{background:#0a0a1a;border-radius:5px;padding:6px;height:100%;overflow-y:auto;font-family:monospace;font-size:10px;line-height:1.4}
+    .log-j{color:#00ff88}.log-t{color:#ffaa00}.log-e{color:#4488ff}.log-w{color:#ff4444}
+    #overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.85);z-index:10}#overlay.active{display:flex}
+    #win-content{text-align:center;color:#fff}#win-content h1{font-size:52px;margin-bottom:16px}#win-content h2{font-size:24px;margin-bottom:20px;color:#aaa}
+    .contributor{font-size:20px;margin:6px 0;color:#ddd}
+    #pool-bar{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}.pool-item{padding:6px 12px;border-radius:6px;font-size:12px;color:#fff;background:rgba(0,0,0,.6)}
+    .icon-upload{display:flex;align-items:center;gap:4px;margin-top:3px}.icon-upload input[type=file]{font-size:9px;width:auto}
+    #conn-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);display:none;justify-content:center;align-items:center;z-index:100;flex-direction:column;gap:16px}#conn-overlay.active{display:flex}#conn-overlay h2{color:#ff4444;font-size:28px}#conn-overlay p{color:#aaa;font-size:16px}
+    .spinner{width:40px;height:40px;border:4px solid #333;border-top-color:#00ff88;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .tier-row{display:flex;align-items:center;gap:4px;padding:3px;background:#0a0a1a;border-radius:4px;font-size:10px}
+    .tier-label{font-weight:600;width:50px}
+    #deploy-queue{font-family:'Segoe UI',sans-serif}
+  </style>
+</head>
+<body>
+  <div id="canvas-wrap">
+    <canvas id="gameCanvas"></canvas>
+    <button id="debug-toggle" onclick="toggleDebug()">Debug</button>
+    <div id="overlay"><div id="win-content"><h1 id="win-title"></h1><h2>Top Contributors</h2><div id="win-contributors"></div><button id="win-restart" class="btn btn-start" style="margin-top:20px;padding:10px 28px;font-size:14px;display:none" onclick="restartFromWin()">Restart</button></div></div>
+    <div id="pool-bar"></div>
+    <div id="deploy-queue" style="display:none;position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:72px;background:rgba(0,0,0,0.9);display:flex;align-items:center;padding:8px 20px;gap:12px;z-index:5;border-top:1px solid #333;border-radius:12px 12px 0 0;max-width:100%"></div>
+    <div id="conn-overlay"><div class="spinner"></div><h2>Disconnected</h2><p>Reconnecting...</p></div>
+  </div>
+  <div id="debug">
+    <div id="debug-header"><h2>Control Panel</h2><button id="debug-close" onclick="toggleDebug()">x</button></div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('game')">Game</button>
+      <button class="tab-btn" onclick="switchTab('factions')">Factions</button>
+      <button class="tab-btn" onclick="switchTab('events')">Events</button>
+      <button class="tab-btn" onclick="switchTab('tools')">Tools</button>
+      <button class="tab-btn" onclick="switchTab('log')">Log</button>
+    </div>
+    <div id="tab-game" class="tab-content active">
+      <div class="section">
+        <h3>Controls</h3>
+        <div class="row">
+          <button class="btn btn-start" onclick="startGame()">Start</button>
+          <button class="btn btn-stop" onclick="stopGame()">Stop</button>
+          <button class="btn btn-debug" id="btn-adjacency" onclick="toggleDebugLines()">Adjacency: OFF</button>
+          <button class="btn btn-debug btn-sm" onclick="startGame()">Restart</button>
+        </div>
+        <div class="row" style="margin-top:4px">
+          <button class="btn btn-stop btn-sm" onclick="purgeQueues()" style="flex:1">Purge Queues / Clear Flying</button>
+        </div>
+      </div>
+      <div class="section">
+        <h3>Settings</h3>
+        <div class="form-group"><label>Game Duration (min)</label><input type="number" id="game-duration" value="3" min="1" max="60" style="width:70px"></div>
+        <div class="form-group"><label>Max Troops / Territory</label><input type="number" id="global-troop-cap" value="120" min="10" max="9999" style="width:70px"></div>
+      </div>
+      <div class="section">
+        <h3>Status</h3>
+        <div class="stat-row">State: <span id="st-status" style="color:#ff4444">Stopped</span></div>
+        <div class="stat-row">Players: <span id="st-players">0</span></div>
+        <div class="stat-row">Flying: <span id="st-troops">0</span></div>
+        <div class="stat-row">Queued: <span id="st-queued">0</span></div>
+        <div class="stat-row">Active Queues: <span id="st-active-queues">0 / 4</span></div>
+        <div class="stat-row">FPS: <span id="st-fps">0</span></div>
+      </div>
+    </div>
+    <div id="tab-factions" class="tab-content">
+      <div class="section">
+        <h3>Factions</h3>
+        <div id="faction-list"></div>
+      </div>
+      <div class="section">
+        <h3>Custom Names</h3>
+        <div id="faction-names"></div>
+      </div>
+      <div class="section">
+        <h3>Add Faction</h3>
+        <div style="display:flex;gap:4px;margin-bottom:6px">
+          <input type="text" id="new-faction-name" placeholder="Name" style="flex:1;font-size:11px">
+          <input type="color" id="new-faction-color" value="#888888" style="width:36px;padding:2px;cursor:pointer">
+          <input type="text" id="new-faction-icon" placeholder="emoji" style="width:40px;font-size:11px;text-align:center">
+        </div>
+        <button class="btn btn-start" style="width:100%" onclick="addNewFaction()">Add Faction</button>
+      </div>
+    </div>
+    <div id="tab-events" class="tab-content">
+      <div class="section">
+        <h3>Select Faction</h3>
+        <div id="quick-factions"></div>
+      </div>
+      <div class="section">
+        <h3>Event Controls</h3>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;align-items:center;gap:6px"><span style="color:#00ff88;font-size:11px;width:50px">Like</span><input type="checkbox" id="evt-like-on" checked style="width:auto"><input type="number" id="evt-like-val" value="1" min="1" max="50" style="width:50px"><button class="btn btn-start btn-sm" onclick="quickEvent('like')">Send</button></div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="color:#4488ff;font-size:11px;width:50px">Share</span><input type="checkbox" id="evt-share-on" checked style="width:auto"><input type="number" id="evt-share-val" value="1" min="1" max="50" style="width:50px"><button class="btn btn-debug btn-sm" onclick="quickEvent('share')">Send</button></div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="color:#ffaa00;font-size:11px;width:50px">Follow</span><input type="checkbox" id="evt-follow-on" checked style="width:auto"><input type="number" id="evt-follow-val" value="2" min="1" max="50" style="width:50px"><button class="btn btn-inject btn-sm" onclick="quickEvent('follow')">Send</button></div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="color:#ff4444;font-size:11px;width:50px">Gift</span><input type="checkbox" id="evt-gift-on" checked style="width:auto"><input type="number" id="evt-gift-val" value="10" min="1" max="500" style="width:50px"><button class="btn btn-stop btn-sm" onclick="quickEvent('gift')">Send</button></div>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <button class="btn btn-debug btn-sm" style="flex:1" onclick="burstLike()">Burst x10 Likes</button>
+          <button class="btn btn-debug btn-sm" style="flex:1" onclick="burstGift()">Burst x10 Gifts</button>
+        </div>
+      </div>
+      <div class="section">
+        <h3>Like Batching</h3>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#aaa">
+          <span>Every</span><input type="number" id="like-batch-x" value="10" min="1" max="1000" style="width:50px"><span>=</span><input type="number" id="like-batch-y" value="1" min="1" max="100" style="width:50px"><span>troops</span>
+        </div>
+        <div id="like-counter" style="margin-top:4px;font-size:10px;color:#666">Likes: 0</div>
+      </div>
+      <div class="section">
+        <h3>Gift Tiers</h3>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;background:#0a0a1a;border-radius:5px">
+            <span style="color:#00ff88;font-weight:700;width:55px;font-size:11px">T1 Arrow</span>
+            <span style="color:#666;font-size:10px">1-10c =</span>
+            <input type="number" id="gt-mult-0" value="5" min="1" max="50" style="width:45px;font-size:12px;padding:4px 6px;text-align:center">
+            <span style="color:#666;font-size:10px">x</span>
+            <span style="color:#555;font-size:9px;flex:1;text-align:right">1 target</span>
+            <button class="btn btn-start btn-sm" onclick="fireTier(5)" style="font-size:10px;padding:4px 10px">Fire</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;background:#0a0a1a;border-radius:5px">
+            <span style="color:#4488ff;font-weight:700;width:55px;font-size:11px">T2 Burst</span>
+            <span style="color:#666;font-size:10px">11-50c =</span>
+            <input type="number" id="gt-mult-1" value="8" min="1" max="50" style="width:45px;font-size:12px;padding:4px 6px;text-align:center">
+            <span style="color:#666;font-size:10px">x</span>
+            <span style="color:#555;font-size:9px;flex:1;text-align:right">2 targets</span>
+            <button class="btn btn-debug btn-sm" onclick="fireTier(30)" style="font-size:10px;padding:4px 10px">Fire</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;background:#0a0a1a;border-radius:5px">
+            <span style="color:#ffaa00;font-weight:700;width:55px;font-size:11px">T3 Rain</span>
+            <span style="color:#666;font-size:10px">51-100c =</span>
+            <input type="number" id="gt-mult-2" value="12" min="1" max="50" style="width:45px;font-size:12px;padding:4px 6px;text-align:center">
+            <span style="color:#666;font-size:10px">x</span>
+            <span style="color:#555;font-size:9px;flex:1;text-align:right">4 targets</span>
+            <button class="btn btn-inject btn-sm" onclick="fireTier(75)" style="font-size:10px;padding:4px 10px">Fire</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;background:#0a0a1a;border-radius:5px">
+            <span style="color:#ff4444;font-weight:700;width:55px;font-size:11px">T4 Strike</span>
+            <span style="color:#666;font-size:10px">101+c =</span>
+            <input type="number" id="gt-mult-3" value="15" min="1" max="50" style="width:45px;font-size:12px;padding:4px 6px;text-align:center">
+            <span style="color:#666;font-size:10px">x</span>
+            <span style="color:#555;font-size:9px;flex:1;text-align:right">5 + lightning</span>
+            <button class="btn btn-stop btn-sm" onclick="fireTier(150)" style="font-size:10px;padding:4px 10px">Fire</button>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <h3>Stress Test Presets</h3>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="btn btn-start btn-sm" onclick="presetSim(100,false)" style="width:100%">Simulate 100 Troops → Faction</button>
+          <button class="btn btn-debug btn-sm" onclick="presetSim(50,true)" style="width:100%">Simulate Concurrent 4-Faction Raid (50 each)</button>
+          <button class="btn btn-inject btn-sm" onclick="presetSim(300,false)" style="width:100%">Stress Test: 300 Troops (overflow test)</button>
+        </div>
+      </div>
+    </div>
+    <div id="tab-tools" class="tab-content">
+      <div class="section">
+        <h3>Inject Troops</h3>
+        <div class="row">
+          <div class="form-group" style="flex:1"><label>Faction</label><select id="inj-faction"></select></div>
+          <div class="form-group" style="width:70px"><label>Count</label><input type="number" id="inj-count" value="10" min="1"></div>
+        </div>
+        <div class="row">
+          <div class="form-group" style="flex:1"><label>Target</label><select id="inj-target"></select></div>
+          <button class="btn btn-inject" onclick="inject()">Send</button>
+        </div>
+        <div id="inject-msg" style="color:#ff4444;font-size:10px;margin-top:3px"></div>
+      </div>
+      <div class="section">
+        <h3>Simulation</h3>
+        <button class="btn btn-start" style="width:100%" onclick="runSimulation()">Run Full Test</button>
+      </div>
+    </div>
+    <div id="tab-log" class="tab-content" style="padding:0">
+      <div id="log"></div>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let config = null, factions = [], territories = [], adjacency = [];
+    let running = false, showAdjacency = false;
+    let localTroops = [], factionImages = {}, captureEffects = [], winAnim = null, lightningEffects = [];
+    let shockwaveEffects = [], rainEffects = [], rocketEffects = [];
+    let damageEffects = {};
+    let factionMass = {}, lastMassUpdate = 0, prevLeaderId = -1, leaderPulseAge = 0;
+    let factionScaleBonus = {};
+    let factionQueues = {};
+    const MERGE_WINDOW = 2000;
+    const DEPLOY_INTERVAL = 50;
+    const ICON_SCALE_LERP = 0.12;
+    const ICON_SCALE_TIERS = [
+      { min: 0.00, scale: 1.0 },
+      { min: 0.11, scale: 1.2 },
+      { min: 0.26, scale: 1.4 },
+      { min: 0.51, scale: 1.6 },
+      { min: 0.76, scale: 1.8 },
+      { min: 1.00, scale: 2.0 }
+    ];
+    let lastDeployTick = 0;
+    function addToFactionQueue(factionId,username,type,troops,factionColor,profilePic){const now=performance.now(),q=factionQueues[factionId],icons={like:'👍',share:'🔗',follow:'👤',gift:'🎁'};if(q&&(now-q.lastAdd)<MERGE_WINDOW&&q.viewer===username){q.total+=troops;q.lastAdd=now;}else{factionQueues[factionId]={viewer:username,type,total:troops,deployed:0,color:factionColor,icon:icons[type]||'⚔️',pic:profilePic,lastAdd:now};}renderFactionQueues();}
+    function processFactionQueues(now){let changed=false;for(const fid in factionQueues){const q=factionQueues[fid];if(q.deployed>=q.total){if(!q.fadeStart)q.fadeStart=now;if(now-q.fadeStart>600){delete factionQueues[fid];changed=true;}}else{q.fadeStart=0;}}if(changed)renderFactionQueues();}
+    function renderFactionQueues(){const el=document.getElementById('deploy-queue');if(!el)return;el.innerHTML='';const a=Object.keys(factionQueues);if(a.length===0){el.style.display='none';return;}el.style.display='flex';for(const fid of a){const q=factionQueues[fid],done=q.deployed>=q.total,rem=q.total-q.deployed,pct=q.total>0?(q.deployed/q.total*100):0;const fade=done&&q.fadeStart?Math.max(0,1-(performance.now()-q.fadeStart)/600):1;const pic=q.pic?`<img style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid ${q.color}" src="${q.pic}">`:`<div style="width:32px;height:32px;border-radius:50%;background:${q.color};display:flex;align-items:center;justify-content:center;font-size:16px">${q.icon}</div>`;const s=document.createElement('div');s.style.cssText=`display:flex;align-items:center;gap:8px;padding:8px 14px;background:#0f0f23;border-radius:8px;border:2px solid ${q.color};flex:1;min-width:200px;max-width:300px;opacity:${fade};transition:opacity .3s`;s.innerHTML=`${pic}<div style="flex:1;min-width:0"><div style="color:#fff;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${q.viewer}</div><div style="font-size:10px;color:#888">${q.icon} ${q.type}</div><div style="margin-top:4px;height:6px;background:#1a1a2e;border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${q.color};border-radius:3px;transition:width .1s"></div></div><div style="font-size:10px;color:${done?'#00ff88':q.color};margin-top:2px;font-weight:700">${done?'Done':rem+' left'}</div></div>`;el.appendChild(s);}}
+    let selectedQuickFaction = 0, likeCounter = 0, gameDuration = 180, gameEndTime = 0, gameStartTime = 0;
+    let factionNames = {};
+    const STORAGE_KEY = 'stateio_settings';
+    function saveSettings(){const s={gameDuration:+document.getElementById('game-duration')?.value||3,troopCap:+document.getElementById('global-troop-cap')?.value||120,likeBatchX:+document.getElementById('like-batch-x')?.value||10,likeBatchY:+document.getElementById('like-batch-y')?.value||1,giftMults:[0,1,2,3].map(i=>+document.getElementById('gt-mult-'+i)?.value||[5,8,12,15][i]),evtToggles:['like','share','follow','gift'].map(t=>document.getElementById('evt-'+t+'-on')?.checked!==false),evtVals:['like','share','follow','gift'].map(t=>+document.getElementById('evt-'+t+'-val')?.value||(t==='follow'?2:t==='gift'?10:1)),factionNames:{...factionNames},selectedFaction:selectedQuickFaction};try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch(e){}}
+    function loadSettings(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const s=JSON.parse(raw);if(s.gameDuration!=null){const el=document.getElementById('game-duration');if(el)el.value=s.gameDuration;gameDuration=s.gameDuration*60;}if(s.troopCap!=null){const el=document.getElementById('global-troop-cap');if(el)el.value=s.troopCap;}if(s.likeBatchX!=null){const el=document.getElementById('like-batch-x');if(el)el.value=s.likeBatchX;}if(s.likeBatchY!=null){const el=document.getElementById('like-batch-y');if(el)el.value=s.likeBatchY;}if(s.giftMults)s.giftMults.forEach((v,i)=>{const el=document.getElementById('gt-mult-'+i);if(el)el.value=v;});if(s.evtToggles)['like','share','follow','gift'].forEach((t,i)=>{const el=document.getElementById('evt-'+t+'-on');if(el)el.checked=s.evtToggles[i];});if(s.evtVals)['like','share','follow','gift'].forEach((t,i)=>{const el=document.getElementById('evt-'+t+'-val');if(el)el.value=s.evtVals[i];});if(s.factionNames)factionNames=s.factionNames;if(s.selectedFaction!=null)selectedQuickFaction=s.selectedFaction;}catch(e){}}
+    function wireSaveListeners(){['game-duration','global-troop-cap','like-batch-x','like-batch-y','gt-mult-0','gt-mult-1','gt-mult-2','gt-mult-3','evt-like-on','evt-share-on','evt-follow-on','evt-gift-on','evt-like-val','evt-share-val','evt-follow-val','evt-gift-val'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',saveSettings);});const durEl=document.getElementById('game-duration');if(durEl)durEl.addEventListener('change',()=>{gameDuration=(+durEl.value||3)*60;saveSettings();});const capEl=document.getElementById('global-troop-cap');if(capEl)capEl.addEventListener('change',()=>{setTroopCap();saveSettings();});}
+    loadSettings();
+    function renderFactionNames() { const el=document.getElementById('faction-names');if(!el)return;el.innerHTML='';factions.forEach(f=>{el.innerHTML+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:12px;height:12px;border-radius:50%;background:${f.color};flex-shrink:0"></div><input type="text" value="${factionNames[f.id]||f.name}" maxlength="16" style="flex:1;font-size:11px" onchange="factionNames[${f.id}]=this.value;saveSettings()" placeholder="${f.name}"></div>`;}); }
+    function switchTab(id){document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',b.textContent.toLowerCase()===id));document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id==='tab-'+id));}
+    socket.on('init', (data) => { config=data.config;factions=data.factions;territories=data.territories;adjacency=data.adjacency;canvas.width=config.canvas.width;canvas.height=config.canvas.height;populateSelects();updateFactionList();renderQuickFactions();renderFactionNames();render(); });
+    socket.on('game_started', (data) => { running=true;gameStartTime=performance.now();gameEndTime=gameStartTime+(data&&data.duration?data.duration*1000:gameDuration*1000);localTroops=[];winAnim=null;captureEffects=[];lightningEffects=[];shockwaveEffects=[];rainEffects=[];rocketEffects=[];damageEffects={};document.getElementById('overlay').classList.remove('active');document.getElementById('win-restart').style.display='none';setStatus('Running'); });
+    socket.on('game_stopped', () => { running=false;setStatus('Stopped'); });
+    socket.on('territory_updates', (updates) => { for(const u of updates){const t=territories.find(t=>t.id===u.id);if(t){t.owner=u.owner;t.troops=u.troops;}} });
+    socket.on('troop_spawns', (spawns) => { for(const s of spawns){const from=territories.find(t=>t.id===s.fromId),to=territories.find(t=>t.id===s.toId);if(!from||!to)continue;localTroops.push({fromX:from.x,fromY:from.y,toX:to.x,toY:to.y,progress:0,speed:s.speed,troops:s.troops,factionId:s.factionId,factionColor:s.factionColor});const q=factionQueues[s.factionId];if(q){q.deployed=Math.min(q.total,q.deployed+s.troops);renderFactionQueues();}}document.getElementById('st-troops').textContent=localTroops.length; });
+    socket.on('game_events', (evts) => { for(const e of evts){if(e.type==='game_over'){winAnim={progress:0,data:e};}if(e.type==='territory_captured'){captureEffects.push({territoryId:e.territoryId,color:factions[e.newOwner]?.color||'#fff',age:0});log(`T${e.territoryId} → ${factions[e.newOwner]?.name}`,'e');}} });
+    socket.on('player_joined', (d) => { document.getElementById('st-players').textContent=parseInt(document.getElementById('st-players').textContent)+1;log(`${d.username} → ${d.faction.name}`,'j');updateFactionList(); });
+    socket.on('troops_added', (d) => { const f=factions[d.factionId];log(`${d.username} +${d.troops} (${d.type}) → ${f?.name}`,'t');addToFactionQueue(d.factionId,d.username,d.type,d.troops,f?.color||'#fff',null); });
+    socket.on('icon_update', (d) => { const img=new Image();img.src=d.imageData;factionImages[d.factionId]=img;log(`Icon → ${factions[d.factionId]?.name}`,'e'); });
+    socket.on('troop_deploy_combo', (data) => { const batchSize = 5; const count = Math.ceil(data.troops / batchSize); for (let i = 0; i < count; i++) { const t = Math.min(batchSize, data.troops - i * batchSize); setTimeout(() => { localTroops.push({ fromX: data.from.x, fromY: data.from.y, toX: data.to.x, toY: data.to.y, progress: 0, speed: 0.4, troops: t, factionId: data.factionId, factionColor: data.factionColor }); }, i * 100); } });
+    socket.on('lightning_strike',(data)=>{if(data.effectType==='burst'){shockwaveEffects.push({x:data.fromX,y:data.fromY,age:0,color:data.factionColor,maxAge:800,targets:data.targets});}else if(data.effectType==='rain'){for(const t of data.targets){const terr=territories.find(tt=>tt.id===t.id);if(terr)rainEffects.push({x:terr.x,y:terr.y,fromX:data.fromX,fromY:data.fromY,age:Math.random()*300,color:data.factionColor,maxAge:1200,hit:t.hit});}}else if(data.effectType==='lightning'){for(const t of data.targets){const terr=territories.find(tt=>tt.id===t.id);if(terr)rocketEffects.push({x:terr.x,y:terr.y,fromX:data.fromX,fromY:data.fromY,age:0,color:data.factionColor,maxAge:3500,hit:t.hit,factionId:data.factionId});}}else{for(const t of data.targets){const terr=territories.find(tt=>tt.id===t.id);if(terr)lightningEffects.push({x:terr.x,y:terr.y,fromX:data.fromX,fromY:data.fromY,age:0,color:data.factionColor,maxAge:1500,hit:t.hit});}}for(const t of data.targets){damageEffects[t.id]={age:0,maxAge:600,intensity:Math.min(1,(t.hit||10)/30)};}log(`${data.effectType||'lightning'}! ${data.value}g → ${data.targets.length} targets`,'w');});
+    socket.on('disconnect', () => { document.getElementById('conn-overlay').classList.add('active');log('Disconnected','w'); });
+    socket.on('reconnect', () => { document.getElementById('conn-overlay').classList.remove('active');log('Reconnected!','j');socket.emit('request_state'); });
+    socket.on('connect_error', () => { document.getElementById('conn-overlay').classList.add('active'); });
+    socket.on('map_update', (data) => { territories=data.territories;adjacency=data.adjacency; });
+    socket.on('factions_updated', (data) => { factions=data.map(f=>({...f,troopPool:0,supporters:new Map(),stats:{totalDeployed:0,territoriesHeld:0,peakTroops:0}})); updateFactionList();renderQuickFactions();populateSelects();renderFactionNames();log('Factions updated','e'); });
+    function setStatus(s) { document.getElementById('st-status').textContent=s;document.getElementById('st-status').style.color=s==='Running'?'#00ff88':'#ff4444'; }
+    function toggleDebug() { document.getElementById('debug').classList.toggle('collapsed'); }
+    function toggleDebugLines() { showAdjacency=!showAdjacency;document.getElementById('btn-adjacency').textContent='Adjacency: '+(showAdjacency?'ON':'OFF'); }
+    function startGame() { const dur=+document.getElementById('game-duration').value||3;gameDuration=dur*60;gameEndTime=performance.now()+gameDuration*1000;socket.emit('start_game',{duration:gameDuration});document.getElementById('st-players').textContent='0'; }
+    function stopGame() { socket.emit('stop_game'); }
+    function selectQuickFaction(id) { selectedQuickFaction=id;renderQuickFactions();saveSettings(); }
+    function renderQuickFactions() { const el=document.getElementById('quick-factions');if(!el)return;el.innerHTML='';factions.forEach(f=>{const btn=document.createElement('button');btn.className='btn btn-sm';btn.style.cssText=`background:${f.id===selectedQuickFaction?f.color:'#333'};color:${f.id===selectedQuickFaction?'#000':'#fff'};flex:1`;btn.textContent=`${f.icon} ${f.name}`;btn.onclick=()=>selectQuickFaction(f.id);el.appendChild(btn);}); }
+    function sendEvent(type,value){const kw=factions[selectedQuickFaction]?.name.toLowerCase();const user='viewer_'+Math.random().toString(36).slice(2,6);const mult=type==='gift'?getGiftMultiplier(value):undefined;fetch('/api/mock-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,username:user,factionKeyword:kw,value,mult})});}
+    function getGiftMultiplier(coins) { if(coins<=10)return+document.getElementById('gt-mult-0').value||5;if(coins<=50)return+document.getElementById('gt-mult-1').value||8;if(coins<=100)return+document.getElementById('gt-mult-2').value||12;return+document.getElementById('gt-mult-3').value||15; }
+    function quickEvent(type) { const on=document.getElementById('evt-'+type+'-on');if(on&&!on.checked){log(type+' disabled','w');return;}if(type==='like'){const bx=+document.getElementById('like-batch-x').value||10,by=+document.getElementById('like-batch-y').value||1;likeCounter++;document.getElementById('like-counter').textContent='Likes: '+likeCounter;if(likeCounter%bx===0){sendEvent('like',by);log(`Batch: ${bx} likes → ${by} troops`,'t');}else{log(`Like ${likeCounter}/${bx}`,'t');}return;}if(type==='gift'){const v=+(document.getElementById('evt-gift-val')?.value)||10;sendEvent('gift',Math.min(v,200));return;}const v=+(document.getElementById('evt-'+type+'-val')?.value)||(type==='follow'?2:1);sendEvent(type,v); }
+    function burstLike() { const on=document.getElementById('evt-like-on');if(on&&!on.checked){log('like disabled','w');return;}const v=+(document.getElementById('evt-like-val')?.value)||1;const kw=factions[selectedQuickFaction]?.name.toLowerCase();for(let i=0;i<10;i++)setTimeout(()=>{fetch('/api/mock-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'like',username:`bot${i}`,factionKeyword:kw,value:v})});},i*200); }
+    function burstGift() { const on=document.getElementById('evt-gift-on');if(on&&!on.checked){log('gift disabled','w');return;}const v=+(document.getElementById('evt-gift-val')?.value)||10;const kw=factions[selectedQuickFaction]?.name.toLowerCase();for(let i=0;i<10;i++)setTimeout(()=>{fetch('/api/mock-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'gift',username:`bot${i}`,factionKeyword:kw,value:v})});},i*200); }
+    function fireTier(coinVal){const on=document.getElementById('evt-gift-on');if(on&&!on.checked){log('gift disabled','w');return;}const kw=factions[selectedQuickFaction]?.name.toLowerCase();const user='tier_'+Math.random().toString(36).slice(2,6);const mult=getGiftMultiplier(coinVal);fetch('/api/mock-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'gift',username:user,factionKeyword:kw,value:coinVal,mult})});log(`Fire tier: ${coinVal}c (${mult}x) → ${kw}`,'t');}
+    async function presetSim(troops,allFactions){const targets=allFactions?factions:factions.filter(f=>f.id===selectedQuickFaction);const kws=targets.map(f=>f.name.toLowerCase());let idx=0;log(`Preset: ${troops}t × ${kws.length} faction(s)`,'e');for(const kw of kws){for(let i=0;i<Math.ceil(troops/5);i++){fetch('/api/mock-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'gift',username:`preset_${idx++}`,factionKeyword:kw,value:Math.min(troops,50)})});await wait(100);}}log('Preset complete','e');}
+    const wait=ms=>new Promise(r=>setTimeout(r,ms));
+    async function runSimulation() { log('Starting simulation...','e');socket.emit('start_game');await wait(500);const kws=factions.map(f=>f.name.toLowerCase());let idx=0;const send=(type,user,kw,val)=>fetch('/api/mock-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,username:user,factionKeyword:kw,value:val})});const steps=[{type:'join',count:5,label:'Joining 5/faction',val:1},{type:'like',count:5,label:'5 likes/faction',val:1},{type:'share',count:3,label:'3 shares/faction',val:1},{type:'follow',count:2,label:'2 follows/faction',val:1},{type:'gift',count:2,label:'2 gifts/faction',val:5}];for(const step of steps){log(step.label+'...','t');for(const kw of kws){for(let i=0;i<step.count;i++){await send(step.type,`sim_${idx++}`,kw,step.val);await wait(100);}}await wait(500);}log('Simulation complete!','e'); }
+    function inject() { const fid=+document.getElementById('inj-faction').value,count=+document.getElementById('inj-count').value;const tid=document.getElementById('inj-target').value||undefined,msg=document.getElementById('inject-msg');if(!running){msg.textContent='Start game first!';return;}if(territories.filter(t=>t.owner===fid).length===0){msg.textContent='No territories!';return;}msg.textContent='';socket.emit('inject_troops',{factionId:fid,count,targetId:tid}); }
+    function randomizeMap() { socket.emit('randomize_map'); }
+    function setTroopCap() { const v=+document.getElementById('global-troop-cap').value;socket.emit('set_troop_cap',{maxTroops:v});log('Cap → '+v,'e'); }
+    function purgeQueues() { localTroops=[];factionQueues={};captureEffects=[];lightningEffects=[];shockwaveEffects=[];rainEffects=[];rocketEffects=[];damageEffects={};renderFactionQueues();socket.emit('purge_queues');document.getElementById('st-troops').textContent='0';log('Purged all queues & flying troops','w'); }
+    function restartFromWin() { document.getElementById('overlay').classList.remove('active');document.getElementById('win-restart').style.display='none';startGame(); }
+    function uploadIcon(factionId, file) { const reader=new FileReader();reader.onload=()=>{const data=reader.result;factionImages[factionId]=new Image();factionImages[factionId].src=data;fetch('/api/upload-icon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({factionId,imageData:data})});};reader.readAsDataURL(file); }
+    function populateSelects() { const sel=document.getElementById('inj-faction');sel.innerHTML='';factions.forEach(f=>{sel.innerHTML+=`<option value="${f.id}">${f.icon} ${f.name}</option>`;});const ts=document.getElementById('inj-target');ts.innerHTML='<option value="">Auto</option>';territories.forEach(t=>{ts.innerHTML+=`<option value="${t.id}">T${t.id}</option>`;}); }
+    function updateFactionList() { const el=document.getElementById('faction-list');el.innerHTML='';factions.forEach(f=>{const hasImg=factionImages[f.id];el.innerHTML+=`<div class="faction-item" style="flex-wrap:wrap"><div class="faction-dot" style="background:${f.color}"></div><div class="faction-info" style="min-width:0"><div class="faction-name">${f.icon} ${f.name} <span style="color:#666;font-size:10px">(${f.commentKeyword})</span></div><div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap"><label class="btn btn-sm btn-debug" style="margin:0;font-size:9px">Upload<input type="file" accept="image/*" style="display:none" onchange="uploadIcon(${f.id},this.files[0])"></label>${hasImg?'<span style="color:#00ff88;font-size:9px">Set</span>':''}<button class="btn btn-sm btn-debug" style="font-size:9px;padding:2px 6px" onclick="copyFactionAction(${f.id})">Copy</button><button class="btn btn-sm btn-stop" style="font-size:9px;padding:2px 6px" onclick="deleteFactionAction(${f.id})">Delete</button></div></div></div>`;}); }
+    function addNewFaction() { const name=document.getElementById('new-faction-name').value.trim()||'Team';const color=document.getElementById('new-faction-color').value;const icon=document.getElementById('new-faction-icon').value.trim()||'⚪';socket.emit('add_faction',{name,color,icon});document.getElementById('new-faction-name').value='';log(`Added faction: ${name}`,'j'); }
+    function deleteFactionAction(id) { if(!confirm('Delete this faction?'))return;socket.emit('remove_faction',{id});log('Deleted faction '+id,'w'); }
+    function copyFactionAction(id) { socket.emit('copy_faction',{id});log('Copied faction '+id,'e'); }
+    function log(msg, cls) { const el=document.getElementById('log');const d=document.createElement('div');d.className='log-'+(cls||'');d.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;el.appendChild(d);el.scrollTop=el.scrollHeight;if(el.children.length>100)el.removeChild(el.firstChild); }
+    let lastFrame=performance.now();
+    let fpsFrames=0,fpsLast=performance.now();
+    function gameLoop(now) { const dt=now-lastFrame;lastFrame=now;
+      fpsFrames++;if(now-fpsLast>=1000){document.getElementById('st-fps').textContent=fpsFrames;fpsFrames=0;fpsLast=now;}
+      let totalQueued=0;for(const fid in factionQueues){const q=factionQueues[fid];if(q)totalQueued+=Math.max(0,(q.total||0)-(q.deployed||0));}document.getElementById('st-queued').textContent=totalQueued;const aq=Object.keys(factionQueues).length;document.getElementById('st-active-queues').textContent=aq+' / '+factions.length;processFactionQueues(now);for(let i=localTroops.length-1;i>=0;i--){localTroops[i].progress+=(localTroops[i].speed||0.3)*dt/1000;if(localTroops[i].progress>=1)localTroops.splice(i,1);}for(let i=captureEffects.length-1;i>=0;i--){captureEffects[i].age+=dt;if(captureEffects[i].age>1000)captureEffects.splice(i,1);}      for(let i=lightningEffects.length-1;i>=0;i--){lightningEffects[i].age+=dt;if(lightningEffects[i].age>lightningEffects[i].maxAge)lightningEffects.splice(i,1);}
+      for(let i=shockwaveEffects.length-1;i>=0;i--){shockwaveEffects[i].age+=dt;if(shockwaveEffects[i].age>shockwaveEffects[i].maxAge)shockwaveEffects.splice(i,1);}
+      for(let i=rainEffects.length-1;i>=0;i--){rainEffects[i].age+=dt;if(rainEffects[i].age>rainEffects[i].maxAge)rainEffects.splice(i,1);}
+      for(let i=rocketEffects.length-1;i>=0;i--){rocketEffects[i].age+=dt;if(rocketEffects[i].age>rocketEffects[i].maxAge)rocketEffects.splice(i,1);}
+      for(const id in damageEffects){damageEffects[id].age+=dt;if(damageEffects[id].age>damageEffects[id].maxAge)delete damageEffects[id];}if(winAnim){winAnim.progress=Math.min(1,winAnim.progress+dt/2000);}document.getElementById('st-troops').textContent=localTroops.length;if(running&&gameEndTime>0&&performance.now()>=gameEndTime){running=false;const counts={};for(const t of territories){if(t.owner>=0)counts[t.owner]=(counts[t.owner]||0)+t.troops;}let winner=-1,maxT=0;for(const[id,c]of Object.entries(counts)){if(c>maxT){maxT=c;winner=+id;}}if(winner>=0&&!winAnim){const wf=factions.find(f=>f.id===winner);winAnim={progress:0,data:{winnerId:winner,winnerName:wf?.name,winnerColor:wf?.color,winnerIcon:wf?.icon,stats:factions.map(f=>({id:f.id,name:f.name,totalTroops:counts[f.id]||0}))}};}log('Time up! Game over!','w');}render();requestAnimationFrame(gameLoop); }
+    function calcFactionMass(){const now=performance.now();if(now-lastMassUpdate<150)return;lastMassUpdate=now;factionMass={};for(const t of territories)if(t.owner>=0)factionMass[t.owner]=(factionMass[t.owner]||0)+t.troops;for(const tr of localTroops)factionMass[tr.factionId]=(factionMass[tr.factionId]||0)+tr.troops;const active=Object.entries(factionMass).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);const lid=active.length>0?+active[0][0]:-1;if(lid>=0&&lid!==prevLeaderId&&prevLeaderId>=0)leaderPulseAge=0;prevLeaderId=lid;}
+    function drawImgCircle(img,x,y,r){ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip();ctx.drawImage(img,x-r,y-r,r*2,r*2);ctx.restore();}
+    function troopR(troops,base){return base*(0.7+Math.min(1,troops/120)*0.5);}
+    function isPngImg(img){return img&&img.src&&img.src.indexOf('image/png')>-1;}
+    function render() {
+      if(!config)return;ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,canvas.width,canvas.height);
+      if(showAdjacency){ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;for(const[a,b]of adjacency){const ta=territories.find(t=>t.id===a),tb=territories.find(t=>t.id===b);if(!ta||!tb)continue;ctx.beginPath();ctx.moveTo(ta.x,ta.y);ctx.lineTo(tb.x,tb.y);ctx.stroke();}}
+      const base=config.nodeRadius;
+      const totalTroops = {};for(const tt of territories)if(tt.owner>=0)totalTroops[tt.owner]=(totalTroops[tt.owner]||0)+tt.troops;const allOwned = territories.filter(t=>t.owner>=0).length||1;for(const t of territories){const f=factions.find(f=>f.id===t.owner),tr=troopR(t.troops,base),hasImg=f&&factionImages[f.id]&&factionImages[f.id].naturalWidth>0,isPng=hasImg&&isPngImg(factionImages[f.id]);const dmg=damageEffects[t.id];const dmgPulse=dmg?1+Math.sin(dmg.age/dmg.maxAge*Math.PI*4)*(1-dmg.age/dmg.maxAge)*dmg.intensity*0.3:1;const ownedCount=f?(totalTroops[f.id]||0):0;const totalFactionTroops=Object.values(totalTroops).reduce((a,b)=>a+b,0)||1;const dominance=ownedCount/totalFactionTroops;let targetScale=1.0;for(const tier of ICON_SCALE_TIERS)if(dominance>=tier.min)targetScale=tier.scale;const prevBonus=factionScaleBonus[f.id]||1.0;factionScaleBonus[f.id]=prevBonus+(targetScale-prevBonus)*ICON_SCALE_LERP;const sizeBonus=factionScaleBonus[f.id];const finalR=tr*dmgPulse*sizeBonus;if(hasImg&&isPng){const s=finalR*1.6;ctx.drawImage(factionImages[f.id],t.x-s/2,t.y-s/2,s,s);}else if(hasImg){drawImgCircle(factionImages[f.id],t.x,t.y,finalR);}else{const pulse=running?1+Math.sin(performance.now()/600+t.id)*0.04:1,r=finalR*pulse;const g=ctx.createRadialGradient(t.x,t.y,0,t.x,t.y,r);if(f){g.addColorStop(0,f.color+'ff');g.addColorStop(0.6,f.color+'cc');g.addColorStop(1,f.color+'66');}else{g.addColorStop(0,'#555');g.addColorStop(1,'#333');}ctx.beginPath();ctx.arc(t.x,t.y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}if(dmg&&dmg.intensity>0.3){ctx.beginPath();ctx.arc(t.x,t.y,finalR+8,0,Math.PI*2);ctx.strokeStyle=f?f.color:'#ff4444';ctx.globalAlpha=(1-dmg.age/dmg.maxAge)*dmg.intensity*0.8;ctx.lineWidth=4;ctx.stroke();ctx.globalAlpha=1;}if(!isPng){if(f){ctx.beginPath();ctx.arc(t.x,t.y,finalR+4,0,Math.PI*2);ctx.strokeStyle=f.color;ctx.globalAlpha=Math.min(0.5,t.troops/120);ctx.lineWidth=3;ctx.stroke();ctx.globalAlpha=1;}ctx.beginPath();ctx.arc(t.x,t.y,finalR,0,Math.PI*2);ctx.strokeStyle=hasImg?'rgba(255,255,255,0.8)':'#fff';ctx.lineWidth=2;ctx.stroke();}const ly=t.y-finalR-16,txt=''+t.troops;ctx.font='bold 16px Arial';const tw=ctx.measureText(txt).width,pw=tw+16,ph=24;ctx.fillStyle='rgba(0,0,0,0.8)';ctx.beginPath();ctx.roundRect(t.x-pw/2,ly-ph/2,pw,ph,10);ctx.fill();ctx.strokeStyle=f?f.color:'#555';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(t.x-pw/2,ly-ph/2,pw,ph,10);ctx.stroke();ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,0.9)';ctx.strokeText(txt,t.x,ly);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,t.x,ly);}
+      for(const eff of captureEffects){const t=territories.find(t=>t.id===eff.territoryId);if(!t)continue;ctx.beginPath();ctx.arc(t.x,t.y,base+eff.age/8,0,Math.PI*2);ctx.strokeStyle=eff.color;ctx.globalAlpha=1-eff.age/1000;ctx.lineWidth=4;ctx.stroke();ctx.globalAlpha=1;}
+      for(const troop of localTroops){
+        const progress=troop.progress,sx=troop.fromX,sy=troop.fromY,ex=troop.toX,ey=troop.toY;
+        const angle=Math.atan2(ey-sy,ex-sx),dist=Math.sqrt((ex-sx)**2+(ey-sy)**2);
+        const dashLen=12,gapLen=8,totalDash=dashLen+gapLen;
+        const numDashes=Math.floor(dist/totalDash);
+        for(let d=0;d<numDashes;d++){
+          const dStart=d*totalDash/dist,dEnd=(d*totalDash+dashLen)/dist;
+          if(dEnd<progress-0.05||dStart>progress+0.05)continue;
+          const dx1=sx+(ex-sx)*dStart,dy1=sy+(ey-sy)*dStart;
+          const dx2=sx+(ex-sx)*dEnd,dy2=sy+(ey-sy)*dEnd;
+          const alpha=Math.max(0,1-Math.abs((dStart+dEnd)/2-progress)*8);
+          ctx.beginPath();ctx.moveTo(dx1,dy1);ctx.lineTo(dx2,dy2);
+          ctx.strokeStyle=troop.factionColor;ctx.lineWidth=2.5;ctx.globalAlpha=alpha*0.8;ctx.stroke();
+          if(d%3===0&&dEnd<=progress){
+            const cx=sx+(ex-sx)*((dStart+dEnd)/2),cy=sy+(ey-sy)*((dStart+dEnd)/2);
+            ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);
+            ctx.beginPath();ctx.moveTo(5,0);ctx.lineTo(-3,-3);ctx.lineTo(-1,0);ctx.lineTo(-3,3);ctx.closePath();
+            ctx.fillStyle=troop.factionColor;ctx.globalAlpha=alpha*0.7;ctx.fill();
+            ctx.restore();
+          }
+        }
+        const headX=sx+(ex-sx)*progress,headY=sy+(ey-sy)*progress;
+        if(progress>0.02){
+          const trailP=Math.max(0,progress-0.08);
+          const tx=sx+(ex-sx)*trailP,ty=sy+(ey-sy)*trailP;
+          ctx.beginPath();ctx.moveTo(headX,headY);ctx.lineTo(tx,ty);
+          ctx.strokeStyle=troop.factionColor;ctx.globalAlpha=0.3;ctx.lineWidth=1.5;ctx.stroke();
+        }
+        ctx.save();ctx.translate(headX,headY);ctx.rotate(angle);
+        ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-4,-4);ctx.lineTo(-1,0);ctx.lineTo(-4,4);ctx.closePath();
+        ctx.fillStyle=troop.factionColor;ctx.globalAlpha=0.95;ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=1.2;ctx.stroke();
+        ctx.globalAlpha=1;ctx.restore();
+      }
+      calcFactionMass();
+      const remaining=running?Math.max(0,(gameEndTime-performance.now())/1000):gameDuration;
+      const m=Math.floor(remaining/60),s=Math.floor(remaining%60);
+      const endgame=remaining<=60&&remaining>0;
+      const tc=endgame?(Math.sin(performance.now()/300)>0?'#ff4444':'#ffaa00'):(remaining<=30?'#ff4444':remaining<=60?'#ffaa00':'#00ff88');
+      const bw=canvas.width*0.35,bh=44,bx=(canvas.width-bw)/2,by=4;
+      ctx.fillStyle='rgba(0,0,0,0.85)';ctx.beginPath();ctx.roundRect(bx,by,bw,bh,10);ctx.fill();ctx.strokeStyle=tc;ctx.lineWidth=endgame?3:2;ctx.beginPath();ctx.roundRect(bx,by,bw,bh,10);ctx.stroke();ctx.fillStyle=tc;ctx.font=`bold ${endgame?30:26}px monospace`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(`${m}:${s.toString().padStart(2,'0')}`,canvas.width/2,by+bh/2);
+      const barY=by+bh+4,barH=32,barW=canvas.width*0.85,barX=(canvas.width-barW)/2;
+      ctx.fillStyle='rgba(0,0,0,0.7)';ctx.beginPath();ctx.roundRect(barX,barY,barW,barH,8);ctx.fill();
+      const active=factions.filter(f=>(factionMass[f.id]||0)>0).sort((a,b)=>(factionMass[b.id]||0)-(factionMass[a.id]||0));
+      const totalMass=active.reduce((s,f)=>s+(factionMass[f.id]||0),0)||1;
+      let sx=barX+2;
+      const innerW=barW-4;
+      for(let i=0;i<active.length;i++){
+        const f=active[i],pct=(factionMass[f.id]||0)/totalMass,sw=Math.max(0,innerW*pct);
+        if(sw<2)continue;
+        const isFirst=i===0,isLast=i===active.length-1;
+        const r=isFirst?[8,0,0,8]:isLast?[0,8,8,0]:0;
+        ctx.fillStyle=f.color;ctx.beginPath();ctx.roundRect(sx,barY+1,sw,barH-2,r);ctx.fill();
+        if(sw>50){
+          const nm=factionNames[f.id]||f.name;
+          ctx.fillStyle='#fff';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+          const label=sw>90?`${f.icon} ${nm} ${Math.round(pct*100)}%`:`${Math.round(pct*100)}%`;
+          ctx.fillText(label,sx+sw/2,barY+barH/2);
+        } else if(sw>20){
+          ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillText(`${Math.round(pct*100)}%`,sx+sw/2,barY+barH/2);
+        }
+        if(isFirst&&sw>30){
+          ctx.fillStyle='#ffd700';ctx.font='14px Arial';ctx.textAlign='left';ctx.textBaseline='middle';
+          ctx.fillText('👑',sx+4,barY+barH/2);
+        }
+        sx+=sw;
+      }
+      for(const sw of shockwaveEffects){const p=sw.age/sw.maxAge,a=1-p;for(let i=0;i<3;i++){const delay=i*0.15;const rp=Math.max(0,Math.min(1,(p-delay)/(1-delay)));const r=30+rp*350;ctx.beginPath();ctx.arc(sw.x,sw.y,r,0,Math.PI*2);ctx.strokeStyle=sw.color;ctx.lineWidth=4*(1-rp);ctx.globalAlpha=a*(1-i*0.25);ctx.stroke();}if(p<0.15){ctx.beginPath();ctx.arc(sw.x,sw.y,60*p/0.15,0,Math.PI*2);ctx.fillStyle=sw.color;ctx.globalAlpha=(1-p/0.15)*0.4;ctx.fill();}ctx.globalAlpha=1;}
+      for(const rn of rainEffects){const p=rn.age/rn.maxAge,a=1-p,sx=rn.x-100+Math.sin(p*6)*80,sy=rn.y-300,ex=rn.x,ey=rn.y;const cx=sx+(ex-sx)*p,cy=sy+(ey-sy)*p;const ang=Math.atan2(ey-sy,ex-sx);ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-4,-3);ctx.lineTo(-2,0);ctx.lineTo(-4,3);ctx.closePath();ctx.fillStyle=rn.color;ctx.globalAlpha=a;ctx.fill();ctx.restore();ctx.globalAlpha=1;}
+      for(const lz of lightningEffects){const p=lz.age/lz.maxAge,a=1-p;const dx=lz.x-lz.fromX,dy=lz.y-lz.fromY,dist=Math.sqrt(dx*dx+dy*dy);const seg=Math.max(6,Math.floor(dist/40)),sl=dist/seg;const ang=Math.atan2(dy,dx);ctx.strokeStyle=lz.color;ctx.lineWidth=3;ctx.globalAlpha=a;ctx.beginPath();let cx=lz.fromX,cy=lz.fromY;ctx.moveTo(cx,cy);for(let s=0;s<seg;s++){const pr=(Math.random()-0.5)*sl*0.6;cx+=Math.cos(ang)*sl+Math.cos(ang+Math.PI/2)*pr;cy+=Math.sin(ang)*sl+Math.sin(ang+Math.PI/2)*pr;ctx.lineTo(cx,cy);}ctx.lineTo(lz.x,lz.y);ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.beginPath();cx=lz.fromX;cy=lz.fromY;ctx.moveTo(cx,cy);for(let s=0;s<seg;s++){const pr=(Math.random()-0.5)*sl*0.3;cx+=Math.cos(ang)*sl+Math.cos(ang+Math.PI/2)*pr;cy+=Math.sin(ang)*sl+Math.sin(ang+Math.PI/2)*pr;ctx.lineTo(cx,cy);}ctx.lineTo(lz.x,lz.y);ctx.stroke();const ir=15+p*30;ctx.beginPath();ctx.arc(lz.x,lz.y,ir,0,Math.PI*2);ctx.strokeStyle=lz.color;ctx.lineWidth=2;ctx.globalAlpha=a*0.5;ctx.stroke();ctx.textAlign='center';ctx.textBaseline='middle';ctx.globalAlpha=a;ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,0.9)';ctx.strokeText('-'+lz.hit,lz.x,lz.y-ir-10);ctx.fillStyle='#fff';ctx.font='bold 18px Arial';ctx.fillText('-'+lz.hit,lz.x,lz.y-ir-10);ctx.globalAlpha=1;}
+      for(const rk of rocketEffects){const p=rk.age/rk.maxAge,a=1-p;const dx=rk.x-rk.fromX,dy=rk.y-rk.fromY,dist=Math.sqrt(dx*dx+dy*dy);const ang=Math.atan2(dy,dx);const flightEnd=0.5;const rocketP=Math.min(1,p/flightEnd);const rx=rk.fromX+dx*rocketP,ry=rk.fromY+dy*rocketP;const trailLen=40;ctx.save();ctx.translate(rx,ry);ctx.rotate(ang);ctx.beginPath();ctx.moveTo(16,0);ctx.lineTo(-8,-6);ctx.lineTo(-4,-3);ctx.lineTo(-4,3);ctx.lineTo(-8,6);ctx.closePath();ctx.fillStyle=rk.color;ctx.globalAlpha=a;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();for(let fl=0;fl<4;fl++){const flOff=fl*12;const flLen=trailLen+Math.random()*20;const flY=(-8+Math.random()*16);ctx.beginPath();ctx.moveTo(-4-flOff,0);ctx.lineTo(-4-flOff-flLen,flY);ctx.strokeStyle=fl<2?'#ffcc00':'#ff6600';ctx.globalAlpha=a*(0.8-fl*0.15);ctx.lineWidth=4-fl;ctx.stroke();}ctx.beginPath();ctx.arc(-4-trailLen*0.3,0,4+Math.random()*3,0,Math.PI*2);ctx.fillStyle='#ff4444';ctx.globalAlpha=a*0.4;ctx.fill();ctx.globalAlpha=1;ctx.restore();if(p>=flightEnd){const imp=(p-flightEnd)/(1-flightEnd);const impR=15+imp*120;ctx.beginPath();ctx.arc(rk.x,rk.y,impR,0,Math.PI*2);ctx.strokeStyle=rk.color;ctx.lineWidth=3*(1-imp);ctx.globalAlpha=(1-imp)*0.8;ctx.stroke();ctx.beginPath();ctx.arc(rk.x,rk.y,impR*0.5,0,Math.PI*2);ctx.fillStyle=rk.color;ctx.globalAlpha=(1-imp)*0.3;ctx.fill();for(let s=0;s<10;s++){const sa=s/10*Math.PI*2+imp*2;const sd=imp*90;const sx=rk.x+Math.cos(sa)*sd,sy=rk.y+Math.sin(sa)*sd;ctx.beginPath();ctx.arc(sx,sy,3*(1-imp),0,Math.PI*2);ctx.fillStyle='#ffaa00';ctx.globalAlpha=(1-imp)*0.6;ctx.fill();}ctx.globalAlpha=1;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,0.9)';ctx.strokeText('-'+rk.hit,rk.x,rk.y-impR-12);ctx.fillStyle='#fff';ctx.font='bold 18px Arial';ctx.fillText('-'+rk.hit,rk.x,rk.y-impR-12);}}
+      if(winAnim&&winAnim.progress>0){const p=winAnim.progress,e=winAnim.data;ctx.fillStyle='rgba(0,0,0,0.85)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.save();ctx.globalAlpha=Math.min(1,p*2);const ts=0.5+0.5*Math.min(1,p*2);ctx.translate(canvas.width/2,canvas.height/2-150);ctx.scale(ts,ts);ctx.fillStyle=e.winnerColor;ctx.font='bold 72px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(`${e.winnerIcon} ${e.winnerName} Wins!`,0,0);ctx.restore();if(p>0.3){ctx.globalAlpha=Math.min(1,(p-0.3)*3);ctx.fillStyle='#aaa';ctx.font='bold 36px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Top Contributors',canvas.width/2,canvas.height/2-60);ctx.globalAlpha=1;}const w=e.stats.find(s=>s.id===e.winnerId);const cs=w?(w.topContributors||[]).slice(0,5):[];for(let i=0;i<cs.length;i++){const cp=Math.min(1,(p-0.4-i*0.1)*5);if(cp<=0)continue;ctx.globalAlpha=cp;ctx.fillStyle='#ddd';ctx.font='20px Arial';ctx.textAlign='center';ctx.fillText(`#${i+1} ${cs[i].username} - ${cs[i].troopsContributed} troops`,canvas.width/2,canvas.height/2+i*40);ctx.globalAlpha=1;}if(p>0.5){const btn=document.getElementById('win-restart');if(btn)btn.style.display='inline-block';}if(p>0.9){const blink=Math.sin(performance.now()/200)>0?1:0.3;ctx.globalAlpha=blink;ctx.fillStyle='#aaa';ctx.font='24px Arial';ctx.textAlign='center';ctx.fillText('Stream to restart',canvas.width/2,canvas.height/2+260);ctx.globalAlpha=1;}}
+    }
+    wireSaveListeners();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
