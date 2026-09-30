@@ -10,8 +10,9 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ## Phase 0 — Documentation & repo (current)
 - [x] Author full docs set (README, AGENTS, GUARDRAILS, ARCHITECTURE, GAME_DESIGN, BRIDGE, PLANS, TESTING, DECISIONS, HISTORY, CHANGELOG)
 - [x] Define fixed decisions and guardrails
-- [ ] Connect workspace to `ambitious2223/territory-io-countries` and publish `main`
-- [ ] Add `.gitignore`, npm scripts (`dev`/`server`/`client`/`test`/`smoke`/`lint`)
+- [x] Connect workspace to `ambitious2223/territory-io-countries` and publish `master`
+- [x] Add `.gitignore`
+- [ ] Add npm scripts (`dev`/`server`/`client`/`test`/`smoke`/`lint`)
 
 **Verify:** docs render on GitHub; `npm run dev` still boots the existing game.
 
