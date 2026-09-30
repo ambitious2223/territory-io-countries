@@ -4,6 +4,7 @@ import { initConnectionPanel, initViewersPanel, initCinematicPanel } from './ui.
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
 import { getTeams, loadFromServer, subscribe } from './teamRegistry.js';
+import { setBaseUrl, loadWinners } from './winnersStore.js';
 
 const canvas = document.getElementById('game-canvas');
 canvas.width = 1200;
@@ -47,6 +48,8 @@ initCinematicPanel(game);
 initTeamsPanel(game);
 initLanguageSelector();
 
+setBaseUrl(bridge.url);
 bridge.connect();
 loadFromServer(bridge.url);
+loadWinners();
 game.start();

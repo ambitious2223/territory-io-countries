@@ -36,6 +36,14 @@ this project aims to follow [Semantic Versioning](https://semver.org/).
 - Camera pan/zoom with exponential focus easing and cinematic blur; HUD remains screen-space.
 - `src/joinCinematic.js` — queued join intros that pan/zoom to a new viewer with a profile-photo
   card (focus → hold → return), plus a debug **Cinematic** section (blur % slider, Skip Intro).
+- `src/scoring.js` — gift-dominant scoring engine (gifts, likes, unique comments, follows, shares,
+  territory) with tunable weights and a combined leaderboard.
+- `src/round.js` — round state machine (countdown → playing → end → intermission) with auto-loop
+  and manual start/end; wired into the game loop.
+- Live team scoreboard (flag/emoji, territory %, combined score) and a round-state banner.
+- Manual **Start / End / Auto** round controls in the control bar.
+- Winners persistence: `server/stores/winnersStore.js` + `GET/POST/DELETE /api/winners` and a
+  client mirror (`src/winnersStore.js`) with localStorage fallback; winners saved on round end.
 
 ### Changed
 - Project re-scoped from "Territory With Swords" (local AI battle) to

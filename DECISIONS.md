@@ -99,6 +99,15 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Single source of truth; the matcher is deterministic and testable without a browser.
 - **Alternatives:** Separate client/server rosters; matching in the socket layer.
 
+## D-019 — Combined-score rounds with gift-dominant weighting
+- **Context:** The streamer wants timed rounds decided by territory **plus** interaction, with gifts
+  dominant and everything tunable.
+- **Decision:** `ScoringEngine` blends interaction (gifts × coins, likes, unique comments, one-time
+  follow/share) with territory (tiles × weight); `RoundManager` drives countdown → playing →
+  intermission and auto-loops, with manual override. Winner = highest combined score at time-up.
+- **Rationale:** Matches the fixed decisions; keeps gameplay engine and scoring independent/pure.
+- **Alternatives:** Territory-only; gift-only (ignores non-payers).
+
 ## D-018 — Camera transform + queued join cinematic
 - **Context:** The camera only did screen shake; the request wants a cinematic zoom to each new
   viewer showing their profile photo, with a blur control.

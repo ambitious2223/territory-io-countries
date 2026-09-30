@@ -38,6 +38,18 @@ export const CONFIG = {
   CHOKEPOINT_ENEMY_BONUS: 3.0,
 
   MATCH_DURATION: 90,
+  ROUND_DURATION: 180,
+  ROUND_INTERMISSION: 20,
+  ROUND_COUNTDOWN: 3,
+  SCORING: {
+    giftPerCoin: 1,
+    like: 0.02,
+    comment: 1,
+    follow: 25,
+    share: 50,
+    tile: 0.5,
+  },
+
   DOMINATION_THRESHOLD: 0.65,
   ELIMINATION_ZERO_TILE_TIME: 5.0,
   DOMINATION_WARN_RATIO: 0.45,

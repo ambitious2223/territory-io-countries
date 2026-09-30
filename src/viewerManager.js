@@ -43,6 +43,16 @@ export class ViewerManager {
     this.aiTimer = 0
   }
 
+  respawn() {
+    for (const viewer of this.viewers.values()) {
+      viewer.marble = null
+      viewer.queued = false
+    }
+    this.queue.length = 0
+    this.aiTimer = 0
+    for (const viewer of this.viewers.values()) this.place(viewer)
+  }
+
   handleEvent(event, teams) {
     if (!event || event.type !== 'chat') return null
     const team = matchTeam(teams, event.message)

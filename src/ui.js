@@ -100,6 +100,17 @@ export function initControls(game) {
   document.getElementById('btn-restart').addEventListener('click', () => {
     if (game.gameOver) game.restart();
   });
+  document.getElementById('btn-round-start').addEventListener('click', () => {
+    game.audio.init(); game.audio.unlock();
+    game.startRound();
+  });
+  document.getElementById('btn-round-end').addEventListener('click', () => {
+    game.endRound();
+  });
+  document.getElementById('btn-round-auto').addEventListener('click', (event) => {
+    game.round.autoLoop = !game.round.autoLoop;
+    event.currentTarget.classList.toggle('active', game.round.autoLoop);
+  });
   document.getElementById('go-restart').addEventListener('click', () => {
     if (game.gameOver) game.restart();
   });

@@ -1,4 +1,5 @@
 import { getTeamsConfig, saveTeamsConfig, updateTeam } from './stores/teamsStore.js'
+import { getWinners, addWinner, clearWinners } from './stores/winnersStore.js'
 import { saveFlagImage } from './uploads.js'
 import { buildMockEvent } from './mock.js'
 
@@ -29,6 +30,19 @@ export function registerHttpRoutes(app, { manager, getClientCount }) {
       return
     }
     res.json(saveTeamsConfig(body))
+  })
+
+  app.get('/api/winners', (_req, res) => {
+    res.json(getWinners())
+  })
+
+  app.post('/api/winners', (req, res) => {
+    const { board, entry } = req.body || {}
+    res.json(addWinner(board, entry))
+  })
+
+  app.delete('/api/winners', (req, res) => {
+    res.json(clearWinners(req.query.board))
   })
 
   app.post('/api/flags', (req, res) => {

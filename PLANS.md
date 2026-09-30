@@ -75,10 +75,11 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ---
 
 ## Phase 6 — Scoring & rounds
-- [ ] `src/scoring.js` (gift-dominant, tunable)
-- [ ] Live team scoreboard (DOM)
-- [ ] Round state machine + auto-loop + manual override
-- [ ] `stores/winnersStore` + winners HUD/admin
+- [x] `src/scoring.js` (gift-dominant, tunable via `setWeights`)
+- [x] Live team scoreboard (DOM, flag/emoji + territory % + score)
+- [x] Round state machine (`src/round.js`) + auto-loop + manual Start/End/Auto
+- [x] Winners persistence (`stores/winnersStore` + `/api/winners`, client mirror)
+- [~] In-app winners HUD/admin and scoring-weight sliders (engine supports them; UI pending)
 
 **Verify:** a timed round ends, correct winner, auto-resets; manual end/next work.
 

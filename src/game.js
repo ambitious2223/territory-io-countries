@@ -3,6 +3,10 @@ import { randomRange } from './utils.js';
 import { generateZoneLayout, zoneSpawnTiles } from './zones.js';
 import { ViewerManager } from './viewerManager.js';
 import { JoinCinematic } from './joinCinematic.js';
+import { ScoringEngine } from './scoring.js';
+import { RoundManager, ROUND } from './round.js';
+import { renderScoreboard } from './scoreboard.js';
+import { addWinner } from './winnersStore.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
 import { TerritoryManager } from './territory.js';
@@ -17,7 +21,7 @@ import { VFXSystem } from './vfx.js';
 import { updateMarbleAI } from './ai.js';
 import { generateMap } from './map.js';
 import {
-  updateLeaderboard, updateGameOver, hideGameOver,
+  updateTimer, updateGameOver, hideGameOver,
   updateControlBar, updatePauseOverlay,
   initControls, initDebugPanel, updateDebugPanel,
   updateConnectionPanel, updateViewersPanel, updateCinematicPanel,
@@ -50,6 +54,14 @@ export class Game {
     this.zoneLayout = null;
     this.zoneColors = [];
     this.spawnTiles = [];
+    this.walls = null;
+    this.winReason = null;
+    this.scoring = new ScoringEngine(CONFIG.SCORING);
+    this.round = new RoundManager({
+      roundDuration: CONFIG.ROUND_DURATION,
+      intermission: CONFIG.ROUND_INTERMISSION,
+      countdown: CONFIG.ROUND_COUNTDOWN,
+    });
     this.viewers = new ViewerManager({
       cap: CONFIG.VIEWER_CAP,
       aiFill: CONFIG.AI_FILL_ENABLED,
@@ -162,6 +174,7 @@ export class Game {
     this.zoneLayout = layout;
     this.zoneColors = colors;
     this.spawnTiles = spawnTiles;
+    this.walls = walls;
     this.grid = new Grid();
     this.grid.init(walls, layout, colors);
     this.territory = new TerritoryManager(this.grid);
@@ -170,39 +183,122 @@ export class Game {
 
   restart() {
     this.currentMap = getSelectedMap();
+    this.round.stop();
     this.setupMatch();
-    this.particles.reset();
-    this.vfx.reset();
-    this.marbles = [];
-    this.gameOver = false;
     this.paused = false;
-    this.winner = null;
-    this.winColor = null;
-    this.camera.reset();
-    this.victoryFillRow = 0;
-    this.victoryFillCol = 0;
-    this.powerups.reset();
-    this.analytics.reset();
-    this._sweepKiller = null;
-    this.cinematic.skip();
-    hideGameOver();
-    this.viewers.reset();
-    this.viewers.seed(this.teams);
+    this.resetRound();
+    this.round.start();
   }
 
   start() {
     this.audio.init();
     this.currentMap = getSelectedMap();
     this.setupMatch();
+    this.scoring.reset();
     this.viewers.reset();
     this.viewers.seed(this.teams);
+    this.round.start();
     this.running = true;
     this.lastTime = performance.now();
     this.loop();
   }
 
+  startRound() {
+    if (this.round.isRunning) return;
+    this.resetRound();
+    this.round.start();
+  }
+
+  endRound() {
+    if (this.round.state === ROUND.COUNTDOWN) {
+      this.round.stop();
+      return;
+    }
+    if (this.round.state === ROUND.PLAYING) {
+      this.finishRound('manual');
+    }
+  }
+
+  onRoundTransition(state) {
+    if (state === ROUND.ROUND_END) {
+      this.finishRound('timeout');
+    } else if (state === ROUND.COUNTDOWN) {
+      this.resetRound();
+    }
+  }
+
+  finishRound(reason) {
+    if (this.gameOver) return;
+    this.updateTerritoryScores();
+    const board = this.scoring.leaderboard(this.teams.map((team) => team.id));
+    const top = board[0];
+    const team = this.teams.find((entry) => entry.id === top?.teamId);
+    this.gameOver = true;
+    this.winReason = reason;
+    if (team) {
+      const kills = this.marbles
+        .filter((marble) => marble.teamId === team.id)
+        .reduce((sum, marble) => sum + (marble.kills || 0), 0);
+      this.winColor = team.color;
+      this.winner = { name: team.name?.en || 'Winner', color: team.color, kills };
+      this.vfx.addDominationText(CONFIG.CANVAS_WIDTH / 2, CONFIG.CANVAS_HEIGHT / 2, team.name?.en || '');
+      this.saveWinner(team, top);
+    }
+    this.analytics.updateDuration();
+    this.audio.playVictory();
+    this.round.beginIntermission();
+  }
+
+  resetRound() {
+    this.scoring.reset();
+    this.particles.reset();
+    this.vfx.reset();
+    this.marbles = [];
+    this.gameOver = false;
+    this.winner = null;
+    this.winColor = null;
+    this.winReason = null;
+    this.camera.reset();
+    this.cinematic.skip();
+    this.victoryFillRow = 0;
+    this.victoryFillCol = 0;
+    this.powerups.reset();
+    this.analytics.reset();
+    this._sweepKiller = null;
+    if (this.walls) {
+      this.grid.init(this.walls, this.zoneLayout, this.zoneColors);
+      this.territory = new TerritoryManager(this.grid);
+      this._bindAudio();
+    }
+    hideGameOver();
+    this.suppressCinematic = true;
+    this.viewers.respawn();
+    this.viewers.seed(this.teams);
+    this.suppressCinematic = false;
+  }
+
+  updateTerritoryScores() {
+    for (const team of this.teams) {
+      this.scoring.setTerritory(team.id, this.grid.countTiles(team.color));
+    }
+  }
+
+  saveWinner(team, row) {
+    addWinner('teams', {
+      id: team.id,
+      name: team.name?.en || '',
+      emoji: team.emoji || '',
+      color: team.color,
+      score: Math.round(row?.combined || 0),
+    });
+  }
+
   handleBridgeEvent(event) {
-    this.viewers.handleEvent(event, this.teams);
+    const result = this.viewers.handleEvent(event, this.teams);
+    if (result && result.viewer) {
+      this.scoring.registerUser(event.userId ?? event.username, result.viewer.teamId);
+    }
+    this.scoring.applyEvent(event);
   }
 
   spawnViewerMarble(profile, team) {
@@ -224,7 +320,7 @@ export class Game {
     };
     this.marbles.push(marble);
     this.analytics.registerMarble(marble);
-    if (!profile.isBot) {
+    if (!profile.isBot && !this.suppressCinematic) {
       this.cinematic.enqueue({
         x: marble.x,
         y: marble.y,
@@ -262,17 +358,12 @@ export class Game {
 
   checkDomination() {
     if (this.gameOver) return;
-    const alive = this.marbles.filter(m => m.alive);
-    for (const m of alive) {
-      const tiles = this.grid.countTiles(m.color);
-      const ratio = tiles / this.grid.claimableTiles;
+    if (!this.grid.claimableTiles) return;
+    for (const marble of this.marbles) {
+      if (!marble.alive || marble.eliminated) continue;
+      const ratio = this.grid.countTiles(marble.color) / this.grid.claimableTiles;
       if (ratio >= CONFIG.DOMINATION_THRESHOLD) {
-        this.gameOver = true;
-        this.winner = m;
-        this.winColor = m.color;
-        this.analytics.updateDuration();
-        this.audio.playVictory();
-        this.vfx.addDominationText(m.x, m.y, m.name);
+        this.finishRound('domination');
         return;
       }
     }
@@ -325,8 +416,17 @@ export class Game {
     this.cinematic.update(dt);
     this.camera.update(dt);
 
+    const transition = this.round.update(dt);
+    if (transition) this.onRoundTransition(transition);
+
     if (this.gameOver) {
       this.victoryPaint();
+      this.particles.update(dt);
+      this.vfx.update(dt);
+      return;
+    }
+
+    if (this.round.state === ROUND.COUNTDOWN) {
       this.particles.update(dt);
       this.vfx.update(dt);
       return;
@@ -449,8 +549,9 @@ export class Game {
       this.cinematic.draw(this.ctx);
     }
 
-    updateLeaderboard(this.marbles);
+    renderScoreboard(this);
     updateControlBar(this);
+    updateTimer(this.round.timeLeft);
     updatePauseOverlay(this.paused);
     updateDebugPanel(this, this.particles, this.marbles, this.grid);
     updateConnectionPanel(this);
@@ -460,7 +561,7 @@ export class Game {
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);
       const domination = tileCount / this.grid.claimableTiles;
-      updateGameOver(this.winner, this.analytics.duration, SUPPORTERS, tileCount, domination);
+      updateGameOver(this.winner, this.analytics.duration, SUPPORTERS, tileCount, domination, this.winReason);
     }
   }
 }

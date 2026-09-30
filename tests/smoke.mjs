@@ -43,6 +43,13 @@ async function main() {
   }
   console.log(`teams ok — ${teamsData.teams.length} teams`)
 
+  const winnersResponse = await fetch(`${URL}/api/winners`)
+  const winnersData = await winnersResponse.json()
+  if (!Array.isArray(winnersData.teams)) {
+    throw new Error('winners endpoint returned invalid data')
+  }
+  console.log('winners ok')
+
   const socket = io(URL, { transports: ['websocket'] })
   await new Promise((resolve, reject) => {
     socket.on('connect', resolve)

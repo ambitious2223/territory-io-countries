@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Phase 6: scoring, rounds, scoreboard, winners
+
+**Done**
+- `src/scoring.js` gift-dominant engine (tunable weights) + tests.
+- `src/round.js` state machine (countdown/playing/roundEnd/intermission) with auto-loop + tests.
+- Game integration: join → team scoring, round lifecycle, winner settlement by combined score,
+  per-round reset (territory/marbles/scores) with viewer respawn (cinematic suppressed on reset).
+- Live team scoreboard (`src/scoreboard.js`) + round banner; manual Start/End/Auto controls.
+- Winners persistence: server store + `/api/winners` routes + client mirror with localStorage.
+
+**Verified**
+- `npm run lint` clean · `npm test` 61 passed · `npm run build` ok · `npm run smoke` PASS
+  (health + teams + winners + socket).
+
+**Next**
+- Phase 7: gift → power-up mappings UI + effect executor.
+
+---
+
 ## 2026-09-30 — Phase 5: camera pan/zoom + join cinematic
 
 **Done**
