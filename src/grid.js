@@ -13,7 +13,7 @@ export class Grid {
     this.claimableTiles = 0;
   }
 
-  init(walls) {
+  init(walls, layout = null, colors = null) {
     this.walls = walls;
     this.tiles = [];
     this.owners = [];
@@ -36,10 +36,15 @@ export class Grid {
           this.owners[r][c] = WALL;
           this.fillProgress[r][c] = 1.0;
         } else {
-          const zr = Math.floor(r / tilesPerZoneRow);
-          const zc = Math.floor(c / tilesPerZoneCol);
-          const zone = zoneMap[zr][zc];
-          const color = CONFIG.COLORS[zone];
+          let color;
+          if (layout && colors) {
+            const teamIndex = layout[r][c];
+            color = teamIndex >= 0 && teamIndex < colors.length ? colors[teamIndex] : CONFIG.NEUTRAL_COLOR;
+          } else {
+            const zr = Math.floor(r / tilesPerZoneRow);
+            const zc = Math.floor(c / tilesPerZoneCol);
+            color = CONFIG.COLORS[zoneMap[zr][zc]];
+          }
           this.tiles[r][c] = color;
           this.owners[r][c] = color;
           this.fillProgress[r][c] = 1.0;

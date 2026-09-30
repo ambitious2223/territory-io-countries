@@ -53,10 +53,12 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ---
 
 ## Phase 4 — Viewer avatars
-- [ ] Spawn avatar marble per viewer (photo + name + team colour)
-- [ ] Active cap (24) + reinforcement queue + swap-on-death
-- [ ] AI fill for thin teams
-- [ ] Per-viewer analytics
+- [x] Generic N-team zone layout (`src/zones.js`) driving grid colours + spawn points
+- [x] Spawn avatar marble per viewer (photo + name + team colour) via `ViewerManager`
+- [x] Active cap (24) + reinforcement queue + swap-on-death
+- [x] AI fill for thin teams (seeds/respawns a bot when a team has no marble)
+- [x] Per-viewer analytics (each viewer marble registered; kills tracked)
+- [x] Debug **Viewers** panel (active/queued/total, cap + AI-fill controls)
 
 **Verify:** 30 mock joins → 24 active, 6 queued; one dies → a queued viewer spawns.
 

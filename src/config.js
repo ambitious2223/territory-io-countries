@@ -58,6 +58,11 @@ export const CONFIG = {
 
   VICTORY_PAINT_SPEED: 4,
 
+  VIEWER_CAP: 24,
+  AI_FILL_ENABLED: true,
+  AI_FILL_INTERVAL: 2.0,
+  NEUTRAL_COLOR: '#1a1a1a',
+
   WALL_COLOR: '#2a2a2e',
   WALL_HIGHLIGHT: '#3a3a3e',
 

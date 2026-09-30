@@ -3,7 +3,7 @@ import { randomRange, hexToRgba } from './utils.js';
 import { Sword } from './sword.js';
 
 export class Marble {
-  constructor(x, y, color, name) {
+  constructor(x, y, color, name, options = {}) {
     this.x = x;
     this.y = y;
     this.vx = randomRange(-1, 1);
@@ -21,6 +21,17 @@ export class Marble {
     this.sword = new Sword(this);
     this.wanderAngle = Math.random() * Math.PI * 2;
     this.scale = 1;
+
+    this.teamId = options.teamId ?? null;
+    this.viewerId = options.viewerId ?? null;
+    this.isBot = options.isBot ?? false;
+    this.avatarUrl = options.avatar || '';
+    this.avatarImage = null;
+    if (this.avatarUrl) {
+      const image = new Image();
+      image.src = this.avatarUrl;
+      this.avatarImage = image;
+    }
 
     this.steerX = 0;
     this.steerY = 0;
@@ -332,10 +343,25 @@ export class Marble {
     ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
+    if (this.avatarImage && this.avatarImage.complete && this.avatarImage.naturalWidth > 0) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(
+        this.avatarImage,
+        this.x - this.radius,
+        this.y - this.radius,
+        this.radius * 2,
+        this.radius * 2
+      );
+      ctx.restore();
+    } else {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.strokeStyle = 'rgba(255,255,255,0.4)';
     ctx.lineWidth = 2;

@@ -26,6 +26,13 @@ this project aims to follow [Semantic Versioning](https://semver.org/).
   `src/imageUtils.js` 3:2 cover-crop for consistent flag uploads.
 - Debug panel **Teams** editor (add/remove, EN/AR names, ISO2, colour, flag upload).
 - `src/i18n.js` — English + Arabic with RTL; language selector; primary UI localized.
+- Teams-driven arena: `src/zones.js` generates contiguous zones for any team count (2–12),
+  driving grid colours and spawn points; `map.js` clears spawns around team centroids.
+- Viewer avatars: `src/viewerManager.js` turns chat join commands into avatar marbles with
+  profile photos, team colours and names; hard cap (~24) with a reinforcement queue that swaps
+  in on death; AI fill seeds a bot for any team without a marble.
+- Marble avatar rendering (circular profile photo, colour fallback) and per-viewer fields.
+- Debug **Viewers** section (active/queued/total, cap + AI-fill toggles).
 
 ### Changed
 - Project re-scoped from "Territory With Swords" (local AI battle) to

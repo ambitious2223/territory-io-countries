@@ -210,6 +210,30 @@ export function initConnectionPanel(game) {
   });
 }
 
+export function initViewersPanel(game) {
+  const cap = document.getElementById('viewer-cap');
+  if (cap) {
+    cap.value = String(game.viewers.cap);
+    cap.addEventListener('change', () => game.viewers.setCap(cap.value));
+  }
+  const aiFill = document.getElementById('viewer-aifill');
+  if (aiFill) {
+    aiFill.checked = game.viewers.aiFill;
+    aiFill.addEventListener('change', () => game.viewers.setAiFill(aiFill.checked));
+  }
+}
+
+export function updateViewersPanel(game) {
+  if (!game.debugMode) return;
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+  set('dbg-viewers-active', game.viewers.activeCount);
+  set('dbg-viewers-queued', game.viewers.queuedCount);
+  set('dbg-viewers-total', game.viewers.totalCount);
+}
+
 export function updateConnectionPanel(game) {
   if (!game.debugMode) return;
   const state = game.bridgeState || {};

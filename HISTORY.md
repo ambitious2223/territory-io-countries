@@ -4,6 +4,26 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Phase 4: viewer avatar marbles
+
+**Done**
+- `src/zones.js` generic N-team zone layout + centroids/spawn tiles (unit tested); grid and map
+  refactored to be team-driven.
+- `src/viewerManager.js`: chat join → matcher → avatar marble; cap + reinforcement queue with
+  swap-on-death; AI fill for empty teams.
+- `Marble` gained `teamId`/`viewerId`/`isBot`/`avatar` and circular profile-photo rendering.
+- `Game` now sets teams from the registry, builds zones per match, spawns viewer/bot marbles, and
+  routes bridge events and deaths.
+- Debug **Viewers** panel (active/queued/total + cap and AI-fill controls).
+
+**Verified**
+- `npm run lint` clean · `npm test` 43 passed · `npm run build` ok · `npm run smoke` PASS.
+
+**Next**
+- Phase 5: camera pan/zoom + join cinematic + blur slider.
+
+---
+
 ## 2026-09-30 — Phase 3: teams, flags & i18n
 
 **Done**

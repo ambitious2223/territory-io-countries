@@ -2,7 +2,39 @@ import { CONFIG } from './config.js';
 
 const WALL = 'WALL';
 
-export function generateMap(name, cols, rows) {
+function clearSpawns(walls, spawnTiles, rows, cols) {
+  for (const tile of spawnTiles) {
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = tile.row + dr;
+        const nc = tile.col + dc;
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+          walls[nr][nc] = false;
+        }
+      }
+    }
+  }
+}
+
+function defaultSpawnTiles(cols, rows) {
+  const zoneMap = CONFIG.ZONE_LAYOUT;
+  const zoneRows = zoneMap.length;
+  const zoneCols = zoneMap[0].length;
+  const tilesPerZoneCol = cols / zoneCols;
+  const tilesPerZoneRow = rows / zoneRows;
+  const tiles = [];
+  for (let zr = 0; zr < zoneRows; zr++) {
+    for (let zc = 0; zc < zoneCols; zc++) {
+      tiles.push({
+        row: Math.floor(zr * tilesPerZoneRow + tilesPerZoneRow / 2),
+        col: Math.floor(zc * tilesPerZoneCol + tilesPerZoneCol / 2),
+      });
+    }
+  }
+  return tiles;
+}
+
+export function generateMap(name, cols, rows, spawnTiles = null) {
   const walls = [];
   for (let r = 0; r < rows; r++) {
     walls[r] = [];
@@ -30,27 +62,6 @@ export function generateMap(name, cols, rows) {
     }
     for (let c = 0; c < cols; c++) walls[cy][c] = true;
     for (let r = 0; r < rows; r++) walls[r][cx] = true;
-
-    const zoneMap = CONFIG.ZONE_LAYOUT;
-    const zoneRows = zoneMap.length;
-    const zoneCols = zoneMap[0].length;
-    const tpc = cols / zoneCols;
-    const tpr = rows / zoneRows;
-    for (let zr = 0; zr < zoneRows; zr++) {
-      for (let zc = 0; zc < zoneCols; zc++) {
-        const spawnR = Math.floor(zr * tpr + tpr / 2);
-        const spawnC = Math.floor(zc * tpc + tpc / 2);
-        for (let dr = -1; dr <= 1; dr++) {
-          for (let dc = -1; dc <= 1; dc++) {
-            const nr = spawnR + dr;
-            const nc = spawnC + dc;
-            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-              walls[nr][nc] = false;
-            }
-          }
-        }
-      }
-    }
   } else if (name === 'Islands') {
     const clusters = 6 + Math.floor(Math.random() * 4);
     for (let i = 0; i < clusters; i++) {
@@ -67,29 +78,10 @@ export function generateMap(name, cols, rows) {
         }
       }
     }
-
-    const zoneMap = CONFIG.ZONE_LAYOUT;
-    const zoneRows = zoneMap.length;
-    const zoneCols = zoneMap[0].length;
-    const tpc = cols / zoneCols;
-    const tpr = rows / zoneRows;
-    for (let zr = 0; zr < zoneRows; zr++) {
-      for (let zc = 0; zc < zoneCols; zc++) {
-        const spawnR = Math.floor(zr * tpr + tpr / 2);
-        const spawnC = Math.floor(zc * tpc + tpc / 2);
-        for (let dr = -1; dr <= 1; dr++) {
-          for (let dc = -1; dc <= 1; dc++) {
-            const nr = spawnR + dr;
-            const nc = spawnC + dc;
-            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-              walls[nr][nc] = false;
-            }
-          }
-        }
-      }
-    }
   }
 
+  const tiles = spawnTiles && spawnTiles.length ? spawnTiles : defaultSpawnTiles(cols, rows);
+  clearSpawns(walls, tiles, rows, cols);
   return walls;
 }
 

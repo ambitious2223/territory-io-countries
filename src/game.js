@@ -1,5 +1,7 @@
 import { CONFIG } from './config.js';
-import { shuffle } from './utils.js';
+import { randomRange } from './utils.js';
+import { generateZoneLayout, zoneSpawnTiles } from './zones.js';
+import { ViewerManager } from './viewerManager.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
 import { TerritoryManager } from './territory.js';
@@ -17,7 +19,7 @@ import {
   updateLeaderboard, updateGameOver, hideGameOver,
   updateControlBar, updatePauseOverlay,
   initControls, initDebugPanel, updateDebugPanel,
-  updateConnectionPanel,
+  updateConnectionPanel, updateViewersPanel,
   getSelectedMap,
 } from './ui.js';
 
@@ -41,6 +43,18 @@ export class Game {
     this.powerups = new PowerUpManager();
     this.audio = new AudioEngine();
     this.analytics = new Analytics();
+
+    this.teams = [];
+    this.zoneLayout = null;
+    this.zoneColors = [];
+    this.spawnTiles = [];
+    this.viewers = new ViewerManager({
+      cap: CONFIG.VIEWER_CAP,
+      aiFill: CONFIG.AI_FILL_ENABLED,
+      aiInterval: CONFIG.AI_FILL_INTERVAL,
+      spawn: (profile, team) => this.spawnViewerMarble(profile, team),
+      countTeam: (teamId) => this.countTeamMarbles(teamId),
+    });
 
     this.running = false;
     this.paused = false;
@@ -114,13 +128,47 @@ export class Game {
     this.paused = !this.paused;
   }
 
-  restart() {
-    this.currentMap = getSelectedMap();
-    const walls = generateMap(this.currentMap, CONFIG.GRID_COLS, CONFIG.GRID_ROWS);
+  setTeams(teams) {
+    this.teams = Array.isArray(teams) && teams.length > 0 ? teams : this.defaultTeams();
+  }
+
+  defaultTeams() {
+    const zoneNames = [];
+    for (const row of CONFIG.ZONE_LAYOUT) {
+      for (const zone of row) {
+        if (!zoneNames.includes(zone)) zoneNames.push(zone);
+      }
+    }
+    return zoneNames.map((zone, i) => ({
+      id: i + 1,
+      index: i + 1,
+      name: { en: CONFIG.MARBLE_NAMES[i] || `Team ${i + 1}`, ar: '' },
+      iso2: '',
+      emoji: '',
+      color: CONFIG.COLORS[zone],
+      flagImage: null,
+      aliases: [],
+    }));
+  }
+
+  setupMatch() {
+    if (!this.teams || this.teams.length === 0) this.setTeams(null);
+    const layout = generateZoneLayout(this.teams.length, CONFIG.GRID_ROWS, CONFIG.GRID_COLS);
+    const colors = this.teams.map((team) => team.color);
+    const spawnTiles = zoneSpawnTiles(layout, CONFIG.TILE_SIZE);
+    const walls = generateMap(this.currentMap, CONFIG.GRID_COLS, CONFIG.GRID_ROWS, spawnTiles);
+    this.zoneLayout = layout;
+    this.zoneColors = colors;
+    this.spawnTiles = spawnTiles;
     this.grid = new Grid();
-    this.grid.init(walls);
+    this.grid.init(walls, layout, colors);
     this.territory = new TerritoryManager(this.grid);
     this._bindAudio();
+  }
+
+  restart() {
+    this.currentMap = getSelectedMap();
+    this.setupMatch();
     this.particles.reset();
     this.vfx.reset();
     this.marbles = [];
@@ -135,51 +183,53 @@ export class Game {
     this.analytics.reset();
     this._sweepKiller = null;
     hideGameOver();
-    this.spawnMarbles();
+    this.viewers.reset();
+    this.viewers.seed(this.teams);
   }
 
   start() {
     this.audio.init();
     this.currentMap = getSelectedMap();
-    const walls = generateMap(this.currentMap, CONFIG.GRID_COLS, CONFIG.GRID_ROWS);
-    this.grid = new Grid();
-    this.grid.init(walls);
-    this.territory = new TerritoryManager(this.grid);
-    this._bindAudio();
-    this.spawnMarbles();
+    this.setupMatch();
+    this.viewers.reset();
+    this.viewers.seed(this.teams);
     this.running = true;
     this.lastTime = performance.now();
     this.loop();
   }
 
-  spawnMarbles() {
-    const names = shuffle(CONFIG.MARBLE_NAMES).slice(0, CONFIG.MARBLE_COUNT);
-    const zoneNames = ['YELLOW', 'GREEN', 'ORANGE', 'PURPLE', 'BLUE', 'RED', 'MAGENTA', 'CYAN'];
-    const zoneMap = CONFIG.ZONE_LAYOUT;
-    const zoneRows = zoneMap.length;
-    const zoneCols = zoneMap[0].length;
-    const tpc = this.grid.cols / zoneCols;
-    const tpr = this.grid.rows / zoneRows;
+  handleBridgeEvent(event) {
+    this.viewers.handleEvent(event, this.teams);
+  }
 
-    for (let i = 0; i < CONFIG.MARBLE_COUNT; i++) {
-      const zone = zoneNames[i];
-      let zr = 0, zc = 0;
-      for (let r = 0; r < zoneRows; r++) {
-        for (let c = 0; c < zoneCols; c++) {
-          if (zoneMap[r][c] === zone) { zr = r; zc = c; }
-        }
-      }
-      const cx = (zc * tpc + tpc / 2) * CONFIG.TILE_SIZE;
-      const cy = (zr * tpr + tpr / 2) * CONFIG.TILE_SIZE;
-      const marble = new Marble(cx, cy, CONFIG.COLORS[zone], names[i]);
-      marble.onInterrupt = (m) => {
-        this.camera.shake(4, 0.08);
-        this.audio.playInterruption(m.x);
-        this.vfx.addInterruptText(m.x, m.y);
-      };
-      this.marbles.push(marble);
-      this.analytics.registerMarble(marble);
+  spawnViewerMarble(profile, team) {
+    const teamIndex = this.teams.findIndex((entry) => entry.id === team.id);
+    const tile = this.spawnTiles[teamIndex] || this.spawnTiles[0] || { row: 0, col: 0 };
+    const { x, y } = this.grid.gridToWorld(tile.row, tile.col);
+    const jitter = CONFIG.TILE_SIZE * 0.4;
+    const marble = new Marble(
+      x + randomRange(-jitter, jitter),
+      y + randomRange(-jitter, jitter),
+      team.color,
+      profile.name || 'Viewer',
+      { teamId: team.id, viewerId: profile.id, isBot: !!profile.isBot, avatar: profile.avatar }
+    );
+    marble.onInterrupt = (m) => {
+      this.camera.shake(4, 0.08);
+      this.audio.playInterruption(m.x);
+      this.vfx.addInterruptText(m.x, m.y);
+    };
+    this.marbles.push(marble);
+    this.analytics.registerMarble(marble);
+    return marble;
+  }
+
+  countTeamMarbles(teamId) {
+    let count = 0;
+    for (const marble of this.marbles) {
+      if (marble.teamId === teamId && marble.alive && !marble.eliminated) count += 1;
     }
+    return count;
   }
 
   victoryPaint() {
@@ -316,6 +366,7 @@ export class Game {
       this.analytics.recordKill(killer, victim);
       this.audio.playElimination(x);
       this.vfx.addEliminatedText(victim.x, victim.y, victim.name);
+      this.viewers.handleDeath(victim);
     }
 
     const collected = this.powerups.update(dt, this.marbles, this.grid);
@@ -342,6 +393,7 @@ export class Game {
     this.territory.update(dt);
     this.particles.update(dt);
     this.vfx.update(dt);
+    this.viewers.update(dt, this.teams);
 
     for (const m of alive) {
       this.analytics.updateTerritory(m, this.grid.countTiles(m.color));
@@ -381,6 +433,7 @@ export class Game {
     updatePauseOverlay(this.paused);
     updateDebugPanel(this, this.particles, this.marbles, this.grid);
     updateConnectionPanel(this);
+    updateViewersPanel(this);
 
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);

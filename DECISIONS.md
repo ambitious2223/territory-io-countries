@@ -99,6 +99,15 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Single source of truth; the matcher is deterministic and testable without a browser.
 - **Alternatives:** Separate client/server rosters; matching in the socket layer.
 
+## D-017 — Generic team zone layout + separate bot/viewer accounting
+- **Context:** The engine had a hardcoded 8-zone layout and 8 named marbles.
+- **Decision:** Generate contiguous zones for any team count (`src/zones.js`); marbles are created
+  from viewer/bot profiles via `ViewerManager`, and the viewer cap counts **viewers only** (bots
+  are spawned by AI fill to keep empty teams alive and do not consume the cap).
+- **Rationale:** Supports 2–12 teams, keeps the arena lively when few viewers join, and protects the
+  performance budget by bounding viewer avatars.
+- **Alternatives:** Keep the fixed 8-zone layout; cap viewers and bots together.
+
 ## D-016 — Client team registry with server sync + 3:2 flag normalization
 - **Context:** Flags must look consistent and survive restarts/offline.
 - **Decision:** `teamRegistry.js` syncs via `GET/PUT /api/teams` and mirrors to localStorage; uploaded

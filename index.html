@@ -575,6 +575,14 @@
         </div>
       </div>
       <div class="debug-section">
+        <h5 data-i18n="debug.viewers">Viewers</h5>
+        <div class="debug-row"><span data-i18n="debug.activeViewers">Active</span><span class="val" id="dbg-viewers-active">0</span></div>
+        <div class="debug-row"><span data-i18n="debug.queuedViewers">Queued</span><span class="val" id="dbg-viewers-queued">0</span></div>
+        <div class="debug-row"><span data-i18n="debug.totalViewers">Total</span><span class="val" id="dbg-viewers-total">0</span></div>
+        <div class="debug-row"><span data-i18n="debug.cap">Cap</span><input id="viewer-cap" type="number" min="1" max="60" value="24" style="width:50px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
+        <div class="debug-row"><span data-i18n="debug.aiFill">AI Fill</span><input id="viewer-aifill" type="checkbox" /></div>
+      </div>
+      <div class="debug-section">
         <h5 data-i18n="debug.mockEvent">Mock Event</h5>
         <div class="debug-row" style="gap:6px;">
           <select id="mock-type" style="background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">

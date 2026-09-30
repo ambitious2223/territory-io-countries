@@ -1,9 +1,9 @@
 import { Game } from './game.js';
 import { BridgeClient } from './net/bridgeClient.js';
-import { initConnectionPanel } from './ui.js';
+import { initConnectionPanel, initViewersPanel } from './ui.js';
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
-import { loadFromServer } from './teamRegistry.js';
+import { getTeams, loadFromServer, subscribe } from './teamRegistry.js';
 
 const canvas = document.getElementById('game-canvas');
 canvas.width = 1200;
@@ -15,13 +15,19 @@ const bridge = new BridgeClient();
 game.bridge = bridge;
 game.bridgeState = { bridgeOk: false, source: 'none', tiktokState: 'idle' };
 game.eventCount = 0;
+game.setTeams(getTeams());
 
 bridge.onStatus((status) => {
   game.bridgeState = { ...game.bridgeState, ...status };
 });
 
-bridge.onEvent(() => {
+bridge.onEvent((event) => {
   game.eventCount += 1;
+  game.handleBridgeEvent(event);
+});
+
+subscribe((config) => {
+  game.setTeams(config.teams);
 });
 
 function initLanguageSelector() {
@@ -36,6 +42,7 @@ function initLanguageSelector() {
 
 applyLanguage();
 initConnectionPanel(game);
+initViewersPanel(game);
 initTeamsPanel(game);
 initLanguageSelector();
 
