@@ -1,0 +1,437 @@
+import { CONFIG } from './config.js';
+
+const MAX_VOICES = 12;
+
+class Voice {
+  constructor() {
+    this.active = false;
+    this.nodes = [];
+    this.stopTime = 0;
+  }
+
+  start(duration) {
+    this.active = true;
+    this.stopTime = performance.now() + duration * 1000;
+  }
+
+  addNode(node) {
+    this.nodes.push(node);
+  }
+
+  release() {
+    this.active = false;
+    for (const n of this.nodes) {
+      try {
+        if (n.stop) n.stop(0);
+        if (n.disconnect) n.disconnect();
+      } catch (_) {}
+    }
+    this.nodes.length = 0;
+  }
+}
+
+export class AudioEngine {
+  constructor() {
+    this.ctx = null;
+    this.masterGain = null;
+    this.masterVolume = 0.35;
+    this.enabled = true;
+    this.initialized = false;
+    this.unlocked = false;
+
+    this.voices = [];
+    for (let i = 0; i < MAX_VOICES; i++) {
+      this.voices.push(new Voice());
+    }
+  }
+
+  init() {
+    if (this.initialized) return;
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.value = this.masterVolume;
+      this.masterGain.connect(this.ctx.destination);
+      this.initialized = true;
+    } catch (e) {
+      this.enabled = false;
+    }
+  }
+
+  unlock() {
+    if (!this.ctx || this.unlocked) return;
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume().then(() => { this.unlocked = true; });
+    } else {
+      this.unlocked = true;
+    }
+  }
+
+  _canPlay() {
+    return this.enabled && this.ctx && this.ctx.state === 'running';
+  }
+
+  _acquireVoice(duration) {
+    for (const v of this.voices) {
+      if (!v.active || performance.now() >= v.stopTime) {
+        if (v.active) v.release();
+        v.start(duration);
+        return v;
+      }
+    }
+    return null;
+  }
+
+  _panForX(x) {
+    const half = CONFIG.CANVAS_WIDTH / 2;
+    return Math.max(-1, Math.min(1, (x - half) / half));
+  }
+
+  _createPan(x) {
+    const pan = this.ctx.createStereoPanner();
+    pan.pan.value = this._panForX(x);
+    pan.connect(this.masterGain);
+    return pan;
+  }
+
+  playClaim(x = CONFIG.CANVAS_WIDTH / 2, combo = 0) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.08);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+
+    const pitch = CONFIG.COMBO_BASE_PITCH + combo * CONFIG.COMBO_PITCH_INCREMENT;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const pan = this._createPan(x);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(pitch, t);
+
+    gain.gain.setValueAtTime(0.1, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+
+    osc.connect(gain);
+    gain.connect(pan);
+
+    v.addNode(osc);
+    v.addNode(gain);
+    v.addNode(pan);
+
+    osc.start(t);
+    osc.stop(t + 0.08);
+  }
+
+  playPickup(type, x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.35);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+    const pan = this._createPan(x);
+
+    const arpeggios = {
+      overcharge: [523, 659, 784],
+      shield:     [440, 554, 659],
+      colorbomb:  [392, 494, 587],
+    };
+    const notes = arpeggios[type] || [523, 659, 784];
+
+    for (let i = 0; i < notes.length; i++) {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const noteT = t + i * 0.08;
+
+      osc.type = 'sine';
+      osc.frequency.value = notes[i];
+
+      gain.gain.setValueAtTime(0, noteT);
+      gain.gain.linearRampToValueAtTime(0.15, noteT + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteT + 0.12);
+
+      osc.connect(gain);
+      gain.connect(pan);
+
+      v.addNode(osc);
+      v.addNode(gain);
+
+      osc.start(noteT);
+      osc.stop(noteT + 0.12);
+    }
+
+    v.addNode(pan);
+  }
+
+  playColorBomb(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.4);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+    const pan = this._createPan(x);
+
+    const osc = this.ctx.createOscillator();
+    const oscGain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(180, t);
+    osc.frequency.exponentialRampToValueAtTime(30, t + 0.3);
+    oscGain.gain.setValueAtTime(0.3, t);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    osc.connect(oscGain);
+    oscGain.connect(pan);
+    v.addNode(osc);
+    v.addNode(oscGain);
+    v.addNode(pan);
+    osc.start(t);
+    osc.stop(t + 0.3);
+
+    const bufferSize = this.ctx.sampleRate * 0.12;
+    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1);
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.2, t);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    const noisePan = this._createPan(x);
+    noise.connect(noiseGain);
+    noiseGain.connect(noisePan);
+    v.addNode(noise);
+    v.addNode(noiseGain);
+    v.addNode(noisePan);
+    noise.start(t);
+    noise.stop(t + 0.12);
+  }
+
+  playInterruption(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.1);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+    const pan = this._createPan(x);
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(300, t);
+    osc.frequency.exponentialRampToValueAtTime(80, t + 0.08);
+
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+
+    osc.connect(gain);
+    gain.connect(pan);
+
+    v.addNode(osc);
+    v.addNode(gain);
+    v.addNode(pan);
+
+    osc.start(t);
+    osc.stop(t + 0.1);
+  }
+
+  playElimination(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.55);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+    const pan = this._createPan(x);
+
+    const minor = [261, 311, 233];
+    for (let i = 0; i < minor.length; i++) {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const noteT = t + i * 0.14;
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(minor[i], noteT);
+      osc.frequency.exponentialRampToValueAtTime(minor[i] * 0.5, noteT + 0.12);
+
+      gain.gain.setValueAtTime(0, noteT);
+      gain.gain.linearRampToValueAtTime(0.14, noteT + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteT + 0.13);
+
+      osc.connect(gain);
+      gain.connect(pan);
+
+      v.addNode(osc);
+      v.addNode(gain);
+
+      osc.start(noteT);
+      osc.stop(noteT + 0.13);
+    }
+
+    v.addNode(pan);
+  }
+
+  playVictory() {
+    if (!this._canPlay()) return;
+    const t = this.ctx.currentTime;
+    const notes = [523, 659, 784, 1047];
+
+    for (let i = 0; i < notes.length; i++) {
+      const v = this._acquireVoice(0.4);
+      if (!v) return;
+      const noteT = t + i * 0.15;
+
+      const osc = this.ctx.createOscillator();
+      const osc2 = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      osc.type = 'sawtooth';
+      osc.frequency.value = notes[i];
+
+      osc2.type = 'sine';
+      osc2.frequency.value = notes[i] * 2;
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(3000, noteT);
+      filter.frequency.exponentialRampToValueAtTime(800, noteT + 0.3);
+
+      gain.gain.setValueAtTime(0, noteT);
+      gain.gain.linearRampToValueAtTime(0.12, noteT + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteT + 0.35);
+
+      osc.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      v.addNode(osc);
+      v.addNode(osc2);
+      v.addNode(filter);
+      v.addNode(gain);
+
+      osc.start(noteT);
+      osc2.start(noteT);
+      osc.stop(noteT + 0.35);
+      osc2.stop(noteT + 0.35);
+    }
+  }
+
+  startSweep(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(1.8);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+    const pan = this._createPan(x);
+
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(120, t);
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(200, t);
+    filter.frequency.linearRampToValueAtTime(1200, t + 1.5);
+    filter.Q.value = 2;
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.linearRampToValueAtTime(0.08, t + 0.5);
+    gain.gain.linearRampToValueAtTime(0.04, t + 1.0);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.8);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(pan);
+
+    v.addNode(osc);
+    v.addNode(filter);
+    v.addNode(gain);
+    v.addNode(pan);
+
+    osc.start(t);
+    osc.stop(t + 1.8);
+  }
+
+  playDeflect(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.1);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const pan = this._createPan(x);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, t);
+    osc.frequency.exponentialRampToValueAtTime(2400, t + 0.08);
+
+    gain.gain.setValueAtTime(0.18, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+
+    osc.connect(gain);
+    gain.connect(pan);
+
+    v.addNode(osc);
+    v.addNode(gain);
+    v.addNode(pan);
+
+    osc.start(t);
+    osc.stop(t + 0.1);
+  }
+
+  playHit(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.18);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+
+    const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+    const pan = this._createPan(x);
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.15);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, t);
+    filter.frequency.exponentialRampToValueAtTime(80, t + 0.15);
+    filter.Q.value = 1.5;
+
+    gain.gain.setValueAtTime(0.25, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(pan);
+
+    v.addNode(osc);
+    v.addNode(filter);
+    v.addNode(gain);
+    v.addNode(pan);
+
+    osc.start(t);
+    osc.stop(t + 0.18);
+  }
+
+  toggle() {
+    this.enabled = !this.enabled;
+    if (this.masterGain) {
+      this.masterGain.gain.setTargetAtTime(
+        this.enabled ? this.masterVolume : 0,
+        this.ctx.currentTime,
+        0.05
+      );
+    }
+  }
+
+  setVolume(v) {
+    this.masterVolume = Math.max(0, Math.min(1, v));
+    if (this.masterGain && this.enabled) {
+      this.masterGain.gain.setTargetAtTime(
+        this.masterVolume,
+        this.ctx.currentTime,
+        0.05
+      );
+    }
+  }
+}

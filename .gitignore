@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.tiktok-config.json
+.port
+*.log
+.DS_Store
+Thumbs.db
+public/flags/*
+!public/flags/.gitkeep
+coverage/
