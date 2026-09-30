@@ -4,6 +4,24 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Phase 5: camera pan/zoom + join cinematic
+
+**Done**
+- `Camera` rewritten with focus pan/zoom (exponential easing), cinematic blur, and shake preserved.
+- `src/joinCinematic.js`: queue + focus/hold/return state machine + screen-space intro card showing
+  the joiner's profile photo, name and team colour.
+- Game wires cinematic enqueue on viewer spawn, blur during world draw, and card after restore.
+- Debug **Cinematic** section: queue count, blur % slider, Skip Intro.
+- Unit tests for the camera tween and cinematic phases (48 total).
+
+**Verified**
+- `npm run lint` clean · `npm test` 48 passed · `npm run build` ok · `npm run smoke` PASS.
+
+**Next**
+- Phase 6: scoring engine (gift-dominant), live team scoreboard, round lifecycle + winners.
+
+---
+
 ## 2026-09-30 — Phase 4: viewer avatar marbles
 
 **Done**

@@ -65,10 +65,10 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ---
 
 ## Phase 5 — Camera & join cinematic
-- [ ] Extend `Camera` with pan/zoom/tween
-- [ ] `joinCinematic.js` queue + intro card
-- [ ] Blur % slider in debug Diagnostics tab
-- [ ] HUD stays screen-space
+- [x] Extend `Camera` with pan/zoom/tween (exponential focus easing + blur)
+- [x] `joinCinematic.js` queue + profile-photo intro card (focus → hold → return)
+- [x] Blur % slider + Skip Intro in the debug **Cinematic** section
+- [x] HUD stays screen-space (world blurred under the camera transform only)
 
 **Verify:** each join pans/zooms to spawn; blur slider changes backdrop; 60 FPS holds.
 

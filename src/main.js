@@ -1,6 +1,6 @@
 import { Game } from './game.js';
 import { BridgeClient } from './net/bridgeClient.js';
-import { initConnectionPanel, initViewersPanel } from './ui.js';
+import { initConnectionPanel, initViewersPanel, initCinematicPanel } from './ui.js';
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
 import { getTeams, loadFromServer, subscribe } from './teamRegistry.js';
@@ -43,6 +43,7 @@ function initLanguageSelector() {
 applyLanguage();
 initConnectionPanel(game);
 initViewersPanel(game);
+initCinematicPanel(game);
 initTeamsPanel(game);
 initLanguageSelector();
 

@@ -99,6 +99,16 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Single source of truth; the matcher is deterministic and testable without a browser.
 - **Alternatives:** Separate client/server rosters; matching in the socket layer.
 
+## D-018 — Camera transform + queued join cinematic
+- **Context:** The camera only did screen shake; the request wants a cinematic zoom to each new
+  viewer showing their profile photo, with a blur control.
+- **Decision:** Give the camera a single world transform (focus + zoom + shake) applied to world
+  layers only; drive it from a `JoinCinematic` queue that focuses a spawn, holds, then returns.
+  Blur is applied to the world draw via `ctx.filter` (not the HUD).
+- **Rationale:** One transform keeps rendering simple; HUD stays crisp; sequential queue prevents
+  multiple joins from fighting over the camera.
+- **Alternatives:** Per-entity cameras; DOM-based intro (can't sample the canvas position).
+
 ## D-017 — Generic team zone layout + separate bot/viewer accounting
 - **Context:** The engine had a hardcoded 8-zone layout and 8 named marbles.
 - **Decision:** Generate contiguous zones for any team count (`src/zones.js`); marbles are created

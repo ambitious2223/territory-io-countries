@@ -2,6 +2,7 @@ import { CONFIG } from './config.js';
 import { randomRange } from './utils.js';
 import { generateZoneLayout, zoneSpawnTiles } from './zones.js';
 import { ViewerManager } from './viewerManager.js';
+import { JoinCinematic } from './joinCinematic.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
 import { TerritoryManager } from './territory.js';
@@ -19,7 +20,7 @@ import {
   updateLeaderboard, updateGameOver, hideGameOver,
   updateControlBar, updatePauseOverlay,
   initControls, initDebugPanel, updateDebugPanel,
-  updateConnectionPanel, updateViewersPanel,
+  updateConnectionPanel, updateViewersPanel, updateCinematicPanel,
   getSelectedMap,
 } from './ui.js';
 
@@ -34,6 +35,7 @@ export class Game {
     this.ctx = canvas.getContext('2d');
 
     this.camera = new Camera();
+    this.cinematic = new JoinCinematic(this.camera);
     this.debug = new DebugOverlay();
     this.grid = new Grid();
     this.territory = new TerritoryManager(this.grid);
@@ -182,6 +184,7 @@ export class Game {
     this.powerups.reset();
     this.analytics.reset();
     this._sweepKiller = null;
+    this.cinematic.skip();
     hideGameOver();
     this.viewers.reset();
     this.viewers.seed(this.teams);
@@ -221,6 +224,16 @@ export class Game {
     };
     this.marbles.push(marble);
     this.analytics.registerMarble(marble);
+    if (!profile.isBot) {
+      this.cinematic.enqueue({
+        x: marble.x,
+        y: marble.y,
+        name: marble.name,
+        avatar: profile.avatar,
+        color: team.color,
+        teamName: team.name?.en || '',
+      });
+    }
     return marble;
   }
 
@@ -309,6 +322,7 @@ export class Game {
   }
 
   update(dt) {
+    this.cinematic.update(dt);
     this.camera.update(dt);
 
     if (this.gameOver) {
@@ -408,6 +422,9 @@ export class Game {
 
     this.ctx.save();
     this.camera.apply(this.ctx);
+    if (this.camera.blurPixels > 0.1) {
+      this.ctx.filter = `blur(${this.camera.blurPixels.toFixed(1)}px)`;
+    }
 
     this.grid.draw(this.ctx);
     this.powerups.draw(this.ctx);
@@ -428,12 +445,17 @@ export class Game {
 
     this.ctx.restore();
 
+    if (this.cinematic.active) {
+      this.cinematic.draw(this.ctx);
+    }
+
     updateLeaderboard(this.marbles);
     updateControlBar(this);
     updatePauseOverlay(this.paused);
     updateDebugPanel(this, this.particles, this.marbles, this.grid);
     updateConnectionPanel(this);
     updateViewersPanel(this);
+    updateCinematicPanel(this);
 
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);

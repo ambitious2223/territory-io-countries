@@ -33,6 +33,9 @@ this project aims to follow [Semantic Versioning](https://semver.org/).
   in on death; AI fill seeds a bot for any team without a marble.
 - Marble avatar rendering (circular profile photo, colour fallback) and per-viewer fields.
 - Debug **Viewers** section (active/queued/total, cap + AI-fill toggles).
+- Camera pan/zoom with exponential focus easing and cinematic blur; HUD remains screen-space.
+- `src/joinCinematic.js` — queued join intros that pan/zoom to a new viewer with a profile-photo
+  card (focus → hold → return), plus a debug **Cinematic** section (blur % slider, Skip Intro).
 
 ### Changed
 - Project re-scoped from "Territory With Swords" (local AI battle) to

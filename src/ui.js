@@ -234,6 +234,26 @@ export function updateViewersPanel(game) {
   set('dbg-viewers-total', game.viewers.totalCount);
 }
 
+export function initCinematicPanel(game) {
+  const blur = document.getElementById('cine-blur');
+  if (blur) {
+    blur.value = String(Math.round(game.camera.blurScale * 100));
+    blur.addEventListener('input', () => {
+      game.camera.blurScale = Number(blur.value) / 100;
+    });
+  }
+  const skip = document.getElementById('btn-cine-skip');
+  if (skip) {
+    skip.addEventListener('click', () => game.cinematic.skip());
+  }
+}
+
+export function updateCinematicPanel(game) {
+  if (!game.debugMode) return;
+  const el = document.getElementById('dbg-cine-queue');
+  if (el) el.textContent = game.cinematic.pending;
+}
+
 export function updateConnectionPanel(game) {
   if (!game.debugMode) return;
   const state = game.bridgeState || {};
