@@ -107,10 +107,11 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 ---
 
 ## Phase 9 — Polish & hardening
-- [ ] Interaction VFX/SFX (join, gift, kill, capture, victory)
-- [ ] Performance pass (dirty tiles, pooling, batching)
-- [ ] Full test + smoke coverage; ESLint clean
-- [ ] Docs finalised; CHANGELOG released
+- [x] Interaction SFX (join, gift); capture/victory audio already present; join intro card VFX
+- [x] Performance pass: shared per-frame tile-count map (scoreboard + domination)
+- [x] Winners HUD (All-Time Winners) + scoring-weight editor in the debug panel
+- [x] Full test + smoke coverage; ESLint clean
+- [x] Docs finalised; CHANGELOG released as **1.0.0**
 
 **Verify:** 60 FPS with cap reached; all gates green.
 

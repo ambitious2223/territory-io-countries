@@ -1,6 +1,6 @@
 {
   "name": "territory-with-flags",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "TikTok LIVE team/flag territory-conquest game",
   "type": "module",
   "scripts": {

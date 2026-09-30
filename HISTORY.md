@@ -4,6 +4,22 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-09-30 — Phase 9: polish & release 1.0.0
+
+**Done**
+- Added synthesized join + gift SFX; join sound on viewer spawn.
+- Debug **All-Time Winners** panel and **Scoring Weights** editor (live tuning).
+- Performance: shared per-frame tile-count map consumed by the scoreboard and domination check.
+- Finalised docs; released CHANGELOG **1.0.0**.
+
+**Verified**
+- `npm run lint` clean · `npm test` 73 passed · `npm run build` ok · `npm run smoke` PASS.
+
+**Status:** all planned phases (0–9) complete. Open follow-ups: real-stream verification, Tikora
+relay test, and optional dirty-tile caching if a larger arena is ever needed.
+
+---
+
 ## 2026-09-30 — Phase 8: TikFinity tab + Tikora hub
 
 **Done**

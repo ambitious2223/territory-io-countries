@@ -28,7 +28,7 @@ import {
   updateTimer, updateGameOver, hideGameOver,
   updateControlBar, updatePauseOverlay,
   initControls, initDebugPanel, updateDebugPanel,
-  updateConnectionPanel, updateViewersPanel, updateCinematicPanel, updateTikoraPanel,
+  updateConnectionPanel, updateViewersPanel, updateCinematicPanel, updateTikoraPanel, updateWinnersPanel,
   getSelectedMap,
 } from './ui.js';
 
@@ -306,8 +306,18 @@ export class Game {
     this.scoring.applyEvent(event);
     if (event && event.type === 'gift') {
       const mapping = matchMapping(getMappings(), event);
-      if (mapping) executeGiftEffect(this, mapping, event);
+      if (mapping && executeGiftEffect(this, mapping, event)) {
+        this.audio.playGift(CONFIG.CANVAS_WIDTH / 2);
+      }
     }
+  }
+
+  tileCountsByTeam() {
+    const counts = new Map();
+    for (const team of this.teams) {
+      counts.set(team.id, this.grid.countTiles(team.color));
+    }
+    return counts;
   }
 
   spawnViewerMarble(profile, team) {
@@ -338,6 +348,7 @@ export class Game {
         color: team.color,
         teamName: team.name?.en || '',
       });
+      this.audio.playJoin(marble.x);
     }
     return marble;
   }
@@ -366,11 +377,10 @@ export class Game {
   }
 
   checkDomination() {
-    if (this.gameOver) return;
-    if (!this.grid.claimableTiles) return;
-    for (const marble of this.marbles) {
-      if (!marble.alive || marble.eliminated) continue;
-      const ratio = this.grid.countTiles(marble.color) / this.grid.claimableTiles;
+    if (this.gameOver || !this.grid.claimableTiles) return;
+    const counts = this.tileCountsByTeam();
+    for (const team of this.teams) {
+      const ratio = (counts.get(team.id) || 0) / this.grid.claimableTiles;
       if (ratio >= CONFIG.DOMINATION_THRESHOLD) {
         this.finishRound('domination');
         return;
@@ -558,6 +568,7 @@ export class Game {
       this.cinematic.draw(this.ctx);
     }
 
+    this.territoryCounts = this.tileCountsByTeam();
     renderScoreboard(this);
     updateControlBar(this);
     updateTimer(this.round.timeLeft);
@@ -567,6 +578,7 @@ export class Game {
     updateViewersPanel(this);
     updateCinematicPanel(this);
     updateTikoraPanel(this);
+    updateWinnersPanel(this);
 
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);

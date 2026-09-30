@@ -4,7 +4,7 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 2026-09-30
 
 ### Added
 - Full documentation set: README, AGENTS, GUARDRAILS, ARCHITECTURE, GAME_DESIGN, BRIDGE,
@@ -56,6 +56,10 @@ this project aims to follow [Semantic Versioning](https://semver.org/).
   routes effects via the shared executor and acknowledges them.
 - `GET/POST /api/tikora/config` (env `TIKORA_SLUG`/`TIKORA_KEY`/`TIKORA_RELAY_URL` + saved config)
   with **auto-connect** when enabled; debug **Tikora Hub** panel (key, relay, status).
+- Interaction audio: synthesized **join** blip and **gift** sparkle; join also plays on viewer spawn.
+- Debug **All-Time Winners** panel and **Scoring Weights** editor (live-updates `ScoringEngine`).
+- Performance: one shared per-frame tile-count map reused by the scoreboard and domination check
+  (removes repeated per-marble `countTiles` scans).
 
 ### Changed
 - Project re-scoped from "Territory With Swords" (local AI battle) to

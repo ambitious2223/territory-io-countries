@@ -28,7 +28,7 @@ export function renderScoreboard(game) {
     const flag = team.flagImage
       ? `<img class="sb-flag" src="${escapeHtml(team.flagImage)}" alt="" />`
       : `<span class="sb-emoji">${escapeHtml(team.emoji || '🏳️')}</span>`
-    const tiles = game.grid ? game.grid.countTiles(team.color) : 0
+    const tiles = game.territoryCounts ? game.territoryCounts.get(team.id) || 0 : 0
     const percent = claimable ? Math.round((tiles / claimable) * 100) : 0
     html += `<div class="sb-entry">
       <span class="sb-rank">${index + 1}</span>

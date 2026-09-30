@@ -1,4 +1,12 @@
 import { t } from './i18n.js';
+import { getWinners } from './winnersStore.js';
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return map[char];
+  });
+}
 
 export function updateLeaderboard(marbles) {
   const container = document.getElementById('leaderboard');
@@ -264,6 +272,37 @@ export function initCinematicPanel(game) {
   if (skip) {
     skip.addEventListener('click', () => game.cinematic.skip());
   }
+}
+
+const SCORING_FIELDS = ['giftPerCoin', 'like', 'comment', 'follow', 'share', 'tile'];
+
+export function initScoringPanel(game) {
+  const container = document.getElementById('scoring-panel-body');
+  if (!container) return;
+  container.innerHTML = SCORING_FIELDS.map((key) => (
+    `<div class="debug-row"><span>${key}</span><input class="scoring-input" data-key="${key}" type="number" step="0.01" min="0" value="${game.scoring.weights[key]}" style="width:64px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>`
+  )).join('');
+  container.querySelectorAll('input[data-key]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const value = Number(input.value);
+      if (Number.isFinite(value)) game.scoring.setWeights({ [input.dataset.key]: value });
+    });
+  });
+}
+
+export function updateWinnersPanel(game) {
+  if (!game.debugMode) return;
+  const container = document.getElementById('winners-panel-body');
+  if (!container) return;
+  const winners = getWinners().teams || [];
+  if (winners.length === 0) {
+    container.innerHTML = '<div class="debug-row" style="color:#555;"><span>—</span><span class="val"></span></div>';
+    return;
+  }
+  container.innerHTML = winners.slice(0, 10).map((entry) => {
+    const label = `${entry.emoji || ''} ${entry.name || ''}`.trim();
+    return `<div class="debug-row"><span>${escapeHtml(label)}</span><span class="val">${entry.wins}</span></div>`;
+  }).join('');
 }
 
 export function initTikoraPanel(game) {

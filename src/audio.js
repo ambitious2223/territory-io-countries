@@ -413,6 +413,63 @@ export class AudioEngine {
     osc.stop(t + 0.18);
   }
 
+  playJoin(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.34);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+    const pan = this._createPan(x);
+    const notes = [660, 990];
+    for (let i = 0; i < notes.length; i++) {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const noteT = t + i * 0.09;
+      osc.type = 'triangle';
+      osc.frequency.value = notes[i];
+      gain.gain.setValueAtTime(0, noteT);
+      gain.gain.linearRampToValueAtTime(0.14, noteT + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteT + 0.16);
+      osc.connect(gain);
+      gain.connect(pan);
+      v.addNode(osc);
+      v.addNode(gain);
+      osc.start(noteT);
+      osc.stop(noteT + 0.16);
+    }
+    v.addNode(pan);
+  }
+
+  playGift(x = CONFIG.CANVAS_WIDTH / 2) {
+    if (!this._canPlay()) return;
+    const v = this._acquireVoice(0.5);
+    if (!v) return;
+    const t = this.ctx.currentTime;
+    const pan = this._createPan(x);
+    const notes = [523, 659, 784, 1047];
+    for (let i = 0; i < notes.length; i++) {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const noteT = t + i * 0.06;
+      osc.type = 'sawtooth';
+      osc.frequency.value = notes[i];
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2600, noteT);
+      gain.gain.setValueAtTime(0, noteT);
+      gain.gain.linearRampToValueAtTime(0.1, noteT + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteT + 0.18);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(pan);
+      v.addNode(osc);
+      v.addNode(filter);
+      v.addNode(gain);
+      osc.start(noteT);
+      osc.stop(noteT + 0.18);
+    }
+    v.addNode(pan);
+  }
+
   toggle() {
     this.enabled = !this.enabled;
     if (this.masterGain) {
