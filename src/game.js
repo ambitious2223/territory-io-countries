@@ -7,6 +7,7 @@ import { JoinCinematic } from './joinCinematic.js';
 import { ScoringEngine } from './scoring.js';
 import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
+import { buildOverlayPayload } from './overlaySnapshot.js';
 import { addWinner } from './winnersStore.js';
 import { matchMapping } from './mappings.js';
 import { getMappings } from './mappingsStore.js';
@@ -88,6 +89,8 @@ export class Game {
     this.fpsFrames = 0;
     this.fpsTime = 0;
     this.lastFrameTime = 16.67;
+    this.claimSfxTimer = 0;
+    this.overlayTimer = 0;
 
     this._bindInput();
     initControls(this);
@@ -105,7 +108,8 @@ export class Game {
       switch (e.key) {
         case 'd': case 'D':
           this.debugMode = !this.debugMode;
-          document.getElementById('debug-panel').classList.toggle('visible', this.debugMode);
+          document.getElementById('debug-panel')?.classList.toggle('visible', this.debugMode);
+          document.getElementById('debug-fab')?.classList.toggle('active', this.debugMode);
           break;
         case ' ':
           e.preventDefault();
@@ -442,17 +446,31 @@ export class Game {
       return;
     }
 
+    this.grid.tick(dt);
+    if (this.claimSfxTimer > 0) this.claimSfxTimer -= dt;
+
     const alive = this.marbles.filter((m) => m.alive && !m.eliminated);
+    const changedColors = new Set();
 
     for (const m of alive) {
       const events = m.update(dt, this.grid);
       if (!events) continue;
       for (const event of events) {
         if (!event.converted) continue;
-        this.particles.emitSparks(event.x, event.y, event.color, 3);
-        this.audio.playClaim(event.x);
-        const filled = this.grid.autoFillEnclosures(m.color);
-        if (filled > 0) this.particles.emitSparks(event.x, event.y, event.color, filled * 2);
+        changedColors.add(m.color);
+        this.particles.emitSparks(event.x, event.y, event.color, CONFIG.SPARK_COUNT);
+        if (this.claimSfxTimer <= 0) {
+          this.audio.playClaim(event.x);
+          this.claimSfxTimer = CONFIG.CLAIM_SFX_MIN_INTERVAL;
+        }
+      }
+    }
+
+    for (const color of changedColors) {
+      const filled = this.grid.autoFillEnclosures(color);
+      if (filled > 0) {
+        const center = this.baseCenters[this.teams.findIndex((t) => t.color === color)];
+        if (center) this.particles.emitSparks(center.x, center.y, color, Math.min(24, filled * 2));
       }
     }
 
@@ -513,6 +531,11 @@ export class Game {
     }
 
     this.territoryCounts = this.tileCountsByTeam();
+    this.overlayTimer += this.lastFrameTime / 1000;
+    if (this.overlayTimer >= CONFIG.OVERLAY_BROADCAST_INTERVAL) {
+      this.overlayTimer = 0;
+      this.broadcastOverlay();
+    }
     renderScoreboard(this);
     updateControlBar(this);
     updateTimer(this.round.timeLeft);
@@ -530,6 +553,11 @@ export class Game {
       const domination = this.grid.claimableTiles ? tileCount / this.grid.claimableTiles : 0;
       updateGameOver(this.winner, this.analytics.duration, tileCount, domination, this.winReason);
     }
+  }
+
+  broadcastOverlay() {
+    if (!this.bridge) return;
+    this.bridge.sendOverlay(buildOverlayPayload(this));
   }
 
   drawBases(ctx) {

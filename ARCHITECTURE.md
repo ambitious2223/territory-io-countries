@@ -49,10 +49,11 @@
 | `main.js` | Bootstrap: create `Game`, connect bridge client, init panels, start loop |
 | `game.js` | Loop, round state machine, base setup, elimination, rendering orchestration, input |
 | `config.js` | All tunable constants (canvas, grid, convert, camera, scoring, cinematic) |
-| `grid.js` | Tile ownership, hit-convert state, containment/bounce, enclosure fill, borders |
+| `grid.js` | Tile ownership, one-touch capture + hold, containment/bounce, enclosure fill |
 | `map.js` | Wall/map generation |
 | `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
-| `marble.js` | Viewer ball: confined ricochet movement + contact-convert, rendering |
+| `marble.js` | Viewer ball: confined ricochet movement + one-touch capture, rendering |
+| `outline.js` | Marching-squares union outline + rounded-corner path (pure) |
 | `feed.js` | Conquest feed (joins / eliminations / winner) DOM list |
 | `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
@@ -62,13 +63,17 @@
 | `renderer.js` | Camera (pan/zoom/shake) + shared draw helpers |
 | `viewerManager.js` | Viewer/bot roster, active cap + reinforcement queue |
 | `ui.js` | DOM HUD, control bar, debug panels, game-over, i18n wiring |
+| `debugPanel.js` | Builds the floating tabbed debug panel markup |
+| `debugFab.js` | Draggable debug FAB, tab switching, overlay-link copy |
 | `debug.js` | Canvas debug overlay (vectors, hitboxes, FPS) |
 | `teams.js` | Team model + join-keyword matcher (pure) |
 | `teamRegistry.js` | Team sync via `/api/teams`, localStorage, flag images |
 | `teamsPanel.js` | Teams editor UI |
 | `scoring.js` | Interaction → score engine (pure) |
 | `round.js` | Round lifecycle state machine |
-| `scoreboard.js` | Team scoreboard rendering |
+| `scoreboard.js` | `buildStandings()` + team scoreboard rendering |
+| `overlaySnapshot.js` | Builds the serialisable leaderboard payload for the overlay |
+| `overlay/leaderboard.js` | Standalone OBS leaderboard page (bridge subscriber, no engine) |
 | `winnersStore.js` | Winners persistence + sync |
 | `mappings.js` | Gift-mapping matcher (pure) |
 | `mappingsStore.js` | Mapping persistence + sync |
@@ -109,6 +114,9 @@ See [BRIDGE.md](./BRIDGE.md) for the event contracts.
 Bridge source → normalize() → io.emit('tiktok-event', evt)
   → bridgeClient → ViewerManager.handleEvent(evt) + Scoring.applyEvent(evt)
     → Game state (balls, nations, queues, feed) → render()/HUD
+
+Game (authority) → every ~0.25 s → io.emit('overlay:state', snapshot)
+  → bridge relays 'overlay:leaderboard' (+ caches last) → leaderboard.html page
 ```
 
 Round flow:
@@ -126,7 +134,7 @@ IDLE → COUNTDOWN → PLAYING → ROUND_END → INTERMISSION → (auto) COUNTDO
 render()
   ctx.clear
   camera.apply()            # pan/zoom/shake; world space begins
-    grid.draw               # tiles + in-progress converts + nation borders
+    grid.draw               # tiles + freshness tint + rounded union nation outlines
     drawBases               # flag/emoji + name banner per nation
     powerups.draw
     particles.draw
@@ -146,11 +154,13 @@ intros, focus, and shake all feed the same transform. HUD is never transformed.
 
 There is no combat. A ball is a puck confined to its nation: `Grid.blocksAt(x, y, color)` returns
 true for any tile it does not own, so the ball **reflects** off the border and calls
-`Grid.convertOnHit(row, col, color)` — adding a convert chunk to `Tile.convert = { color,
-progress }`. When the meter fills the tile flips, the walkable region grows, and the ball can
-enter it; another nation hitting the same tile takes the meter over. `autoFillEnclosures` converts
-fully surrounded pockets instantly, `nearestOwnedTile` rescues a ball trapped by a flip, and a
-nation at zero tiles is eliminated.
+`Grid.convertOnHit(row, col, color)`, which **captures the tile in one touch** (`paintTile`) and
+starts a **hold** (`hold[r][c] = now + TILE_HOLD_TIME`). While held, no other colour can retake
+the tile, so contested borders cannot flicker; `grid.tick(dt)` advances the clock and holds expire
+naturally. `autoFillEnclosures` converts fully surrounded pockets instantly, `nearestOwnedTile`
+rescues a ball trapped by a flip, and a nation at zero tiles is eliminated. Nation outlines are
+traced from a boolean mask by `outline.traceOutline` (marching squares) and stroked as rounded
+union paths.
 
 ---
 
@@ -161,12 +171,14 @@ nation at zero tiles is eliminated.
 | --- | --- |
 | `tiktok-event` | unified event (see BRIDGE.md §4) |
 | `tiktok:status` | `{ username, mode, source, tiktokState, roomId, lastError }` |
+| `overlay:leaderboard` | `{ type, round, claimable, teams[], feed[], updatedAt }` (relayed + cached) |
 
 ### Client → Server
 | Event | Payload |
 | --- | --- |
 | `tiktok:connect` | `{ username, mode, tikfinityHost?, tikfinityPort? }` |
 | `tiktok:disconnect` | – |
+| `overlay:state` | leaderboard snapshot emitted by the game (~4 Hz) |
 | `flag:upload` (HTTP POST) | `{ teamId, imageData }` |
 | `mock:event` (HTTP POST) | `{ type, username, teamIndex, value }` |
 

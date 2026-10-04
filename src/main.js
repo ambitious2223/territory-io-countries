@@ -1,5 +1,7 @@
 import { Game } from './game.js';
 import { BridgeClient } from './net/bridgeClient.js';
+import { createDebugPanel } from './debugPanel.js';
+import { initDebugFab, initDebugTabs, initOverlayLink } from './debugFab.js';
 import { initConnectionPanel, initViewersPanel, initCinematicPanel, initTikoraPanel, initScoringPanel } from './ui.js';
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
@@ -7,6 +9,8 @@ import { getTeams, loadFromServer, subscribe } from './teamRegistry.js';
 import { setBaseUrl, loadWinners } from './winnersStore.js';
 import { initMappingsPanel } from './mappingsPanel.js';
 import { setBaseUrl as setMappingsBaseUrl, loadFromServer as loadMappings } from './mappingsStore.js';
+
+createDebugPanel();
 
 const canvas = document.getElementById('game-canvas');
 canvas.width = 1200;
@@ -61,6 +65,9 @@ async function bootstrapTikora() {
   }
 }
 
+initDebugTabs();
+initDebugFab(game);
+initOverlayLink();
 initConnectionPanel(game);
 initViewersPanel(game);
 initCinematicPanel(game);

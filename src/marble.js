@@ -84,44 +84,48 @@ export class Marble {
   }
 
   _moveStep(dt, grid) {
-    let nx = this.x + this.vx * dt;
-    let ny = this.y + this.vy * dt;
+    let x = this.x;
+    let y = this.y;
     let bounced = false;
     let converted = null;
 
-    if (grid.blocksAt(nx, this.y, this.color)) {
-      const { row, col } = grid.worldToGrid(nx, this.y);
+    const tx = x + this.vx * dt;
+    if (grid.blocksAt(tx, y, this.color)) {
+      const { row, col } = grid.worldToGrid(tx, y);
       const hit = grid.convertOnHit(row, col, this.color);
       this.vx = -this.vx;
-      nx = this.x;
       bounced = true;
       if (hit.owned) {
         converted = { row, col };
         this.conversions += 1;
       }
+    } else {
+      x = tx;
     }
 
-    if (grid.blocksAt(this.x, ny, this.color)) {
-      const { row, col } = grid.worldToGrid(this.x, ny);
+    const ty = y + this.vy * dt;
+    if (grid.blocksAt(x, ty, this.color)) {
+      const { row, col } = grid.worldToGrid(x, ty);
       const hit = grid.convertOnHit(row, col, this.color);
       this.vy = -this.vy;
-      ny = this.y;
       bounced = true;
       if (hit.owned) {
         converted = { row, col };
         this.conversions += 1;
       }
+    } else {
+      y = ty;
     }
 
     const maxX = grid.cols * grid.tileSize - this.radius;
     const maxY = grid.rows * grid.tileSize - this.radius;
-    if (nx < this.radius) { nx = this.radius; this.vx = Math.abs(this.vx); bounced = true; }
-    if (nx > maxX) { nx = maxX; this.vx = -Math.abs(this.vx); bounced = true; }
-    if (ny < this.radius) { ny = this.radius; this.vy = Math.abs(this.vy); bounced = true; }
-    if (ny > maxY) { ny = maxY; this.vy = -Math.abs(this.vy); bounced = true; }
+    if (x < this.radius) { x = this.radius; this.vx = Math.abs(this.vx); bounced = true; }
+    if (x > maxX) { x = maxX; this.vx = -Math.abs(this.vx); bounced = true; }
+    if (y < this.radius) { y = this.radius; this.vy = Math.abs(this.vy); bounced = true; }
+    if (y > maxY) { y = maxY; this.vy = -Math.abs(this.vy); bounced = true; }
 
-    this.x = nx;
-    this.y = ny;
+    this.x = x;
+    this.y = y;
 
     if (!bounced) return null;
 

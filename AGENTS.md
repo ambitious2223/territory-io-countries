@@ -37,7 +37,10 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Join inputs | number · ISO2 · English name · Arabic name · flag emoji (fuzzy) |
 | Flags | **Streamer-uploaded images**, consistent 3:2 save + upload helper |
 | Combat | **None** — no swords/HP; conflict is territory only |
-| Territory | **Home bases + confined ricochet balls**; border contact converts tiles |
+| Territory | **Home bases + confined ricochet balls**; one touch claims a tile (short post-capture hold) |
+| Borders | **Rounded union outlines** (marching squares), not per-tile seams |
+| Debug UI | **Floating draggable FAB + tabbed panel** (no top-bar Debug button) |
+| Overlay | **`/leaderboard.html`** display-only subscriber fed by a bridge relay |
 | Scoring | Gift/interaction score is tunable, but the round is won by **land** |
 | Round | **3 min** + ~**20 s** intermission, auto-loop, manual override always available |
 | Win | **Most territory** at time-up (or 65% domination) |

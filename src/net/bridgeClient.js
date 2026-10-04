@@ -8,6 +8,7 @@ export class BridgeClient {
     this.socket = null
     this.eventListeners = new Set()
     this.statusListeners = new Set()
+    this.overlayListeners = new Set()
   }
 
   connect() {
@@ -22,6 +23,20 @@ export class BridgeClient {
 
     this.socket.on('tiktok-event', (event) => this._emit('event', event))
     this.socket.on('tiktok:status', (status) => this._emit('status', status))
+    this.socket.on('overlay:leaderboard', (payload) => this._emitOverlay(payload))
+  }
+
+  onOverlay(fn) {
+    this.overlayListeners.add(fn)
+    return () => this.overlayListeners.delete(fn)
+  }
+
+  sendOverlay(payload) {
+    this.socket?.emit('overlay:state', payload)
+  }
+
+  _emitOverlay(payload) {
+    for (const fn of this.overlayListeners) fn(payload)
   }
 
   onEvent(fn) {

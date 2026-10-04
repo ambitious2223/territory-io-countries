@@ -4,6 +4,32 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.2.0] - 2026-10-04
+
+### Changed
+- **One-touch capture.** Any contact claims a tile outright — neutral or enemy. The two-hit
+  convert meter (and its floating inset-square rendering, the main visual clutter) is gone.
+- **Post-capture hold.** A freshly claimed tile is hardened for `TILE_HOLD_TIME` (~2.5 s) so a
+  contested border can't flicker; the enemy must wait it out before retaking. A subtle freshness
+  tint fades as the hold expires.
+- **Rounded union outlines.** Nation borders are now traced with marching squares
+  (`src/outline.js`) and stroked as one continuous rounded path instead of per-tile seams.
+- **Quieter feedback.** Claim SFX is throttled and sparks reduced; enclosure fill runs once per
+  frame per changed colour instead of per hit. Ball speed nudged to 1.9 px/frame.
+
+### Added
+- **Floating draggable debug button (FAB)** replaces the top-bar Debug button. Translucent,
+  repositionable, click to open/close; position + open state persist. The `D` hotkey still works.
+- **Tabbed debug panel** (Connection / Players / Content / Match / System) rebuilt in
+  `src/debugPanel.js` + `src/debugFab.js`; markup moved out of `index.html`.
+- **Live leaderboard overlay** at `/leaderboard.html` — standalone OBS browser-source page showing
+  leaderboard, conquest feed and round timer, with URL params (`rows`, `feed`, `theme`, `bg`,
+  `rtl`, `scale`). Served over a new bridge relay (`overlay:state` → `overlay:leaderboard`) with
+  the last snapshot cached for late connections. Copy/Open link in the debug System tab.
+
+### Removed
+- `Grid` convert state (`convert[][]`, chunk constants) and the per-tile border renderer.
+
 ## [2.1.0] - 2026-09-30
 
 ### Changed

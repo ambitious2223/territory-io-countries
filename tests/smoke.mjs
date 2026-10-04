@@ -81,7 +81,33 @@ async function main() {
   if (event.type !== 'chat' || event.message !== 'SA') throw new Error('unexpected event payload')
   console.log(`event received — ${event.username}: ${event.message}`)
 
+  const overlaySocket = io(URL, { transports: ['websocket'] })
+  await new Promise((resolve, reject) => {
+    overlaySocket.on('connect', resolve)
+    overlaySocket.on('connect_error', reject)
+    setTimeout(() => reject(new Error('overlay socket timeout')), 5000)
+  })
+  const overlayReceived = new Promise((resolve, reject) => {
+    overlaySocket.on('overlay:leaderboard', resolve)
+    setTimeout(() => reject(new Error('no overlay payload relayed')), 5000)
+  })
+  socket.emit('overlay:state', { probe: 'ok' })
+  const relayed = await overlayReceived
+  if (relayed.probe !== 'ok') throw new Error('overlay relay payload mismatch')
+  console.log('overlay relay ok')
+
+  const lateSocket = io(URL, { transports: ['websocket'] })
+  const cached = await new Promise((resolve, reject) => {
+    lateSocket.on('overlay:leaderboard', resolve)
+    lateSocket.on('connect_error', reject)
+    setTimeout(() => reject(new Error('no cached overlay snapshot')), 5000)
+  })
+  if (cached.probe !== 'ok') throw new Error('overlay cache mismatch')
+  console.log('overlay cache replay ok')
+
   socket.close()
+  overlaySocket.close()
+  lateSocket.close()
   await stopChild()
   console.log('SMOKE PASS')
 }

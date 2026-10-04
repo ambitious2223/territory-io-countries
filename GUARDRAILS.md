@@ -93,7 +93,7 @@ Non-negotiable rules for every contribution. If a rule blocks you, raise it as a
 - `src/renderer.js` — only canvas drawing and camera transform.
 - `src/game.js` — only orchestration, loop, input, lifecycle.
 - `src/grid.js` / `src/map.js` — only territory data and graph/base operations.
-- `src/marble.js` — only ball targeting, movement and slow-convert behaviour.
+- `src/marble.js` — only ball movement (confined ricochet) and capture behaviour.
 - `src/scoring.js` — only interaction → score math (no DOM, no canvas).
 - `src/teams.js` — only team model and join-keyword matching (pure, unit-tested).
 - `src/net/bridgeClient.js` — only socket transport + status; no game rules.

@@ -20,7 +20,7 @@ function baseLayout() {
   return layout
 }
 
-describe('Grid hit-conversion', () => {
+describe('Grid one-touch capture', () => {
   it('starts neutral except for the bases', () => {
     const grid = new Grid()
     grid.init(makeWalls(), baseLayout(), [RED, BLUE])
@@ -29,31 +29,43 @@ describe('Grid hit-conversion', () => {
     expect(grid.countTiles(CONFIG.NEUTRAL_COLOR)).toBe(CONFIG.GRID_ROWS * CONFIG.GRID_COLS - 5)
   })
 
-  it('takes two hits to claim neutral land', () => {
+  it('claims neutral land in a single hit', () => {
     const grid = new Grid()
     grid.init(makeWalls(), baseLayout(), [RED, BLUE])
-    expect(grid.convertOnHit(7, 10, RED).owned).toBe(false)
-    expect(grid.convertOnHit(7, 10, RED).owned).toBe(true)
+    const hit = grid.convertOnHit(7, 10, RED)
+    expect(hit.owned).toBe(true)
+    expect(hit.from).toBe(CONFIG.NEUTRAL_COLOR)
     expect(grid.getOwner(7, 10)).toBe(RED)
   })
 
-  it('takes more hits to eat enemy land', () => {
+  it('claims enemy land in a single hit', () => {
     const grid = new Grid()
     grid.init(makeWalls(), baseLayout(), [RED, BLUE])
-    const hits = Math.ceil(1 / CONFIG.CONVERT_ENEMY_HIT_CHUNK)
-    let owned = false
-    for (let i = 0; i < hits - 1; i++) owned = grid.convertOnHit(7, 13, RED).owned
-    expect(owned).toBe(false)
-    expect(grid.convertOnHit(7, 13, RED).owned).toBe(true)
+    const hit = grid.convertOnHit(7, 13, RED)
+    expect(hit.owned).toBe(true)
+    expect(hit.from).toBe(BLUE)
     expect(grid.getOwner(7, 13)).toBe(RED)
   })
 
-  it('lets an opposing nation take over an in-progress tile', () => {
+  it('holds a freshly captured tile against the enemy', () => {
     const grid = new Grid()
     grid.init(makeWalls(), baseLayout(), [RED, BLUE])
-    grid.convertOnHit(7, 10, RED)
-    expect(grid.convertOnHit(7, 10, BLUE).owned).toBe(false)
-    expect(grid.getOwner(7, 10)).toBe(CONFIG.NEUTRAL_COLOR)
+    grid.convertOnHit(7, 13, RED)
+    expect(grid.isHeld(7, 13)).toBe(true)
+    const blocked = grid.convertOnHit(7, 13, BLUE)
+    expect(blocked.owned).toBe(false)
+    expect(blocked.blocked).toBe(true)
+    expect(grid.getOwner(7, 13)).toBe(RED)
+  })
+
+  it('lets the enemy retake once the hold expires', () => {
+    const grid = new Grid()
+    grid.init(makeWalls(), baseLayout(), [RED, BLUE])
+    grid.convertOnHit(7, 13, RED)
+    grid.tick(CONFIG.TILE_HOLD_TIME + 0.1)
+    expect(grid.isHeld(7, 13)).toBe(false)
+    expect(grid.convertOnHit(7, 13, BLUE).owned).toBe(true)
+    expect(grid.getOwner(7, 13)).toBe(BLUE)
   })
 
   it('blocks movement into any tile a nation does not own', () => {

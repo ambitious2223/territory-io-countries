@@ -15,6 +15,7 @@ if (existsSync(PUBLIC_DIR)) app.use(express.static(PUBLIC_DIR))
 if (existsSync(DIST_DIR)) app.use(express.static(DIST_DIR))
 
 const manager = new ConnectionManager()
+let lastOverlay = null
 
 manager.on('status', (status) => io.emit('tiktok:status', status))
 manager.on('event', (event) => io.emit('tiktok-event', event))
@@ -23,8 +24,13 @@ registerHttpRoutes(app, { manager, getClientCount: () => io.engine.clientsCount 
 
 io.on('connection', (socket) => {
   socket.emit('tiktok:status', manager.snapshot())
+  if (lastOverlay) socket.emit('overlay:leaderboard', lastOverlay)
   socket.on('tiktok:connect', (payload) => manager.reconnect(payload || {}))
   socket.on('tiktok:disconnect', () => manager.stop())
+  socket.on('overlay:state', (payload) => {
+    lastOverlay = payload
+    socket.broadcast.emit('overlay:leaderboard', payload)
+  })
 })
 
 server.listen(BRIDGE_PORT, () => {

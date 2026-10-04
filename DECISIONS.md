@@ -13,6 +13,34 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Rationale:** Matches shipped behaviour; avoids a phantom mode that silently fell back to Direct.
 - **Alternatives:** Implement a status-only `tikora` mode (ambiguous; carries no chat events).
 
+## D-027 — Leaderboard overlay delivered over the bridge relay
+- **Context:** The streamer wants a second OBS browser source showing a styled live leaderboard,
+  conquest feed and timer. The game is client-side, so a second page has no shared state.
+- **Decision:** The main game (the authority) emits a serialisable snapshot (`overlay:state`, ~4 Hz)
+  over its existing bridge socket; `server/index.js` relays it as `overlay:leaderboard`, caches the
+  latest, and replays it to newly connected sockets. `leaderboard.html` is a **display-only**
+  subscriber (`src/overlay/leaderboard.js`) that never runs the engine. Styles/params via URL.
+- **Rationale:** Works across separate tabs, browsers, OBS sources and machines; the bridge already
+  fronts every client; caching removes the "empty until next tick" flash.
+- **Alternatives:** BroadcastChannel/localStorage (same-browser only); running a second engine.
+
+## D-026 — Rounded union nation outlines
+- **Context:** Per-tile border seams read as a noisy grid rather than clean borders.
+- **Decision:** `src/outline.js` traces each nation's tile mask with marching squares, then
+  `strokeLoops` draws one continuous path with explicit rounded corners (clamped corner radius).
+- **Rationale:** Crisp, curved borders; pure geometry so it is unit-tested off-canvas.
+
+## D-025 — One-touch capture with a short post-capture hold
+- **Context:** Two-hit neutral conversion left half-converted tiles rendering as floating inset
+  squares — visually cluttered — and border tug-of-war flickered.
+- **Decision:** A single contact captures any non-owned tile. The captured tile is **held** for
+  `TILE_HOLD_TIME` (~2.5 s) during which no other colour can retake it; holds expire off a grid
+  clock (`grid.tick`). The convert meter is removed entirely.
+- **Rationale:** Matches "one hit is enough", removes the clutter source, and the hold keeps enemy
+  borders stable without slowing the initial land-grab.
+- **Alternatives:** Instant capture with no hold (flickery borders); neutral 1 / enemy N hits
+  (reintroduces per-tile progress visuals).
+
 ## D-024 — Confined ricochet balls; contact-accumulated conversion
 - **Context:** Balls that marched to the frontier one tile at a time drifted far from their base and
   left ragged, intermingled borders — it still read as a mess.

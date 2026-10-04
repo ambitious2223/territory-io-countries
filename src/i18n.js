@@ -63,6 +63,14 @@ const EN = {
   'debug.active': 'Active',
   'debug.poolFree': 'Pool Free',
   'debug.tileOwnership': 'Tile Ownership',
+  'debug.tab.connection': 'Connection',
+  'debug.tab.players': 'Players',
+  'debug.tab.content': 'Content',
+  'debug.tab.match': 'Match',
+  'debug.tab.system': 'System',
+  'debug.overlay': 'Leaderboard Overlay',
+  'debug.copy': 'Copy',
+  'debug.open': 'Open',
   'pause.paused': 'PAUSED',
   'pause.hint': 'Press Space to resume'
 }
@@ -132,6 +140,14 @@ const AR = {
   'debug.active': 'نشط',
   'debug.poolFree': 'متاح',
   'debug.tileOwnership': 'ملكية المربعات',
+  'debug.tab.connection': 'الاتصال',
+  'debug.tab.players': 'اللاعبون',
+  'debug.tab.content': 'المحتوى',
+  'debug.tab.match': 'المباراة',
+  'debug.tab.system': 'النظام',
+  'debug.overlay': 'تراصف المتصدرين',
+  'debug.copy': 'نسخ',
+  'debug.open': 'فتح',
   'pause.paused': 'متوقف',
   'pause.hint': 'اضغط مسافة للاستئناف'
 }

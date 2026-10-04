@@ -21,7 +21,9 @@
 ### Required unit coverage (pure modules)
 - `src/teams.js` — join-keyword matcher: number, ISO2, EN, AR, emoji, fuzzy, negatives.
 - `src/zones.js` — home-base layout for N = 2…12 (one full base per nation, rest neutral).
-- `src/marble.js` + `src/grid.js` — confined ricochet + contact-convert (needs N hits → flip).
+- `src/marble.js` + `src/grid.js` — confined ricochet + one-touch capture and post-capture hold.
+- `src/outline.js` — marching-squares union outline + rounded corner paths.
+- `src/overlaySnapshot.js` — leaderboard snapshot shape, sorting and percents.
 - `src/scoring.js` — each source weight, gift scaling, round settlement/tie-break.
 - `src/round.js` — countdown → playing → intermission transitions.
 - `src/viewerManager.js` — viewer cap + reinforcement-queue ordering.
@@ -52,13 +54,17 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 
 - [ ] `npm run dev` starts bridge (:3020) + app (:1935) with no errors.
 - [ ] `/health` reports the expected `source` and `tiktokState`.
-- [ ] Debug → Connect shows the right status badge for the chosen source.
+- [ ] Debug → Connect shows the right status badge for the chosen source (opened via the FAB).
+- [ ] The floating debug button drags, toggles the tabbed panel, and remembers its spot.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
 - [ ] Flag upload saves a 3:2 image and appears on the team card.
 - [ ] 30 mock joins: ≤ 24 active, the rest queued and swapped in on death.
 - [ ] Join cinematic pans/zooms to spawn; blur slider changes the backdrop.
 - [ ] The arena starts neutral with one visible home base per nation.
-- [ ] Balls ricochet off their border, **never leave their colour**, and each contact converts.
+- [ ] Balls ricochet off their border, **never leave their colour**, and a **single touch** flips a
+      tile (no half-convert squares). A freshly taken tile resists a retake for a couple of seconds.
+- [ ] Nation borders render as clean rounded outlines, not a grid of seams.
+- [ ] `/leaderboard.html` in a second browser window mirrors the leaderboard, feed and timer.
 - [ ] A nation reduced to zero tiles is eliminated (greyed scoreboard) and stops spawning.
 - [ ] The land leader wins at time-up; 65% triggers an immediate domination win.
 - [ ] Conquest feed shows joins, eliminations and the winner (EN and AR).

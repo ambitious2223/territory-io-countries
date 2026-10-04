@@ -95,6 +95,21 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 12 — Clean capture, debug workspace, overlay
+- [x] One-touch capture; convert meter + inset rendering removed
+- [x] Post-capture **hold** (`TILE_HOLD_TIME`) so borders can't flicker; freshness tint
+- [x] Rounded union nation outlines via `src/outline.js` (marching squares)
+- [x] Quieter feedback: throttled claim SFX, fewer sparks, one enclosure-fill pass per frame
+- [x] Draggable translucent debug **FAB** + tabbed debug workspace (`debugPanel.js`/`debugFab.js`)
+- [x] Live **leaderboard overlay** at `/leaderboard.html` over a bridge relay (`overlay:state`);
+      `buildStandings()`/`buildOverlayPayload()`; Vite multi-page build
+- [x] Tests (outline/overlay/convert), lint/test/build/smoke green; released **2.2.0**
+
+**Verify:** one touch flips a tile and no half-convert squares appear; the FAB drags/opens; the
+overlay URL renders the live leaderboard + feed + timer in a second browser source.
+
+---
+
 ## Phase 11 — Ricochet confinement
 - [x] Balls are confined to their nation and **reflect** off neutral/enemy borders
 - [x] Contact-accumulated conversion (no sit-timer, no pathfinding)

@@ -4,6 +4,33 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-04 — One-touch capture, clean borders, overlay + debug FAB (2.2.0)
+
+User feedback: the half-convert inset squares looked cluttered and two-hit capture felt wrong;
+wanted one touch, a floating draggable debug button, and a styled live leaderboard overlay URL.
+
+**Done**
+- **Capture:** one contact claims a tile outright. Removed the convert meter (`grid.convert`) and
+  its inset rendering; added a per-tile **hold** (`TILE_HOLD_TIME` ~2.5 s) off a grid clock so
+  enemy borders can't flicker. Neutral/enemy handled identically; enemy is "slower to hold" by
+  waiting out the hold.
+- **Borders:** new pure `src/outline.js` (marching squares + rounded corner strokes); `grid.draw`
+  renders one rounded union outline per nation.
+- **Feedback:** throttled claim SFX, fewer sparks, `autoFillEnclosures` once per frame per colour;
+  ball speed 2.2 → 1.9.
+- **Debug UI:** top-bar Debug button replaced by a translucent draggable **FAB** (`debugFab.js`)
+  with persisted position/state; panel rebuilt as tabbed workspace (`debugPanel.js`) and moved out
+  of `index.html`; `D` hotkey kept.
+- **Overlay:** `leaderboard.html` + `src/overlay/*` display-only page (leaderboard + conquest feed
+  + timer, URL-param themed). Bridge relays `overlay:state` → `overlay:leaderboard` and caches the
+  last snapshot. Shared `buildStandings()`/`buildOverlayPayload()`; Vite multi-page build.
+
+**Verified**
+- `npm run lint` clean · `npm test` **90 passed** (new outline/overlay tests) · `npm run build`
+  OK (index + leaderboard) · `npm run smoke` PASS incl. overlay relay + cache replay.
+
+---
+
 ## 2026-09-30 — Ricochet balls (2.1.0)
 
 Paired with the user's rule: *"every ball, whenever it reaches a new pixel, has to bounce back."*

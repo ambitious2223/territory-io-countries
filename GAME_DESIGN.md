@@ -60,13 +60,17 @@ a skip. A **blur percentage slider** (0–100, debug panel) blurs the backdrop d
   reaches a tile that is not its own (neutral, enemy or wall), it **claims on contact and ricochets
   back** — the nation's border is literally the wall it bounces off. This keeps every territory
   self-contained and its edges crisp.
-- Every contact adds to that tile's slow-convert meter (`CONVERT_HIT_CHUNK` for neutral land,
-  `CONVERT_ENEMY_HIT_CHUNK` for enemy land). When the meter fills the tile flips to the nation,
-  the "box" grows, and balls can then enter it. **Faster balls hit the border more often and more
-  balls cover more border, so speed and viewer count decide how fast a nation expands.**
-- When two nations hit the same tile the **last hit takes over** the meter, so borders clash and
-  get eaten. Balls never pass through foreign land (and never through each other).
-- Each bounce adds a small random angle so balls don't settle into repetitive orbits.
+- A single contact captures the tile — no meter, no second hit. The moment a ball touches neutral
+  or enemy land it flips to the nation, the "box" grows, and balls can then enter it. **Faster
+  balls hit the border more often and more balls cover more border, so speed and viewer count
+  decide how fast a nation expands.**
+- A freshly captured tile is **hardened for a short hold** (`TILE_HOLD_TIME`, ~2.5 s) during which
+  no other colour can take it back, so a contested border cannot flicker. Once the hold expires the
+  tile is normal again and can be re-eaten.
+- Balls never pass through foreign land (and never through each other). Each bounce adds a small
+  random angle so balls don't settle into repetitive orbits.
+- Nation outlines are drawn as one **rounded union shape** so borders read as clean curves rather
+  than a grid of per-tile seams.
 - `autoFillEnclosures` instantly claims any pocket fully surrounded by a nation's colour.
 - If an enemy converts the tile a ball is standing on, the ball is **snapped to the nearest owned
   tile** so nothing is stranded in foreign land.
@@ -143,10 +147,11 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 | Grid | 24×16 tiles (50 px) |
 | Nations | 2–12 (default 8) |
 | Home base | 4×4 tiles, spread across the arena |
-| Ball radius / speed | 15 px / 2.2 px·frame |
-| Convert per contact | 0.5 neutral · 0.2 enemy (of a tile meter) |
-| Bounce jitter | ±0.35 rad per bounce |
-| Borders | 3 px, nation colour (darkened) |
+| Ball radius / speed | 15 px / 1.9 px·frame |
+| Capture | one touch per tile (neutral or enemy) |
+| Tile hold | ~2.5 s before a captured tile can be retaken |
+| Bounce jitter | ±0.3 rad per bounce |
+| Borders | rounded union outline, ~4 px nation colour (darkened) |
 | Active ball cap | 24 |
 | Round / intermission | 180 s / 20 s |
 | Win | Most territory (or 65% domination) |

@@ -30,7 +30,8 @@ export default [
         Image: 'readonly',
         FileReader: 'readonly',
         localStorage: 'readonly',
-        navigator: 'readonly'
+        navigator: 'readonly',
+        URLSearchParams: 'readonly'
       }
     },
     rules: commonRules

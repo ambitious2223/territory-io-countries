@@ -43,7 +43,6 @@ export function updateControlBar(game) {
   document.getElementById('btn-2x').classList.toggle('speed-active', game.speed === 2);
   document.getElementById('btn-4x').classList.toggle('speed-active', game.speed === 4);
 
-  document.getElementById('btn-debug').classList.toggle('active', game.debugMode);
   document.getElementById('btn-mute').textContent = game.audio.enabled ? t('control.mute') : t('control.unmute');
   document.getElementById('btn-mute').classList.toggle('active', !game.audio.enabled);
 }
@@ -75,10 +74,6 @@ export function initControls(game) {
   document.getElementById('btn-1x').addEventListener('click', () => { game.speed = 1; });
   document.getElementById('btn-2x').addEventListener('click', () => { game.speed = 2; });
   document.getElementById('btn-4x').addEventListener('click', () => { game.speed = 4; });
-  document.getElementById('btn-debug').addEventListener('click', () => {
-    game.debugMode = !game.debugMode;
-    document.getElementById('debug-panel').classList.toggle('visible', game.debugMode);
-  });
   document.getElementById('btn-mute').addEventListener('click', () => {
     game.audio.init(); game.audio.unlock();
     game.audio.toggle();

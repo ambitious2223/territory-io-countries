@@ -14,16 +14,18 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.1.0
+## Status — v2.2.0
 
-Every gate is green: `npm run lint`, `npm test` (81 tests incl. a headless game-loop test),
-`npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (90 tests incl. outline/overlay + a headless
+game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
 - **Conquest core:** neutral arena, one **home base per nation**, one **ball per viewer**. A ball
-  is **confined to its nation** and **ricochets off the border**, adding convert progress on every
-  contact, so borders creep and get eaten. No swords, no HP — territory is the only conflict.
+  is **confined to its nation** and **ricochets off the border**, **claiming a tile on a single
+  touch** (neutral or enemy) so borders creep and get eaten. A freshly claimed tile is held for a
+  couple of seconds so contested borders don't flicker. No swords, no HP — territory is the only
+  conflict.
 - **Conquerable bases / last stand:** a nation at zero tiles is **eliminated** for the round.
 - **Win by land:** most territory at time-up, or an immediate 65% **domination** win.
 - TikTok bridge with **auto-connect**: **Direct** (`tiktok-live-connector`) + **TikFinity**
@@ -34,7 +36,10 @@ Every gate is green: `npm run lint`, `npm test` (81 tests incl. a headless game-
   (number · ISO2 · English · Arabic · emoji, fuzzy matching).
 - Balls with profile photos, a hard cap + reinforcement queue, and AI fill.
 - **Presentation:** nation scoreboard (territory %, active balls, leader crown), a live **Conquest
-  feed**, on-canvas **base banners** and thick nation **borders**.
+  feed**, on-canvas **base banners**, and **rounded union borders**. A floating draggable button
+  opens a tabbed debug workspace (position + state persist).
+- **Overlay URL:** a standalone `/leaderboard.html` page (leaderboard + conquest feed + timer) for
+  a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - Camera pan/zoom **join cinematic** with a profile-photo intro card and adjustable blur.
 - Gift → power-up mappings (overcharge, color bomb, area convert, spawn ally, instant claim) with
   an in-app editor; auto-looping timed rounds and persisted all-time winners.
@@ -55,10 +60,29 @@ npm run dev            # starts bridge server (:3020) + Vite app (:1935)
 | Surface | URL |
 | --- | --- |
 | Game (put this in OBS) | http://localhost:1935 |
+| Standalone leaderboard overlay | http://localhost:1935/leaderboard.html |
 | Bridge health | http://localhost:3020/health |
 
 On boot the bridge **auto-connects** using `.tiktok-config.json` (username + mode). No TikTok
 username yet? It starts in **Mock** mode so the game is fully testable offline.
+
+### Standalone leaderboard overlay
+
+The debug **System** tab shows a copyable overlay URL. Add it as a second **OBS browser source**
+(transparent background by default). Customise with query params:
+
+`http://localhost:1935/leaderboard.html?rows=8&feed=1&theme=glass&bg=0&rtl=0&scale=1`
+
+| Param | Meaning |
+| --- | --- |
+| `rows` | Max nations shown (default 12) |
+| `feed` | `0` hides the conquest feed |
+| `theme` | `glass` (default) or `neon` |
+| `bg` | `1` adds a glass panel background (default transparent) |
+| `rtl` | `1` for right-to-left |
+| `scale` | UI scale multiplier (e.g. `1.2`) |
+
+The page is a **display-only subscriber**; the main game tab must be open and publishing.
 
 ---
 
@@ -81,7 +105,8 @@ username yet? It starts in **Mock** mode so the game is fully testable offline.
 
 ```
 TERRITORY WITH SWORDS/
-├── index.html            # Game shell + OBS overlay + debug panel markup
+├── index.html            # Game shell + HUD markup
+├── leaderboard.html      # Standalone OBS leaderboard overlay page
 ├── server/               # Bridge server (see BRIDGE.md)
 │   ├── index.js          # Express + Socket.IO + auto-connect
 │   ├── connectionManager.js
@@ -95,6 +120,10 @@ TERRITORY WITH SWORDS/
 ├── public/
 │   └── flags/            # Streamer-uploaded flag images
 ├── src/                  # Game engine, systems, bridge client, i18n, Tikora client
+│   ├── outline.js        # Rounded union border tracing (marching squares)
+│   ├── debugPanel.js     # Tabbed debug panel markup
+│   ├── debugFab.js       # Draggable debug button + tabs
+│   └── overlay/          # Standalone leaderboard subscriber + styles
 ├── config/               # teams.json, mappings.json (+ winners.json at runtime)
 ├── tikora.manifest.json  # Effects Tikora reads
 ├── .tiktok-config.json   # Auto-connect configuration

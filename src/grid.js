@@ -1,6 +1,7 @@
 import { CONFIG } from './config.js';
 import { WALL } from './map.js';
 import { shade } from './utils.js';
+import { traceOutline, strokeLoops } from './outline.js';
 
 const DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
@@ -11,27 +12,29 @@ export class Grid {
     this.tileSize = CONFIG.TILE_SIZE;
     this.tiles = [];
     this.owners = [];
-    this.convert = [];
+    this.hold = [];
     this.walls = null;
     this.claimableTiles = 0;
+    this.now = 0;
   }
 
   init(walls, layout = null, colors = null) {
     this.walls = walls;
     this.tiles = [];
     this.owners = [];
-    this.convert = [];
+    this.hold = [];
     this.claimableTiles = 0;
+    this.now = 0;
 
     for (let r = 0; r < this.rows; r++) {
       this.tiles[r] = [];
       this.owners[r] = [];
-      this.convert[r] = [];
+      this.hold[r] = [];
       for (let c = 0; c < this.cols; c++) {
         if (walls[r][c]) {
           this.tiles[r][c] = WALL;
           this.owners[r][c] = WALL;
-          this.convert[r][c] = null;
+          this.hold[r][c] = 0;
         } else {
           let color = CONFIG.NEUTRAL_COLOR;
           if (layout && colors) {
@@ -40,11 +43,15 @@ export class Grid {
           }
           this.tiles[r][c] = color;
           this.owners[r][c] = color;
-          this.convert[r][c] = null;
+          this.hold[r][c] = 0;
           this.claimableTiles++;
         }
       }
     }
+  }
+
+  tick(dt) {
+    this.now += dt;
   }
 
   inBounds(row, col) {
@@ -66,7 +73,6 @@ export class Grid {
     if (this.owners[row][col] === WALL) return;
     this.tiles[row][col] = color;
     this.owners[row][col] = color;
-    this.convert[row][col] = null;
   }
 
   worldToGrid(x, y) {
@@ -91,21 +97,25 @@ export class Grid {
     return owner === WALL || owner !== color;
   }
 
+  isHeld(row, col) {
+    if (!this.inBounds(row, col)) return false;
+    return this.hold[row][col] > this.now;
+  }
+
+  holdRatio(row, col) {
+    if (!this.isHeld(row, col)) return 0;
+    return Math.min(1, (this.hold[row][col] - this.now) / CONFIG.TILE_HOLD_TIME);
+  }
+
   convertOnHit(row, col, color) {
     if (!this.inBounds(row, col)) return { owned: false };
     const owner = this.owners[row][col];
     if (owner === WALL || owner === color) return { owned: false };
+    if (this.isHeld(row, col)) return { owned: false, blocked: true };
 
-    const chunk = owner === CONFIG.NEUTRAL_COLOR ? CONFIG.CONVERT_HIT_CHUNK : CONFIG.CONVERT_ENEMY_HIT_CHUNK;
-    const current = this.convert[row][col];
-    const progress = current && current.color === color ? current.progress + chunk : chunk;
-
-    if (progress >= 1) {
-      this.paintTile(row, col, color);
-      return { owned: true };
-    }
-    this.convert[row][col] = { color, progress };
-    return { owned: false };
+    this.paintTile(row, col, color);
+    this.hold[row][col] = this.now + CONFIG.TILE_HOLD_TIME;
+    return { owned: true, from: owner };
   }
 
   nearestOwnedTile(row, col, color) {
@@ -205,12 +215,11 @@ export class Grid {
         ctx.fillStyle = owner;
         ctx.fillRect(tx, ty, size, size);
 
-        const conv = this.convert[r][c];
-        if (conv) {
-          const inset = Math.min(size * 0.45, (size * (1 - conv.progress)) / 2);
-          ctx.globalAlpha = 0.85;
-          ctx.fillStyle = conv.color;
-          ctx.fillRect(tx + inset, ty + inset, size - inset * 2, size - inset * 2);
+        if (this.isHeld(r, c)) {
+          const ratio = this.holdRatio(r, c);
+          ctx.globalAlpha = 0.16 * ratio;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(tx, ty, size, size);
           ctx.globalAlpha = 1;
         }
       }
@@ -232,31 +241,30 @@ export class Grid {
 
   drawBorders(ctx) {
     const size = this.tileSize;
-    ctx.lineWidth = CONFIG.BORDER_WIDTH;
-    ctx.lineCap = 'round';
+    const colors = new Map();
 
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         const owner = this.owners[r][c];
         if (owner === WALL || owner === CONFIG.NEUTRAL_COLOR) continue;
-
-        const right = this.getOwner(r, c + 1);
-        const down = this.getOwner(r + 1, c);
-        ctx.strokeStyle = shade(owner, -0.25);
-
-        if (right !== owner && right !== null) {
-          ctx.beginPath();
-          ctx.moveTo((c + 1) * size, r * size);
-          ctx.lineTo((c + 1) * size, (r + 1) * size);
-          ctx.stroke();
+        let mask = colors.get(owner);
+        if (!mask) {
+          mask = [];
+          for (let i = 0; i < this.rows; i++) mask[i] = new Array(this.cols).fill(false);
+          colors.set(owner, mask);
         }
-        if (down !== owner && down !== null) {
-          ctx.beginPath();
-          ctx.moveTo(c * size, (r + 1) * size);
-          ctx.lineTo((c + 1) * size, (r + 1) * size);
-          ctx.stroke();
-        }
+        mask[r][c] = true;
       }
+    }
+
+    ctx.lineWidth = CONFIG.OUTLINE_WIDTH;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    const radius = size * CONFIG.OUTLINE_CORNER_RADIUS;
+    for (const [color, mask] of colors) {
+      ctx.strokeStyle = shade(color, -0.28);
+      strokeLoops(ctx, traceOutline(mask, this.rows, this.cols, size), radius);
     }
   }
 }
