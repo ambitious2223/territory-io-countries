@@ -4,6 +4,22 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.2.1] - 2026-10-04
+
+### Changed
+- **Leaderboard overlay is now a single minimal leaderboard.** Rows are `rank · flag · name · %`
+  only; the conquest feed column, the colour bar and the viewer count are gone. The header (state +
+  timer) is fixed to the same width as the list, so the timer aligns with the column.
+- Overlay stays **transparent by default** (OBS-ready) and now carries a text shadow so it reads on
+  a white browser background too. `feed` URL param removed.
+- **Conquest sidebar removed from the main game window** as well — the right-hand feed is gone and
+  the canvas takes the space. The left leaderboard is reduced to `rank · flag · name · %`.
+- Overlay payload no longer includes `feed` or `viewers`.
+
+### Removed
+- `src/feed.js` (`ConquestFeed`) and its i18n strings (`sidebar.conquest`, `feed.*`), plus the now
+  unused `tf()` translation helper.
+
 ## [2.2.0] - 2026-10-04
 
 ### Changed

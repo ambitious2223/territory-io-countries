@@ -4,6 +4,20 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-028 — One minimal leaderboard everywhere; no conquest feed
+- **Context:** The overlay rendered two columns (leaderboard + conquest feed) and the main game had
+  left **Nations** and right **Conquest** sidebars. Rows also wrapped (a 5-column grid rendered 6
+  cells) and the header stretched wider than the list, making the overlay hard to read.
+- **Decision:** Keep a **single minimal live leaderboard** (`rank · flag · name · territory %`).
+  Remove the conquest feed from the overlay *and* the main game. The overlay is one column whose
+  header (state + timer) matches the list width; it stays transparent for OBS with a text shadow so
+  it also reads on white. Delete `src/feed.js`, the `sidebar.conquest`/`feed.*` strings and the
+  unused `tf()` helper; drop `feed`/`viewers` from the overlay payload.
+- **Rationale:** Matches the streamer's "live leaderboard is enough"; one source of truth for
+  standings; removes the wrapping/width bug and dead code.
+- **Alternatives:** Keep the feed on the main game only (still two lists); keep viewers as an extra
+  column (rejected as non-minimal).
+
 ## D-022 — Tikora is an effect hub, not a bridge chat source
 - **Context:** Docs listed Tikora beside Direct/TikFinity as a chat source with a `tikora` connection
   mode, but `connectionManager` never implemented that mode and Tikora only delivers mapped effects.

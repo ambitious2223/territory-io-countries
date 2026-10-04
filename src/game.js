@@ -1,6 +1,5 @@
 import { CONFIG } from './config.js';
 import { randomRange } from './utils.js';
-import { tf } from './i18n.js';
 import { generateBaseLayout, baseCentroids, baseSpawnTiles } from './zones.js';
 import { ViewerManager } from './viewerManager.js';
 import { JoinCinematic } from './joinCinematic.js';
@@ -22,7 +21,6 @@ import { Analytics } from './analytics.js';
 import { Camera } from './renderer.js';
 import { DebugOverlay } from './debug.js';
 import { VFXSystem } from './vfx.js';
-import { ConquestFeed } from './feed.js';
 import { generateMap } from './map.js';
 import {
   updateTimer, updateGameOver, hideGameOver,
@@ -43,7 +41,6 @@ export class Game {
     this.grid = new Grid();
     this.particles = new ParticleSystem();
     this.vfx = new VFXSystem();
-    this.feed = new ConquestFeed();
     this.marbles = [];
     this.powerups = new PowerUpManager();
     this.audio = new AudioEngine();
@@ -235,7 +232,6 @@ export class Game {
       this.winColor = team.color;
       this.winner = { name: team.name?.en || 'Winner', color: team.color, tiles: top.tiles };
       this.vfx.addDominationText(CONFIG.CANVAS_WIDTH / 2, CONFIG.CANVAS_HEIGHT / 2, team.name?.en || '');
-      this.feed.push(tf('feed.winner', { team: team.name?.en || '', tiles: top.tiles }), team.color);
       this.saveWinner(team, top);
     }
     this.analytics.updateDuration();
@@ -247,7 +243,6 @@ export class Game {
     this.scoring.reset();
     this.particles.reset();
     this.vfx.reset();
-    this.feed.reset();
     this.marbles = [];
     this.gameOver = false;
     this.winner = null;
@@ -291,10 +286,6 @@ export class Game {
     const result = this.viewers.handleEvent(event, this.teams);
     if (result && result.viewer) {
       this.scoring.registerUser(event.userId ?? event.username, result.viewer.teamId);
-      this.feed.push(
-        tf('feed.joined', { name: result.viewer.name, team: result.viewer.team.name?.en || '' }),
-        result.viewer.team.color
-      );
     }
     this.scoring.applyEvent(event);
     if (event && event.type === 'gift') {
@@ -395,7 +386,6 @@ export class Game {
     }
     this.vfx.addEliminatedText(this.baseCenters[this.teams.indexOf(team)]?.x || CONFIG.CANVAS_WIDTH / 2,
       this.baseCenters[this.teams.indexOf(team)]?.y || CONFIG.CANVAS_HEIGHT / 2, team.name?.en || '');
-    this.feed.push(tf('feed.eliminated', { team: team.name?.en || '' }), team.color);
     this.audio.playElimination(CONFIG.CANVAS_WIDTH / 2);
   }
 
@@ -546,7 +536,6 @@ export class Game {
     updateCinematicPanel(this);
     updateTikoraPanel(this);
     updateWinnersPanel(this);
-    this.feed.update();
 
     if (this.gameOver) {
       const tileCount = this.grid.countTiles(this.winColor);

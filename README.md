@@ -14,7 +14,7 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.2.0
+## Status — v2.2.1
 
 Every gate is green: `npm run lint`, `npm test` (90 tests incl. outline/overlay + a headless
 game-loop test), `npm run build`, and `npm run smoke`.
@@ -35,11 +35,11 @@ game-loop test), `npm run build`, and `npm run smoke`.
 - Nations 2–12 with streamer-uploaded 3:2 flags and multilingual join keywords
   (number · ISO2 · English · Arabic · emoji, fuzzy matching).
 - Balls with profile photos, a hard cap + reinforcement queue, and AI fill.
-- **Presentation:** nation scoreboard (territory %, active balls, leader crown), a live **Conquest
-  feed**, on-canvas **base banners**, and **rounded union borders**. A floating draggable button
+- **Presentation:** one minimal **live leaderboard** (`rank · flag · name · territory %`, leader
+  crown), on-canvas **base banners**, and **rounded union borders**. A floating draggable button
   opens a tabbed debug workspace (position + state persist).
-- **Overlay URL:** a standalone `/leaderboard.html` page (leaderboard + conquest feed + timer) for
-  a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
+- **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
+  for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - Camera pan/zoom **join cinematic** with a profile-photo intro card and adjustable blur.
 - Gift → power-up mappings (overcharge, color bomb, area convert, spawn ally, instant claim) with
   an in-app editor; auto-looping timed rounds and persisted all-time winners.
@@ -68,15 +68,15 @@ username yet? It starts in **Mock** mode so the game is fully testable offline.
 
 ### Standalone leaderboard overlay
 
-The debug **System** tab shows a copyable overlay URL. Add it as a second **OBS browser source**
-(transparent background by default). Customise with query params:
+A minimal, single-column **live leaderboard** (rank · flag · name · territory %, plus a round timer
+and state). The debug **System** tab shows a copyable overlay URL. Add it as a second **OBS browser
+source** (transparent background by default). Customise with query params:
 
-`http://localhost:1935/leaderboard.html?rows=8&feed=1&theme=glass&bg=0&rtl=0&scale=1`
+`http://localhost:1935/leaderboard.html?rows=8&theme=glass&bg=0&rtl=0&scale=1`
 
 | Param | Meaning |
 | --- | --- |
 | `rows` | Max nations shown (default 12) |
-| `feed` | `0` hides the conquest feed |
 | `theme` | `glass` (default) or `neon` |
 | `bg` | `1` adds a glass panel background (default transparent) |
 | `rtl` | `1` for right-to-left |

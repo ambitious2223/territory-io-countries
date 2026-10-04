@@ -31,8 +31,9 @@ A viewer joins by commenting **any** of:
 5. **flag emoji** (`🇸🇦`)
 
 Matching is tolerant: case-insensitive, diacritics/tatweel stripped, alef/maqsura folded,
-leading `@` ignored, fuzzy prefix/Levenshtein fallback. Joins appear in the **Conquest feed**.
-Eliminated nations stop accepting joins until the next round.
+leading `@` ignored, fuzzy prefix/Levenshtein fallback. Joins are reflected in the **live
+leaderboard** (a nation's active-ball count and territory). Eliminated nations stop accepting joins
+until the next round.
 
 ---
 
@@ -119,20 +120,21 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 
 - **Auto-loop** on by default; the control bar always allows **manual start/end/next**.
 - At round end the **winner is the nation holding the most tiles** (tie-break: most active
-  balls). The result is celebrated with VFX/audio, written to the Conquest feed, saved to the
-  winners store, and the arena resets to neutral + fresh bases.
+  balls). The result is celebrated with VFX/audio, saved to the winners store, and the arena resets
+  to neutral + fresh bases.
 - A nation that reaches **65%** of the arena triggers an immediate **domination** win.
 
 ---
 
 ## 7. HUD & presentation
 
-- Left sidebar: live **nation scoreboard** — rank, flag, territory %, active balls, leader crown;
+- Left sidebar: one minimal **live leaderboard** — rank, flag, name, territory %, leader crown;
   eliminated nations are struck through.
-- Right sidebar: live **Conquest feed** — joins, eliminations and the winner.
-- On-canvas: nation **base banners**; balls show their name; the current conversion arc shows on
-  the ball doing the work; thick nation **borders** separate territories.
-- Top bar: pause, speed, round timer, map select, debug, mute, restart.
+- Standalone `leaderboard.html` overlay: the same minimal board plus round state and timer, for OBS.
+- On-canvas: nation **base banners**; balls show their name; **rounded union borders** separate
+  territories.
+- Top bar: pause, speed, round timer, map select, mute, restart; the debug panel opens from the
+  floating gear button.
 - Floating **debug panel** tabs: Connect · Tikora · Viewers · Cinematic · Mock · Language ·
   Teams · Content · Winners · Scoring · Diagnostics.
 - **i18n:** English default, full **Arabic + RTL** for all UI; Arabic join aliases always work.

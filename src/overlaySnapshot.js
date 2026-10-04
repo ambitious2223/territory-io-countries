@@ -11,14 +11,7 @@ export function buildOverlayPayload(game) {
     flagImage: row.team.flagImage || null,
     tiles: row.tiles,
     percent: row.percent,
-    viewers: row.viewers,
     eliminated: row.eliminated,
-  }));
-
-  const feed = (game.feed?.items || []).map((item) => ({
-    id: item.id,
-    text: item.text,
-    color: item.color,
   }));
 
   return {
@@ -30,7 +23,6 @@ export function buildOverlayPayload(game) {
     },
     claimable: game.grid?.claimableTiles || 0,
     teams,
-    feed,
     updatedAt: Date.now(),
   };
 }

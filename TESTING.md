@@ -64,10 +64,11 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Balls ricochet off their border, **never leave their colour**, and a **single touch** flips a
       tile (no half-convert squares). A freshly taken tile resists a retake for a couple of seconds.
 - [ ] Nation borders render as clean rounded outlines, not a grid of seams.
-- [ ] `/leaderboard.html` in a second browser window mirrors the leaderboard, feed and timer.
-- [ ] A nation reduced to zero tiles is eliminated (greyed scoreboard) and stops spawning.
+- [ ] The leaderboard shows only `rank · flag · name · %` (no conquest list, no viewer counts).
+- [ ] `/leaderboard.html` in a second browser window mirrors the leaderboard + timer on one line
+      per nation (nothing wraps) and the timer matches the column width.
+- [ ] A nation reduced to zero tiles is eliminated (greyed leaderboard) and stops spawning.
 - [ ] The land leader wins at time-up; 65% triggers an immediate domination win.
-- [ ] Conquest feed shows joins, eliminations and the winner (EN and AR).
 - [ ] Likes/comments/follows/shares/gifts feed the interaction score / power-ups.
 - [ ] Event rate-limits and dedupe suppress spam (rapid repeat gift/like).
 - [ ] Round runs 3:00 and auto-resets to neutral + fresh bases.

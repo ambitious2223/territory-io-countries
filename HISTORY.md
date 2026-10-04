@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-04 — Minimal leaderboard everywhere (2.2.1)
+
+User opened the overlay and found the rows wrapping (a 5-column grid rendered 6 cells) and the
+layout hard to read; asked for one minimal leaderboard and no second conquest list.
+
+**Done**
+- Overlay rows fixed to a 4-cell grid (`rank · flag · name · %`); removed bar/viewer cells and the
+  whole conquest feed column; header/timer now spans the single column width; text-shadow added so
+  it reads on white while staying transparent for OBS.
+- Removed the **Conquest sidebar from the main game** too; `index.html` is now a two-column layout,
+  and the left leaderboard drops the viewer column.
+- Deleted `src/feed.js`, the `sidebar.conquest` / `feed.*` i18n strings and the unused `tf()`;
+  `overlaySnapshot` no longer emits `feed`/`viewers`.
+
+**Verified**
+- `npm run lint` clean · `npm test` **90 passed** · `npm run build` OK · `npm run smoke` PASS.
+
+---
+
 ## 2026-10-04 — One-touch capture, clean borders, overlay + debug FAB (2.2.0)
 
 User feedback: the half-convert inset squares looked cluttered and two-hit capture felt wrong;

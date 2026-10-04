@@ -51,7 +51,6 @@ export function renderScoreboard(game) {
       ${flag}
       <span class="sb-name">${escapeHtml(team.name?.en || '')}${crown}</span>
       <span class="sb-terr">${percent}%</span>
-      <span class="sb-score">${row.viewers}</span>
     </div>`
   })
   container.innerHTML = html

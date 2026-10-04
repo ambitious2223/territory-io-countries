@@ -41,6 +41,7 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Borders | **Rounded union outlines** (marching squares), not per-tile seams |
 | Debug UI | **Floating draggable FAB + tabbed panel** (no top-bar Debug button) |
 | Overlay | **`/leaderboard.html`** display-only subscriber fed by a bridge relay |
+| Presentation | A single **minimal live leaderboard** (rank · flag · name · %); no conquest feed list |
 | Scoring | Gift/interaction score is tunable, but the round is won by **land** |
 | Round | **3 min** + ~**20 s** intermission, auto-loop, manual override always available |
 | Win | **Most territory** at time-up (or 65% domination) |

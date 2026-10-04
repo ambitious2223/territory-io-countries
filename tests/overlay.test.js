@@ -13,7 +13,6 @@ function fakeGame() {
     countTeamMarbles: (id) => (id === 1 ? 3 : 1),
     grid: { claimableTiles: 100 },
     round: { state: 'playing', timeLeft: 42.6, autoLoop: true },
-    feed: { items: [{ id: 1, text: 'Egypt joined', color: '#FFD700' }] },
   }
 }
 
@@ -23,15 +22,14 @@ describe('buildOverlayPayload', () => {
     expect(payload.type).toBe('leaderboard')
     expect(payload.claimable).toBe(100)
     expect(payload.teams.map((t) => t.id)).toEqual([1, 2])
-    expect(payload.teams[0]).toMatchObject({ rank: 1, tiles: 40, percent: 40, viewers: 3 })
+    expect(payload.teams[0]).toMatchObject({ rank: 1, tiles: 40, percent: 40 })
     expect(payload.teams[1]).toMatchObject({ rank: 2, tiles: 30, percent: 30 })
   })
 
-  it('rounds the round timer and carries the feed', () => {
+  it('rounds the round timer and carries no feed', () => {
     const payload = buildOverlayPayload(fakeGame())
     expect(payload.round).toEqual({ state: 'playing', timeLeft: 43, autoLoop: true })
-    expect(payload.feed).toHaveLength(1)
-    expect(payload.feed[0].text).toBe('Egypt joined')
+    expect(payload.feed).toBeUndefined()
   })
 
   it('keeps flag images and falls back safely', () => {

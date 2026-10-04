@@ -106,7 +106,7 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 - [x] Tests (outline/overlay/convert), lint/test/build/smoke green; released **2.2.0**
 
 **Verify:** one touch flips a tile and no half-convert squares appear; the FAB drags/opens; the
-overlay URL renders the live leaderboard + feed + timer in a second browser source.
+overlay URL renders the minimal live leaderboard + timer in a second browser source.
 
 ---
 

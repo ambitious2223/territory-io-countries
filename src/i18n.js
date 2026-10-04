@@ -1,10 +1,6 @@
 const EN = {
   'app.title': 'Territory With Flags',
   'sidebar.leaderboard': 'Nations',
-  'sidebar.conquest': 'Conquest',
-  'feed.joined': '{name} joined {team}',
-  'feed.eliminated': '{team} was wiped out!',
-  'feed.winner': '{team} wins with {tiles} tiles!',
   'control.pause': 'Pause',
   'control.play': 'Play',
   'control.speed': 'Speed:',
@@ -78,10 +74,6 @@ const EN = {
 const AR = {
   'app.title': 'إقليم الأعلام',
   'sidebar.leaderboard': 'الدول',
-  'sidebar.conquest': 'الغزو',
-  'feed.joined': '{name} انضم إلى {team}',
-  'feed.eliminated': 'تم القضاء على {team}!',
-  'feed.winner': '{team} يفوز بـ {tiles} مربعاً!',
   'control.pause': 'إيقاف',
   'control.play': 'تشغيل',
   'control.speed': 'السرعة:',
@@ -169,12 +161,6 @@ function readLanguage() {
 
 export function t(key, fallback) {
   return DICTIONARIES[language]?.[key] ?? EN[key] ?? fallback ?? key
-}
-
-export function tf(key, params = {}) {
-  return t(key).replace(/\{(\w+)\}/g, (match, name) => (
-    params[name] === undefined ? match : String(params[name])
-  ))
 }
 
 export function getLanguage() {

@@ -6,7 +6,7 @@
 ┌──────────────────────────────────────────────────────────────────┐
 │ OBS browser source / browser (:1935)                             │
 │   Canvas engine (grid, bases, balls, borders, particles)         │
-│   DOM HUD (scoreboard, conquest feed, timer, debug panel, i18n)  │
+│   DOM HUD (leaderboard, timer, debug panel, i18n)                │
 │   net/bridgeClient.js ── socket.io-client ──┐                    │
 └─────────────────────────────────────────────┼────────────────────┘
                                               │ tiktok-event / tiktok:status
@@ -54,7 +54,6 @@
 | `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
 | `marble.js` | Viewer ball: confined ricochet movement + one-touch capture, rendering |
 | `outline.js` | Marching-squares union outline + rounded-corner path (pure) |
-| `feed.js` | Conquest feed (joins / eliminations / winner) DOM list |
 | `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
 | `vfx.js` | Floating event text |
@@ -113,7 +112,7 @@ See [BRIDGE.md](./BRIDGE.md) for the event contracts.
 ```
 Bridge source → normalize() → io.emit('tiktok-event', evt)
   → bridgeClient → ViewerManager.handleEvent(evt) + Scoring.applyEvent(evt)
-    → Game state (balls, nations, queues, feed) → render()/HUD
+    → Game state (balls, nations, queues) → render()/HUD
 
 Game (authority) → every ~0.25 s → io.emit('overlay:state', snapshot)
   → bridge relays 'overlay:leaderboard' (+ caches last) → leaderboard.html page
@@ -142,7 +141,7 @@ render()
     vfx.draw
     debug.draw (if enabled)
   camera.restore()
-  HUD (DOM): nation scoreboard, conquest feed, timer, control bar, pause overlay
+  HUD (DOM): nation leaderboard, timer, control bar, pause overlay
 ```
 
 **Camera:** a single `Camera` object owns `zoom`, `pan`, `target`, easing and shake. Cinematic
@@ -171,7 +170,7 @@ union paths.
 | --- | --- |
 | `tiktok-event` | unified event (see BRIDGE.md §4) |
 | `tiktok:status` | `{ username, mode, source, tiktokState, roomId, lastError }` |
-| `overlay:leaderboard` | `{ type, round, claimable, teams[], feed[], updatedAt }` (relayed + cached) |
+| `overlay:leaderboard` | `{ type, round, claimable, teams[], updatedAt }` (relayed + cached) |
 
 ### Client → Server
 | Event | Payload |
