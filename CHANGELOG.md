@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.4.1] - 2026-10-04
+
+### Fixed
+- **Team photo upload from the browser.** The Express REST API sent **no CORS headers**, so the
+  app on `:1935` was blocked at preflight when posting to the bridge on `:3020` — choosing a file
+  did nothing. Added a CORS middleware (`Access-Control-Allow-Origin` for allowed origins, handles
+  `OPTIONS`) and a smoke assertion. This also unblocks the cross-origin teams/mappings/winners REST
+  calls in dev (previously masked by localStorage fallbacks).
+
 ## [2.4.0] - 2026-10-04
 
 ### Added

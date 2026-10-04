@@ -4,6 +4,16 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-04 — Fix team-photo upload CORS (2.4.1)
+
+The team picker still did nothing. Root cause: the Express REST API had **no CORS headers**, so a
+browser POST from the Vite app (`:1935`) to the bridge (`:3020`) failed at the preflight `OPTIONS`.
+Confirmed with a live probe (no `Access-Control-Allow-Origin`). Added an `applyCors` middleware to
+`server/index.js`; re-probed — `OPTIONS 204` + ACAO, `POST /api/flags` 200 returning the URL, and
+the flag file serves. Added a smoke assertion so it can't regress.
+
+---
+
 ## 2026-10-04 — Stronghold photos, ball identity, lean debug menu (2.4.0)
 
 **Done**

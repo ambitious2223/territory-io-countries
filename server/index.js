@@ -10,6 +10,22 @@ const app = express()
 const server = createServer(app)
 const io = new Server(server, { cors: { origin: CORS_ORIGINS, methods: ['GET', 'POST', 'PUT'] } })
 
+function applyCors(req, res, next) {
+  const origin = req.headers.origin
+  if (origin && (CORS_ORIGINS.includes('*') || CORS_ORIGINS.includes(origin))) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Vary', 'Origin')
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204)
+    return
+  }
+  next()
+}
+
+app.use(applyCors)
 app.use(express.json({ limit: '5mb' }))
 if (existsSync(PUBLIC_DIR)) app.use(express.static(PUBLIC_DIR))
 if (existsSync(DIST_DIR)) app.use(express.static(DIST_DIR))

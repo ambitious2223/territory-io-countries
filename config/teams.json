@@ -5,82 +5,132 @@
     {
       "id": 1,
       "index": 1,
-      "name": { "en": "Saudi Arabia", "ar": "السعودية" },
+      "name": {
+        "en": "Saudi Arabia",
+        "ar": "السعودية"
+      },
       "iso2": "SA",
       "emoji": "🇸🇦",
       "color": "#00CC44",
-      "flagImage": null,
-      "aliases": ["saudi", "ksa", "السعوديه"]
+      "flagImage": "/flags/1_2c06b8.png",
+      "aliases": [
+        "saudi",
+        "ksa",
+        "السعوديه"
+      ]
     },
     {
       "id": 2,
       "index": 2,
-      "name": { "en": "Egypt", "ar": "مصر" },
+      "name": {
+        "en": "Egypt",
+        "ar": "مصر"
+      },
       "iso2": "EG",
       "emoji": "🇪🇬",
       "color": "#FFD700",
       "flagImage": null,
-      "aliases": ["masr", "misr"]
+      "aliases": [
+        "masr",
+        "misr"
+      ]
     },
     {
       "id": 3,
       "index": 3,
-      "name": { "en": "United Arab Emirates", "ar": "الإمارات" },
+      "name": {
+        "en": "United Arab Emirates",
+        "ar": "الإمارات"
+      },
       "iso2": "AE",
       "emoji": "🇦🇪",
       "color": "#FF8C00",
       "flagImage": null,
-      "aliases": ["emirates", "uae", "dubai", "الامارات"]
+      "aliases": [
+        "emirates",
+        "uae",
+        "dubai",
+        "الامارات"
+      ]
     },
     {
       "id": 4,
       "index": 4,
-      "name": { "en": "Morocco", "ar": "المغرب" },
+      "name": {
+        "en": "Morocco",
+        "ar": "المغرب"
+      },
       "iso2": "MA",
       "emoji": "🇲🇦",
       "color": "#9B30FF",
       "flagImage": null,
-      "aliases": ["maroc", "maghrib"]
+      "aliases": [
+        "maroc",
+        "maghrib"
+      ]
     },
     {
       "id": 5,
       "index": 5,
-      "name": { "en": "Algeria", "ar": "الجزائر" },
+      "name": {
+        "en": "Algeria",
+        "ar": "الجزائر"
+      },
       "iso2": "DZ",
       "emoji": "🇩🇿",
       "color": "#1E90FF",
       "flagImage": null,
-      "aliases": ["algerie", "dzayer"]
+      "aliases": [
+        "algerie",
+        "dzayer"
+      ]
     },
     {
       "id": 6,
       "index": 6,
-      "name": { "en": "Brazil", "ar": "البرازيل" },
+      "name": {
+        "en": "Brazil",
+        "ar": "البرازيل"
+      },
       "iso2": "BR",
       "emoji": "🇧🇷",
       "color": "#FF2222",
       "flagImage": null,
-      "aliases": ["brasil"]
+      "aliases": [
+        "brasil"
+      ]
     },
     {
       "id": 7,
       "index": 7,
-      "name": { "en": "India", "ar": "الهند" },
+      "name": {
+        "en": "India",
+        "ar": "الهند"
+      },
       "iso2": "IN",
       "emoji": "🇮🇳",
       "color": "#FF00FF",
       "flagImage": null,
-      "aliases": ["bharat", "hind"]
+      "aliases": [
+        "bharat",
+        "hind"
+      ]
     },
     {
       "id": 8,
       "index": 8,
-      "name": { "en": "Turkey", "ar": "تركيا" },
+      "name": {
+        "en": "Turkey",
+        "ar": "تركيا"
+      },
       "iso2": "TR",
       "emoji": "🇹🇷",
       "color": "#00CED1",
       "flagImage": null,
-      "aliases": ["turkiye", "türkiye"]
+      "aliases": [
+        "turkiye",
+        "türkiye"
+      ]
     }
   ]
 }

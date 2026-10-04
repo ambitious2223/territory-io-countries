@@ -43,6 +43,13 @@ async function main() {
   }
   console.log(`teams ok — ${teamsData.teams.length} teams`)
 
+  const origin = 'http://localhost:1935'
+  const corsResponse = await fetch(`${URL}/api/teams`, { headers: { Origin: origin } })
+  if (corsResponse.headers.get('access-control-allow-origin') !== origin) {
+    throw new Error('REST response is missing the CORS header')
+  }
+  console.log('cors ok')
+
   const winnersResponse = await fetch(`${URL}/api/winners`)
   const winnersData = await winnersResponse.json()
   if (!Array.isArray(winnersData.teams)) {
