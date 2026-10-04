@@ -274,32 +274,15 @@ export function updateWinnersPanel(game) {
   }).join('');
 }
 
-export function initTikoraPanel(game) {
-  const connectBtn = document.getElementById('btn-tikora-connect');
-  if (!connectBtn) return;
-  connectBtn.addEventListener('click', async () => {
-    const key = document.getElementById('tikora-key').value.trim();
-    const relayUrl = document.getElementById('tikora-relay').value.trim() || undefined;
-    try {
-      await fetch(`${game.bridge?.url || ''}/api/tikora/config`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled: true, key, relayUrl }),
-      });
-    } catch {
-      void 0;
-    }
-    game.tikora?.connect({ key, relayUrl });
-  });
-  document.getElementById('btn-tikora-disconnect').addEventListener('click', () => {
-    game.tikora?.disconnect();
-  });
-}
-
 export function updateTikoraPanel(game) {
   if (!game.debugMode || !game.tikora) return;
-  const el = document.getElementById('dbg-tikora-status');
-  if (el) el.textContent = game.tikora.status;
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+  set('dbg-tikora-status', game.tikora.status);
+  set('dbg-tikora-slug', game.hubIdentity?.slug || '--');
+  set('dbg-tikora-relay', game.hubIdentity?.relayUrl || '--');
 }
 
 export function updateCinematicPanel(game) {

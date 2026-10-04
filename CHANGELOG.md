@@ -4,6 +4,25 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.3.0] - 2026-10-04
+
+### Changed
+- **Hardwired to the Chic Aura Hub (Tikora).** The game resolves its hub slug/key/relay
+  automatically — `TIKORA_GAME_SLUG` / `TIKORA_GAME_KEY` / `TIKORA_RELAY_URL` env, the
+  `TIKORA_GAME_LAUNCH_URL` (`?game=&key=`) query, legacy `TIKORA_*`, saved config, then the
+  manifest slug — and connects on boot. **No game key is pasted anywhere.**
+- `countriesio.bat` opens `%TIKORA_GAME_LAUNCH_URL%` when the hub provides it (falls back to
+  `http://localhost:1935`), so the hub's launch URL reaches the browser.
+- The debug **Tikora** tab is **read-only** (status, game slug, relay). Activating/deactivating and
+  mapping effects stay in the hub.
+
+### Removed
+- In-game Tikora key/relay inputs and Connect/Disconnect buttons; `POST /api/tikora/config`
+  (`GET` now returns the resolved identity).
+
+### Added
+- `server/tikoraIdentity.js` (`resolveTikoraIdentity`, `parseLaunchUrl`) + tests.
+
 ## [2.2.1] - 2026-10-04
 
 ### Changed

@@ -46,8 +46,13 @@ streamer-mapped effects (see §6) and runs alongside whichever chat source is ac
 }
 ```
 
-`.env` overrides (never committed): `PORT=3020`, `TIKTOK_USERNAME`, `BRIDGE_MODE`, `CORS_ORIGINS`,
-`TIKORA_SLUG`, `TIKORA_KEY`, `TIKORA_RELAY_URL`.
+`.env` overrides (never committed): `PORT=3020`, `TIKTOK_USERNAME`, `BRIDGE_MODE`, `CORS_ORIGINS`.
+
+**Hub-injected identity (preferred):** when launched from the Chic Aura Hub (Tikora), the process
+inherits `TIKORA_GAME_SLUG`, `TIKORA_GAME_KEY`, `TIKORA_RELAY_URL` and `TIKORA_GAME_LAUNCH_URL`
+(the `?game=&key=` URL). Identity resolution precedence is: env → launch-URL query → legacy
+`TIKORA_SLUG`/`TIKORA_KEY` → saved `.tiktok-config.json` → manifest slug / default relay. No key is
+ever pasted into the game.
 
 **Auto-connect:** on boot, if `autoConnect` and a username are present, `connectionManager`
 starts the configured mode. If no username is set, the server starts in **Mock** so the game
@@ -101,7 +106,7 @@ Status events (`tiktok:status`):
 | GET/PUT | `/api/mappings` | Read / write gift→effect mappings |
 | POST | `/api/flags` | Upload a flag image (`{ teamId, imageData }`) |
 | POST | `/api/mock-event` | Inject a mock event (`{ type, username, teamIndex, value }`) |
-| GET/POST | `/api/tikora/config` | Tikora effect-hub settings (slug/key/relay/enabled) |
+| GET | `/api/tikora/config` | Resolved hub identity `{ slug, key, relayUrl, enabled }` (read-only) |
 
 Socket events are listed in [ARCHITECTURE.md](./ARCHITECTURE.md) §8.
 
@@ -111,11 +116,14 @@ Socket events are listed in [ARCHITECTURE.md](./ARCHITECTURE.md) §8.
 
 - Tikora is a **client-side effect hub**, not a chat source — it never carries chat/like/gift
   events, and the bridge server does not connect to it.
-- `tikora.manifest.json` declares this game's **effects** (key, label, kind, params).
-- On connect, the game (`src/tikora.js`) loads Tikora's served `hub-client.js` and connects to the
-  relay, sends its **capabilities**, receives mapped `effect` messages, routes them through the
-  shared effect executor, and **acks** each one.
-- Identity resolves: saved setting → `?game=&key=` → `GET /api/tikora/config` → manifest slug.
+- `tikora.manifest.json` declares this game's **effects** (key, label, kind, params) and is the
+  single source of truth Tikora reads (and the game sends as capabilities).
+- The game is **hardwired to the hub**: on boot it resolves its slug/key/relay (§2) and connects
+  itself. There is **no manual key entry** and **no in-game connect/disconnect** — activating,
+  deactivating and mapping effects all live in the hub. The debug panel only *displays* status.
+- On connect, `src/tikora.js` loads Tikora's served `hub-client.js`, connects to the relay, sends
+  its **capabilities**, receives mapped `effect` messages, routes them through the shared effect
+  executor, and **acks** each one.
 - Use **either** Tikora effect routing **or** the game's own gift mappings for a given gift —
   not both.
 
@@ -139,5 +147,5 @@ listeners). Manual disconnect stops all retries until the host reconnects.
 - **Connect** section: username, **mode** select (`Auto · Direct · TikFinity · Mock`), TikFinity
   host/port, **Connect/Disconnect**, live status badge, source, event count, last error, and a
   mock-event injector.
-- **Tikora Hub** section (separate): game key, relay URL, **Connect/Disconnect**, live status —
-  connects the client-side effect hub only.
+- **Tikora Hub** section (read-only): status, resolved game slug and relay — all driven by the hub
+  launch. No key input, no connect/disconnect (managed in the hub).

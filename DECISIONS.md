@@ -4,6 +4,20 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-029 — Hardwired Chic Aura Hub (Tikora) identity; hub owns the controls
+- **Context:** Connecting the game to the hub required pasting a `gk_…` key and relay URL into the
+  in-game debug panel. The hub already launches the game and injects `TIKORA_GAME_SLUG` /
+  `TIKORA_GAME_KEY` / `TIKORA_RELAY_URL` / `TIKORA_GAME_LAUNCH_URL`, and the bridge looked for the
+  wrong variable names (`TIKORA_KEY`/`TIKORA_SLUG`).
+- **Decision:** Resolve identity automatically (`server/tikoraIdentity.js`): env → launch-URL query →
+  legacy `TIKORA_*` → saved config → manifest. `countriesio.bat` opens `TIKORA_GAME_LAUNCH_URL`
+  when set. The client auto-connects on boot. **Remove the manual key/relay inputs and
+  Connect/Disconnect** from the debug panel (read-only status only) and drop `POST /api/tikora/config`.
+  Activating/deactivating and effect mapping live entirely in the hub.
+- **Rationale:** Zero setup, one source of truth, and no split-brain between the hub and the game.
+- **Alternatives:** Keep manual key entry as the primary path (the status quo the user rejected);
+  subscribe to hub control events in-game (unnecessary — the hub already gates delivery).
+
 ## D-028 — One minimal leaderboard everywhere; no conquest feed
 - **Context:** The overlay rendered two columns (leaderboard + conquest feed) and the main game had
   left **Nations** and right **Conquest** sidebars. Rows also wrapped (a 5-column grid rendered 6

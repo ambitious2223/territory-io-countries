@@ -30,6 +30,7 @@
 - `src/joinCinematic.js` — cinematic queue sequencing.
 - `src/mappings.js` — gift-rule matching (first match wins).
 - `src/tikoraClient.js` — relay → `hub-client.js` URL derivation + manifest shape.
+- `server/tikoraIdentity.js` — hub identity precedence (env → launch URL → config → manifest).
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
 - `server/mock.js` — mock event construction.
 - `server/uploads.js` — flag image validation.
@@ -74,7 +75,8 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Round runs 3:00 and auto-resets to neutral + fresh bases.
 - [ ] Manual End / Next / Pause override the auto-loop.
 - [ ] Debug → **Winners** lists persisted winners after a round.
-- [ ] Tikora Hub connect/disconnect works independently of the chat source.
+- [ ] Launched from the Chic Aura Hub (▶ Run), the game connects on its own — the debug Tikora tab
+      shows `connected` plus the injected slug/relay, with no key pasted.
 - [ ] Arabic UI renders RTL with no clipped text; all strings translated.
 - [ ] FPS stays ≥ 58 with the avatar cap reached (Diagnostics tab).
 - [ ] No secrets, uploads, `node_modules/` or `dist/` staged in git.

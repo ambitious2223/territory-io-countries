@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.2.1
+## Status — v2.3.0
 
-Every gate is green: `npm run lint`, `npm test` (90 tests incl. outline/overlay + a headless
-game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (95 tests incl. hub-identity/outline/overlay + a
+headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -30,8 +30,10 @@ game-loop test), `npm run build`, and `npm run smoke`.
 - **Win by land:** most territory at time-up, or an immediate 65% **domination** win.
 - TikTok bridge with **auto-connect**: **Direct** (`tiktok-live-connector`) + **TikFinity**
   (`ws://127.0.0.1:21213`) chat sources with auto-fallback, plus **Mock** for offline.
-- **Tikora** integration as a **client-side effect hub** (loads `hub-client.js` over
-  `ws://127.0.0.1:27016`), independent of the active chat source.
+- **Tikora** (Chic Aura Hub) integration as a **client-side effect hub**: the game **hardwires its
+  identity from the hub** — when launched from Tikora it inherits `TIKORA_GAME_SLUG`/`_KEY`/`_URL`
+  (or the `?game=&key=` launch URL) and connects itself. **No game key to paste**; activating /
+  deactivating effects stays in the hub.
 - Nations 2–12 with streamer-uploaded 3:2 flags and multilingual join keywords
   (number · ISO2 · English · Arabic · emoji, fuzzy matching).
 - Balls with profile photos, a hard cap + reinforcement queue, and AI fill.
@@ -65,6 +67,25 @@ npm run dev            # starts bridge server (:3020) + Vite app (:1935)
 
 On boot the bridge **auto-connects** using `.tiktok-config.json` (username + mode). No TikTok
 username yet? It starts in **Mock** mode so the game is fully testable offline.
+
+### Running from the Chic Aura Hub (Tikora) — no key to paste
+
+The game **hardwires itself to the hub**. Add it once in Tikora's **Game Store**:
+
+| Field | Value |
+| --- | --- |
+| Name | Territory With Flags |
+| Slug | `territory-with-flags` |
+| Type | webapp |
+| Port | `1935` |
+| Launch (.bat) | `C:\dev\TERRITORY WITH SWORDS\countriesio.bat` |
+
+Then generate/copy its `gk_…` key in **Game Hub**. Pressing **▶ Run** starts `countriesio.bat`,
+which opens the hub's launch URL (`?game=territory-with-flags&key=gk_…`) and injects
+`TIKORA_GAME_SLUG`/`TIKORA_GAME_KEY`/`TIKORA_RELAY_URL`; the game reads them from
+`GET /api/tikora/config` (or the URL) and connects automatically. **All activation/deactivation and
+effect mapping live in the hub** — the in-game debug panel only *shows* the hub status. Running
+`npm run dev` by hand still works fully offline (Mock / TikFinity).
 
 ### Standalone leaderboard overlay
 

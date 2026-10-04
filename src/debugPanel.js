@@ -44,12 +44,9 @@ const PANEL = `
       <div class="debug-section">
         <h5 data-i18n="debug.tikora">Tikora Hub</h5>
         <div class="debug-row"><span data-i18n="debug.status">Status</span><span class="val" id="dbg-tikora-status">off</span></div>
-        <input id="tikora-key" placeholder="game key (gk_...)" style="width:100%;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;margin-top:4px;" />
-        <input id="tikora-relay" placeholder="ws://127.0.0.1:27016/" style="width:100%;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;margin-top:4px;" />
-        <div class="debug-row" style="gap:6px;margin-top:6px;">
-          <button class="ctrl-btn" id="btn-tikora-connect" style="flex:1;" data-i18n="debug.connect">Connect</button>
-          <button class="ctrl-btn" id="btn-tikora-disconnect" style="flex:1;" data-i18n="debug.disconnect">Disconnect</button>
-        </div>
+        <div class="debug-row"><span data-i18n="debug.slug">Game</span><span class="val" id="dbg-tikora-slug">--</span></div>
+        <div class="debug-row"><span data-i18n="debug.relay">Relay</span><span class="val" id="dbg-tikora-relay">--</span></div>
+        <div class="debug-row" style="margin-top:6px;"><span style="color:#555;font-size:9px;font-style:italic;" data-i18n="debug.managedByHub">Managed by the hub</span></div>
       </div>
     </div>
 

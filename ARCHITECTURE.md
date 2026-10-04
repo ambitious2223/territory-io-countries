@@ -79,7 +79,7 @@
 | `mappingsPanel.js` | Gift-mapping editor UI |
 | `joinCinematic.js` | Camera intro queue for new joiners |
 | `giftEffects.js` | Gift → power-up effect executor |
-| `tikora.js` | Tikora effect hub (manifest + served `hub-client.js`) |
+| `tikora.js` | Tikora effect hub (manifest + served `hub-client.js`); auto-connects, hub-driven |
 | `tikoraClient.js` | Loads Tikora's `hub-client.js` over the relay |
 | `imageUtils.js` | Image load + 3:2 cover-crop |
 | `utils.js` | Shared helpers |
@@ -97,7 +97,8 @@
 | `directBridge.js` | `tiktok-live-connector` connection + raw listeners |
 | `tikfinityBridge.js` | TikFinity WebSocket listener + payload routing |
 | `normalize.js` | Raw payload → unified event schema; like-delta; gift combo/dedupe |
-| `httpRoutes.js` | REST: health, teams, winners, mappings, flags, tikora config, mock |
+| `httpRoutes.js` | REST: health, teams, winners, mappings, flags, tikora identity, mock |
+| `tikoraIdentity.js` | Resolve hub slug/key/relay from env → launch URL → config → manifest (pure) |
 | `uploads.js` | Flag image validation + write to `public/flags` |
 | `stores/*.js` | Atomic JSON read/write for config, teams, mappings, winners |
 | `mock.js` | Server-side mock event injection |

@@ -2,7 +2,7 @@ import { Game } from './game.js';
 import { BridgeClient } from './net/bridgeClient.js';
 import { createDebugPanel } from './debugPanel.js';
 import { initDebugFab, initDebugTabs, initOverlayLink } from './debugFab.js';
-import { initConnectionPanel, initViewersPanel, initCinematicPanel, initTikoraPanel, initScoringPanel } from './ui.js';
+import { initConnectionPanel, initViewersPanel, initCinematicPanel, initScoringPanel } from './ui.js';
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
 import { getTeams, loadFromServer, subscribe } from './teamRegistry.js';
@@ -49,19 +49,22 @@ function initLanguageSelector() {
 
 applyLanguage();
 async function bootstrapTikora() {
+  let config = {};
   try {
     const response = await fetch(`${bridge.url}/api/tikora/config`);
-    if (!response.ok) return;
-    const config = await response.json();
-    const keyInput = document.getElementById('tikora-key');
-    const relayInput = document.getElementById('tikora-relay');
-    if (keyInput && config.key) keyInput.value = config.key;
-    if (relayInput && config.relayUrl) relayInput.value = config.relayUrl;
-    if (config.enabled && config.key) {
-      game.tikora.connect({ key: config.key, relayUrl: config.relayUrl, slug: config.slug });
-    }
+    if (response.ok) config = await response.json();
   } catch {
     void 0;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('game') || config.slug || '';
+  const key = params.get('key') || config.key || '';
+  const relayUrl = params.get('relay') || config.relayUrl || '';
+
+  game.hubIdentity = { slug, relayUrl };
+  if (key && slug) {
+    game.tikora.connect({ key, relayUrl, slug });
   }
 }
 
@@ -71,7 +74,6 @@ initOverlayLink();
 initConnectionPanel(game);
 initViewersPanel(game);
 initCinematicPanel(game);
-initTikoraPanel(game);
 initScoringPanel(game);
 initTeamsPanel(game);
 initMappingsPanel();

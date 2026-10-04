@@ -30,7 +30,7 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Bridge server | Node.js + Express + Socket.IO, port **3020** |
 | App port | **1935** |
 | Bridge chat sources | **Direct** `tiktok-live-connector` + **TikFinity** WebSocket (auto-fallback, + Mock), each with debug controls |
-| Tikora | **Client-side effect hub** (not a chat source): loads `hub-client.js`, runs in `src/tikora.js` |
+| Tikora (Chic Aura Hub) | **Client-side effect hub** (not a chat source): `src/tikora.js` loads `hub-client.js`; **hardwired identity** from hub env/launch-URL (no manual key); controls live in the hub |
 | Auto-connect | Bridge connects on boot from `.tiktok-config.json` |
 | Teams | **2–12**, streamer-configured from a default 8-slot roster |
 | Viewer model | **One ball per viewer**, hard cap **~24** active, overflow queued |

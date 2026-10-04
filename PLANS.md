@@ -95,6 +95,18 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 13 — Hardwire to the Chic Aura Hub
+- [x] `server/tikoraIdentity.js` (env → launch-URL → config → manifest) + `httpRoutes` uses it
+- [x] `countriesio.bat` opens `TIKORA_GAME_LAUNCH_URL` when launched by the hub
+- [x] Client auto-connects from config/query; **no manual key**
+- [x] Debug Tikora tab read-only; removed key/relay inputs + Connect/Disconnect; no `POST /api/tikora/config`
+- [x] Tests (`tikoraIdentity`), docs; released **2.3.0**
+
+**Verify:** launched from the hub, the game joins with the injected identity and receives effects
+with zero setup; the hub remains the only place to activate/deactivate effects.
+
+---
+
 ## Phase 12 — Clean capture, debug workspace, overlay
 - [x] One-touch capture; convert meter + inset rendering removed
 - [x] Post-capture **hold** (`TILE_HOLD_TIME`) so borders can't flicker; freshness tint

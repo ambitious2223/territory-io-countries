@@ -135,8 +135,8 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   territories.
 - Top bar: pause, speed, round timer, map select, mute, restart; the debug panel opens from the
   floating gear button.
-- Floating **debug panel** tabs: Connect · Tikora · Viewers · Cinematic · Mock · Language ·
-  Teams · Content · Winners · Scoring · Diagnostics.
+- Debug panel: a floating gear opens a tabbed workspace (Connection · Players · Content · Match ·
+  System). The Tikora tab is **read-only** — the hub owns activating/deactivating effects.
 - **i18n:** English default, full **Arabic + RTL** for all UI; Arabic join aliases always work.
 
 ---

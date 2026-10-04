@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-04 — Hardwired to the Chic Aura Hub (2.3.0)
+
+User asked to hardwire the game to the hub (`C:\dev\windows app interactive for streams`, the
+Tikora Electron app): no game-key setup, activating/deactivating stays in the hub.
+
+**Done**
+- `server/tikoraIdentity.js` resolves hub identity (env `TIKORA_GAME_*` → `TIKORA_GAME_LAUNCH_URL`
+  query → legacy → `.tiktok-config.json` → manifest); `httpRoutes` uses it and drops the `POST`.
+- `countriesio.bat` opens `%TIKORA_GAME_LAUNCH_URL%` (falls back to `:1935`).
+- `src/main.js` auto-connects from config or `?game=&key=`; debug Tikora tab is read-only
+  (`src/debugPanel.js`, `src/ui.js`); removed the manual key/relay inputs + Connect/Disconnect.
+- Noted in docs that the hub is a **separate repo** (`ambitious2223/tiktok-games-launcher`).
+
+**Verified**
+- `npm run lint` clean · `npm test` **95 passed** (new `tikoraIdentity` tests) · `npm run build`
+  OK · `npm run smoke` PASS.
+
+---
+
 ## 2026-10-04 — Minimal leaderboard everywhere (2.2.1)
 
 User opened the overlay and found the rows wrapping (a 5-column grid rendered 6 cells) and the
