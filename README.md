@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.3.0
+## Status — v2.4.0
 
-Every gate is green: `npm run lint`, `npm test` (95 tests incl. hub-identity/outline/overlay + a
-headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (96 tests incl. hub-identity/team-registry/outline/
+overlay + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -38,8 +38,13 @@ headless game-loop test), `npm run build`, and `npm run smoke`.
   (number · ISO2 · English · Arabic · emoji, fuzzy matching).
 - Balls with profile photos, a hard cap + reinforcement queue, and AI fill.
 - **Presentation:** one minimal **live leaderboard** (`rank · flag · name · territory %`, leader
-  crown), on-canvas **base banners**, and **rounded union borders**. A floating draggable button
-  opens a tabbed debug workspace (position + state persist).
+  crown), **3D circular strongholds** showing the uploaded team photo, and **rounded union borders**.
+  Balls show the viewer's TikTok photo with a **team-colour ring, glow, tint and nameplate**, so you
+  always know who belongs to which nation.
+- **Team photos:** upload a flag/photo per team in **Debug → Teams**; it appears in the stronghold,
+  the leaderboard and the overlay. Uploads apply live.
+- **Lean debug menu:** Connection · Teams · Overlay · Advanced (secondary tools collapsed). A
+  floating draggable button opens it (position + state persist).
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - Camera pan/zoom **join cinematic** with a profile-photo intro card and adjustable blur.

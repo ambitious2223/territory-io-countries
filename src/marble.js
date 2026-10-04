@@ -1,6 +1,16 @@
 import { CONFIG } from './config.js';
 import { randomRange, hexToRgba } from './utils.js';
 
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
 export class Marble {
   constructor(x, y, color, name, options = {}) {
     this.x = x;
@@ -144,10 +154,10 @@ export class Marble {
   draw(ctx) {
     if (!this.alive || this.eliminated) return;
 
-    const glowSize = this.radius + 7 + Math.sin(Date.now() * 0.005) * 2;
-    const gradient = ctx.createRadialGradient(this.x, this.y, this.radius * 0.5, this.x, this.y, glowSize);
-    gradient.addColorStop(0, hexToRgba(this.color, 0.9));
-    gradient.addColorStop(0.7, hexToRgba(this.color, 0.35));
+    const glowSize = this.radius + 9 + Math.sin(Date.now() * 0.005) * 2;
+    const gradient = ctx.createRadialGradient(this.x, this.y, this.radius * 0.6, this.x, this.y, glowSize);
+    gradient.addColorStop(0, hexToRgba(this.color, 0.55));
+    gradient.addColorStop(0.7, hexToRgba(this.color, 0.28));
     gradient.addColorStop(1, hexToRgba(this.color, 0));
     ctx.fillStyle = gradient;
     ctx.beginPath();
@@ -160,6 +170,8 @@ export class Marble {
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
       ctx.clip();
       ctx.drawImage(this.avatarImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+      ctx.fillStyle = hexToRgba(this.color, 0.22);
+      ctx.fillRect(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
       ctx.restore();
     } else {
       ctx.fillStyle = this.color;
@@ -168,10 +180,10 @@ export class Marble {
       ctx.fill();
     }
 
-    ctx.strokeStyle = this.overcharge ? '#FFFF00' : 'rgba(255,255,255,0.5)';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = this.overcharge ? '#FFFF00' : this.color;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, this.radius + 0.5, 0, Math.PI * 2);
     ctx.stroke();
 
     if (this.bounceFlash > 0) {
@@ -183,10 +195,27 @@ export class Marble {
       ctx.stroke();
     }
 
-    ctx.fillStyle = '#fff';
+    this.drawNameplate(ctx);
+  }
+
+  drawNameplate(ctx) {
+    const label = this.name || '';
     ctx.font = 'bold 11px monospace';
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(this.name, this.x, this.y - this.radius - 6);
+    ctx.textBaseline = 'middle';
+    const width = ctx.measureText(label).width;
+    const pad = 6;
+    const plateW = width + pad * 2;
+    const plateH = 15;
+    const x = this.x - plateW / 2;
+    const y = this.y - this.radius - 8 - plateH;
+    roundRect(ctx, x, y, plateW, plateH, 5);
+    ctx.fillStyle = hexToRgba(this.color, 0.9);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.fillText(label, this.x, y + plateH / 2 + 0.5);
   }
 }

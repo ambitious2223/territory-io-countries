@@ -45,7 +45,15 @@ function buildRow(team) {
 
   const emoji = document.createElement('span')
   emoji.className = 'team-emoji'
-  emoji.textContent = team.emoji || '🏳️'
+  if (team.flagImage) {
+    const preview = document.createElement('img')
+    preview.className = 'team-flag-preview'
+    preview.src = team.flagImage
+    preview.alt = ''
+    emoji.appendChild(preview)
+  } else {
+    emoji.textContent = team.emoji || '🏳️'
+  }
 
   const color = document.createElement('input')
   color.type = 'color'
@@ -96,13 +104,21 @@ function buildRow(team) {
 function pickFlag(teamId, input) {
   const file = input.files?.[0]
   if (!file) return
+  input.disabled = true
+  input.title = 'Uploading…'
   const reader = new FileReader()
   reader.onload = async () => {
     try {
       const normalized = await cropToAspect(reader.result)
       const result = await uploadFlag(activeGame?.bridge?.url || '', teamId, normalized)
-      if (result?.error) console.warn('Flag upload failed:', result.error)
+      if (result?.error) {
+        input.disabled = false
+        input.title = result.error
+        console.warn('Flag upload failed:', result.error)
+      }
     } catch (error) {
+      input.disabled = false
+      input.title = error.message
       console.warn('Flag processing failed:', error.message)
     }
   }

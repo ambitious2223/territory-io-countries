@@ -52,7 +52,8 @@
 | `grid.js` | Tile ownership, one-touch capture + hold, containment/bounce, enclosure fill |
 | `map.js` | Wall/map generation |
 | `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
-| `marble.js` | Viewer ball: confined ricochet movement + one-touch capture, rendering |
+| `marble.js` | Viewer ball: confined ricochet + capture; avatar with team ring/glow/tint/nameplate |
+| `bases.js` | Stronghold rendering: 3D circular medallion + team photo |
 | `outline.js` | Marching-squares union outline + rounded-corner path (pure) |
 | `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
@@ -62,7 +63,7 @@
 | `renderer.js` | Camera (pan/zoom/shake) + shared draw helpers |
 | `viewerManager.js` | Viewer/bot roster, active cap + reinforcement queue |
 | `ui.js` | DOM HUD, control bar, debug panels, game-over, i18n wiring |
-| `debugPanel.js` | Builds the floating tabbed debug panel markup |
+| `debugPanel.js` | Builds the floating tabbed debug panel (Connection/Teams/Overlay/Advanced) |
 | `debugFab.js` | Draggable debug FAB, tab switching, overlay-link copy |
 | `debug.js` | Canvas debug overlay (vectors, hitboxes, FPS) |
 | `teams.js` | Team model + join-keyword matcher (pure) |
@@ -135,10 +136,10 @@ render()
   ctx.clear
   camera.apply()            # pan/zoom/shake; world space begins
     grid.draw               # tiles + freshness tint + rounded union nation outlines
-    drawBases               # flag/emoji + name banner per nation
+    drawBases               # 3D medallion + team photo + name banner per nation
     powerups.draw
     particles.draw
-    balls.draw (avatar + name + convert arc)
+    balls.draw (avatar + team ring/glow/tint + nameplate)
     vfx.draw
     debug.draw (if enabled)
   camera.restore()

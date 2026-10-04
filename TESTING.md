@@ -31,6 +31,7 @@
 - `src/mappings.js` — gift-rule matching (first match wins).
 - `src/tikoraClient.js` — relay → `hub-client.js` URL derivation + manifest shape.
 - `server/tikoraIdentity.js` — hub identity precedence (env → launch URL → config → manifest).
+- `src/teamRegistry.js` — flag upload stores the URL and notifies subscribers (live update).
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
 - `server/mock.js` — mock event construction.
 - `server/uploads.js` — flag image validation.
@@ -58,7 +59,9 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Debug → Connect shows the right status badge for the chosen source (opened via the FAB).
 - [ ] The floating debug button drags, toggles the tabbed panel, and remembers its spot.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
-- [ ] Flag upload saves a 3:2 image and appears on the team card.
+- [ ] Flag upload saves a 3:2 image, shows a thumbnail in the team row, and appears **live** in that
+      team's stronghold, the leaderboard and the overlay (no reload needed).
+- [ ] Each ball shows a viewer profile photo with a team-colour ring/glow/tint and nameplate.
 - [ ] 30 mock joins: ≤ 24 active, the rest queued and swapped in on death.
 - [ ] Join cinematic pans/zooms to spawn; blur slider changes the backdrop.
 - [ ] The arena starts neutral with one visible home base per nation.

@@ -95,6 +95,17 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 14 — Stronghold photos, ball identity, lean debug
+- [x] Team photo upload applies live (`uploadFlag` notifies) + row thumbnail/status
+- [x] `src/bases.js`: 3D circular stronghold medallion with the team photo (emoji fallback)
+- [x] Ball identity: team-colour ring + glow + light tint + nameplate over the TikTok avatar
+- [x] Debug panel regrouped to Connection · Teams · Overlay · Advanced; tests/docs; released **2.4.0**
+
+**Verify:** uploading a team photo shows instantly in the stronghold/leaderboard/overlay; each ball
+reads as its nation; the debug panel shows only the everyday controls.
+
+---
+
 ## Phase 13 — Hardwire to the Chic Aura Hub
 - [x] `server/tikoraIdentity.js` (env → launch-URL → config → manifest) + `httpRoutes` uses it
 - [x] `countriesio.bat` opens `TIKORA_GAME_LAUNCH_URL` when launched by the hub

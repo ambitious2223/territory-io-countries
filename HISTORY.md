@@ -4,6 +4,22 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-04 — Stronghold photos, ball identity, lean debug menu (2.4.0)
+
+**Done**
+- Team-photo upload fixed: `uploadFlag` now notifies, so the team editor + game update live; the
+  editor row shows a photo thumbnail and an uploading/error state.
+- `src/bases.js`: strongholds drawn as 3D circular medallions with the uploaded photo clipped in
+  (emoji fallback). Extracted from `game.js`.
+- `marble.js`: balls get a team-colour ring + glow, a light team tint over the avatar, and a
+  team-colour nameplate — the TikTok photo stays the fighter, ownership is obvious.
+- Debug panel regrouped to **Connection · Teams · Overlay · Advanced** (secondary tools collapsed).
+
+**Verified**
+- `npm run lint` clean · `npm test` **96 passed** (new `teamRegistry` test) · build + smoke green.
+
+---
+
 ## 2026-10-04 — Hardwired to the Chic Aura Hub (2.3.0)
 
 User asked to hardwire the game to the hub (`C:\dev\windows app interactive for streams`, the

@@ -131,12 +131,15 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 - Left sidebar: one minimal **live leaderboard** — rank, flag, name, territory %, leader crown;
   eliminated nations are struck through.
 - Standalone `leaderboard.html` overlay: the same minimal board plus round state and timer, for OBS.
-- On-canvas: nation **base banners**; balls show their name; **rounded union borders** separate
-  territories.
+- On-canvas: **3D circular strongholds** show the uploaded team photo (emoji fallback) with the name
+  banner; **rounded union borders** separate territories.
+- Balls show the viewer's **TikTok profile photo** as the fighter, framed by a **team-colour ring +
+  glow**, a light team **tint**, and a **team-colour nameplate** above — so team ownership is clear.
 - Top bar: pause, speed, round timer, map select, mute, restart; the debug panel opens from the
   floating gear button.
-- Debug panel: a floating gear opens a tabbed workspace (Connection · Players · Content · Match ·
-  System). The Tikora tab is **read-only** — the hub owns activating/deactivating effects.
+- Debug panel: a floating gear opens a tabbed workspace — **Connection · Teams · Overlay ·
+  Advanced**. Teams holds the editor + photo upload; Advanced (collapsed) holds the dev tools. The
+  Tikora section is **read-only** — the hub owns activating/deactivating effects.
 - **i18n:** English default, full **Arabic + RTL** for all UI; Arabic join aliases always work.
 
 ---

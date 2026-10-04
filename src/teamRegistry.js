@@ -128,7 +128,10 @@ export async function uploadFlag(baseUrl, teamId, dataUrl) {
     body: JSON.stringify({ teamId, imageData: dataUrl })
   })
   const data = await response.json()
-  if (data.url) updateTeam(teamId, { flagImage: data.url })
+  if (data.url) {
+    updateTeam(teamId, { flagImage: data.url })
+    notify()
+  }
   return data
 }
 

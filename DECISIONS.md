@@ -4,6 +4,19 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-030 — Stronghold team photo + ball team identity; live upload; lean debug menu
+- **Context:** Uploading a team photo appeared to do nothing (the registry never notified after
+  upload, and the stronghold drew the emoji/letter, never the photo). In play, the viewer's TikTok
+  avatar is the ball, so team ownership needed a clear, non-clashing cue.
+- **Decision:** (1) `uploadFlag` notifies so uploads apply live, with a thumbnail/status in the team
+  row. (2) Strongholds render as a **3D circular medallion** with the team photo clipped in
+  (`src/bases.js`). (3) Balls keep the viewer avatar and add a **team-colour ring + glow + light
+  tint + nameplate**. (4) The debug panel is regrouped to Connection · Teams · Overlay · Advanced.
+- **Rationale:** The photo has an obvious home; the ball reads as a person *and* a nation; the debug
+  panel shows only everyday controls.
+- **Alternatives:** Tint-only (weak at 30 px); team colour replacing the avatar (loses identity);
+  keep the flag only in the leaderboard (no in-world ownership).
+
 ## D-029 — Hardwired Chic Aura Hub (Tikora) identity; hub owns the controls
 - **Context:** Connecting the game to the hub required pasting a `gk_…` key and relay URL into the
   in-game debug panel. The hub already launches the game and injects `TIKORA_GAME_SLUG` /

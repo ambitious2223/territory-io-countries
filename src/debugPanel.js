@@ -8,10 +8,9 @@ const PANEL = `
   </div>
   <div class="debug-tabs" id="debug-tabs">
     <button class="debug-tab active" data-tab="connection" data-i18n="debug.tab.connection">Connection</button>
-    <button class="debug-tab" data-tab="players" data-i18n="debug.tab.players">Players</button>
-    <button class="debug-tab" data-tab="content" data-i18n="debug.tab.content">Content</button>
-    <button class="debug-tab" data-tab="match" data-i18n="debug.tab.match">Match</button>
-    <button class="debug-tab" data-tab="system" data-i18n="debug.tab.system">System</button>
+    <button class="debug-tab" data-tab="teams" data-i18n="debug.tab.teams">Teams</button>
+    <button class="debug-tab" data-tab="overlay" data-i18n="debug.tab.overlay">Overlay</button>
+    <button class="debug-tab" data-tab="advanced" data-i18n="debug.tab.advanced">Advanced</button>
   </div>
   <div class="debug-body" id="debug-body">
 
@@ -50,15 +49,38 @@ const PANEL = `
       </div>
     </div>
 
-    <div class="debug-tab-panel" data-tab-panel="players">
+    <div class="debug-tab-panel" data-tab-panel="teams">
       <div class="debug-section">
-        <h5 data-i18n="debug.viewers">Viewers</h5>
-        <div class="debug-row"><span data-i18n="debug.activeViewers">Active</span><span class="val" id="dbg-viewers-active">0</span></div>
-        <div class="debug-row"><span data-i18n="debug.queuedViewers">Queued</span><span class="val" id="dbg-viewers-queued">0</span></div>
-        <div class="debug-row"><span data-i18n="debug.totalViewers">Total</span><span class="val" id="dbg-viewers-total">0</span></div>
-        <div class="debug-row"><span data-i18n="debug.cap">Cap</span><input id="viewer-cap" type="number" min="1" max="60" value="24" style="width:50px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
-        <div class="debug-row"><span data-i18n="debug.aiFill">AI Fill</span><input id="viewer-aifill" type="checkbox" /></div>
+        <h5 data-i18n="debug.teams">Teams</h5>
+        <div id="teams-panel-body"></div>
+        <div class="debug-row" style="gap:6px;margin-top:6px;">
+          <button class="ctrl-btn" id="btn-teams-add" style="flex:1;" data-i18n="debug.addTeam">Add Team</button>
+          <button class="ctrl-btn" id="btn-teams-save" style="flex:1;" data-i18n="debug.save">Save</button>
+        </div>
       </div>
+      <div class="debug-section">
+        <h5 data-i18n="debug.language">Language</h5>
+        <select id="language-select" style="width:100%;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="debug-tab-panel" data-tab-panel="overlay">
+      <div class="debug-section">
+        <h5 data-i18n="debug.overlay">Leaderboard Overlay</h5>
+        <div class="debug-row" style="gap:6px;">
+          <input id="overlay-url" readonly style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#8cf;font-size:10px;padding:3px 5px;font-family:inherit;" />
+        </div>
+        <div class="debug-row" style="gap:6px;margin-top:6px;">
+          <button class="ctrl-btn" id="btn-copy-overlay" style="flex:1;" data-i18n="debug.copy">Copy</button>
+          <button class="ctrl-btn" id="btn-open-overlay" style="flex:1;" data-i18n="debug.open">Open</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="debug-tab-panel" data-tab-panel="advanced">
       <div class="debug-section">
         <h5 data-i18n="debug.mockEvent">Mock Event</h5>
         <div class="debug-row" style="gap:6px;">
@@ -75,35 +97,14 @@ const PANEL = `
         </div>
         <button class="ctrl-btn" id="btn-mock-inject" style="width:100%;margin-top:6px;" data-i18n="debug.inject">Inject</button>
       </div>
-    </div>
-
-    <div class="debug-tab-panel" data-tab-panel="content">
       <div class="debug-section">
-        <h5 data-i18n="debug.teams">Teams</h5>
-        <div id="teams-panel-body"></div>
-        <div class="debug-row" style="gap:6px;margin-top:6px;">
-          <button class="ctrl-btn" id="btn-teams-add" style="flex:1;" data-i18n="debug.addTeam">Add Team</button>
-          <button class="ctrl-btn" id="btn-teams-save" style="flex:1;" data-i18n="debug.save">Save</button>
-        </div>
+        <h5 data-i18n="debug.viewers">Viewers</h5>
+        <div class="debug-row"><span data-i18n="debug.activeViewers">Active</span><span class="val" id="dbg-viewers-active">0</span></div>
+        <div class="debug-row"><span data-i18n="debug.queuedViewers">Queued</span><span class="val" id="dbg-viewers-queued">0</span></div>
+        <div class="debug-row"><span data-i18n="debug.totalViewers">Total</span><span class="val" id="dbg-viewers-total">0</span></div>
+        <div class="debug-row"><span data-i18n="debug.cap">Cap</span><input id="viewer-cap" type="number" min="1" max="60" value="24" style="width:50px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
+        <div class="debug-row"><span data-i18n="debug.aiFill">AI Fill</span><input id="viewer-aifill" type="checkbox" /></div>
       </div>
-      <div class="debug-section">
-        <h5 data-i18n="debug.content">Content — Gift Mappings</h5>
-        <div id="mappings-panel-body"></div>
-        <div class="debug-row" style="gap:6px;margin-top:6px;">
-          <button class="ctrl-btn" id="btn-mappings-add" style="flex:1;" data-i18n="debug.addMapping">Add</button>
-          <button class="ctrl-btn" id="btn-mappings-save" style="flex:1;" data-i18n="debug.save">Save</button>
-        </div>
-      </div>
-      <div class="debug-section">
-        <h5 data-i18n="debug.language">Language</h5>
-        <select id="language-select" style="width:100%;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">
-          <option value="en">English</option>
-          <option value="ar">العربية</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="debug-tab-panel" data-tab-panel="match">
       <div class="debug-section">
         <h5 data-i18n="debug.cinematic">Cinematic</h5>
         <div class="debug-row"><span data-i18n="debug.queue">Queue</span><span class="val" id="dbg-cine-queue">0</span></div>
@@ -118,9 +119,14 @@ const PANEL = `
         <h5 data-i18n="debug.winners">All-Time Winners</h5>
         <div id="winners-panel-body"></div>
       </div>
-    </div>
-
-    <div class="debug-tab-panel" data-tab-panel="system">
+      <div class="debug-section">
+        <h5 data-i18n="debug.content">Content — Gift Mappings</h5>
+        <div id="mappings-panel-body"></div>
+        <div class="debug-row" style="gap:6px;margin-top:6px;">
+          <button class="ctrl-btn" id="btn-mappings-add" style="flex:1;" data-i18n="debug.addMapping">Add</button>
+          <button class="ctrl-btn" id="btn-mappings-save" style="flex:1;" data-i18n="debug.save">Save</button>
+        </div>
+      </div>
       <div class="debug-section">
         <h5 data-i18n="debug.performance">Performance</h5>
         <div class="debug-row"><span>FPS</span><span class="val" id="dbg-fps">--</span></div>
@@ -136,16 +142,6 @@ const PANEL = `
       <div class="debug-section">
         <h5 data-i18n="debug.tileOwnership">Tile Ownership</h5>
         <div class="debug-tile-grid" id="dbg-tiles"></div>
-      </div>
-      <div class="debug-section">
-        <h5 data-i18n="debug.overlay">Leaderboard Overlay</h5>
-        <div class="debug-row" style="gap:6px;">
-          <input id="overlay-url" readonly style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#8cf;font-size:10px;padding:3px 5px;font-family:inherit;" />
-        </div>
-        <div class="debug-row" style="gap:6px;margin-top:6px;">
-          <button class="ctrl-btn" id="btn-copy-overlay" style="flex:1;" data-i18n="debug.copy">Copy</button>
-          <button class="ctrl-btn" id="btn-open-overlay" style="flex:1;" data-i18n="debug.open">Open</button>
-        </div>
       </div>
     </div>
 

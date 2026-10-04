@@ -22,6 +22,7 @@ import { Camera } from './renderer.js';
 import { DebugOverlay } from './debug.js';
 import { VFXSystem } from './vfx.js';
 import { generateMap } from './map.js';
+import { drawBases } from './bases.js';
 import {
   updateTimer, updateGameOver, hideGameOver,
   updateControlBar, updatePauseOverlay,
@@ -500,7 +501,7 @@ export class Game {
     }
 
     this.grid.draw(this.ctx);
-    this.drawBases(this.ctx);
+    drawBases(this.ctx, this);
     this.powerups.draw(this.ctx);
     this.particles.draw(this.ctx);
 
@@ -549,41 +550,4 @@ export class Game {
     this.bridge.sendOverlay(buildOverlayPayload(this));
   }
 
-  drawBases(ctx) {
-    for (let i = 0; i < this.teams.length; i++) {
-      const team = this.teams[i];
-      if (team.eliminated) continue;
-      const point = this.baseCenters[i];
-      if (!point) continue;
-      const radius = CONFIG.MARBLE_RADIUS + 4;
-
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, radius + 6, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = team.color;
-      ctx.fill();
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(team.emoji || (team.name?.en || '?').slice(0, 1).toUpperCase(), point.x, point.y);
-
-      ctx.font = 'bold 12px monospace';
-      ctx.textBaseline = 'top';
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      const label = team.name?.en || '';
-      const w = ctx.measureText(label).width;
-      ctx.fillRect(point.x - w / 2 - 4, point.y + radius + 6, w + 8, 16);
-      ctx.fillStyle = '#fff';
-      ctx.fillText(label, point.x, point.y + radius + 8);
-    }
-  }
 }

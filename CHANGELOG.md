@@ -4,6 +4,26 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.4.0] - 2026-10-04
+
+### Added
+- **Team photos in the stronghold.** Bases render as a **3D circular medallion** (radial-gradient
+  disc, drop shadow, specular highlight, bright rim) with the uploaded team photo clipped inside;
+  the emoji/letter is the fallback. Extracted to `src/bases.js`.
+- **Ball team identity.** Each viewer ball now shows the TikTok avatar with a **team-colour ring +
+  glow**, a **light team tint** (~22 %) on the photo, and a **team-colour nameplate** above it, so
+  ownership is unmistakable while the face still reads.
+
+### Fixed
+- **Team-photo upload now updates live.** `uploadFlag` notifies subscribers after saving, so the
+  editor and the running game refresh immediately (previously the new flag only appeared after a
+  reload). The team row shows a thumbnail of the saved photo and an uploading/error state.
+
+### Changed
+- **Debug menu simplified.** Tabs are now **Connection · Teams · Overlay · Advanced**. The bulk of
+  the tools (Mock, Viewers, Cinematic, Scoring, Winners, Gift Mappings, Performance, Particles,
+  Tile Ownership) moved into a collapsed **Advanced** tab.
+
 ## [2.3.0] - 2026-10-04
 
 ### Changed
