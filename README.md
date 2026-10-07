@@ -86,22 +86,19 @@ username yet? It starts in **Mock** mode so the game is fully testable offline.
 
 ### Running from the Chic Aura Hub (Tikora) — no key to paste
 
-The game **hardwires itself to the hub**. Add it once in Tikora's **Game Store**:
-
-| Field | Value |
-| --- | --- |
-| Name | Territory With Flags |
-| Slug | `territory-with-flags` |
-| Type | webapp |
-| Port | `1935` |
-| Launch (.bat) | `C:\dev\TERRITORY WITH SWORDS\countriesio.bat` |
-
-Then generate/copy its `gk_…` key in **Game Hub**. Pressing **▶ Run** starts `countriesio.bat`,
-which opens the hub's launch URL (`?game=territory-with-flags&key=gk_…`) and injects
-`TIKORA_GAME_SLUG`/`TIKORA_GAME_KEY`/`TIKORA_RELAY_URL`; the game reads them from
+The game **hardwires itself to the hub**, and the hub now **seeds it automatically**: start Tikora
+and **Territory With Flags (🗺️) appears in the Game Store** with its launch script, port `1935`
+and manifest folder already configured (slug `territory-with-flags`). Press **▶ Run** — it starts
+`countriesio.bat`, which opens the hub's launch URL (`?game=territory-with-flags&key=gk_…`) and
+injects `TIKORA_GAME_SLUG`/`TIKORA_GAME_KEY`/`TIKORA_RELAY_URL`; the game reads them from
 `GET /api/tikora/config` (or the URL) and connects automatically. **All activation/deactivation and
 effect mapping live in the hub** — the in-game debug panel only *shows* the hub status. Running
 `npm run dev` by hand still works fully offline (Mock / TikFinity).
+
+> If you ever need to re-create the entry by hand: Name `Territory With Flags`, Slug
+> `territory-with-flags`, Type webapp, Port `1935`, Launch `C:\dev\TERRITORY WITH SWORDS\countriesio.bat`.
+> Setting its **path** to the project folder is what lets the hub list your effects while the game
+> is offline (it reads `tikora.manifest.json`).
 
 ### Standalone leaderboard overlay
 

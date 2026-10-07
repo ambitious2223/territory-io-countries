@@ -22,6 +22,9 @@ Newest first. Log what was done, blockers, and next steps.
 
 **Verified**
 - `npm run lint` clean · `npm test` **116 passed** · build + smoke green.
+- Hub companion commits (separate repo, its own 5 gates green): effect event now carries
+  avatar/name/userId (`81da6da`), and the hub **seeds Territory With Flags into its Game Store**
+  with path/port/bat + manifest sync (`4aec1eb`) — the game appears automatically on hub start.
 
 ---
 
