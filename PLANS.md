@@ -95,6 +95,20 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 15 — Capital slider, layering, auto-save
+- [x] Capital-size slider (Teams tab, 0.5x–2.5x) persisted as `capitalScale`; `bases.js` scales
+      the medallion, emoji and name pill
+- [x] Render order: capitals above balls, below event text
+- [x] Name banner restyled (dark pill + team-colour border + shadowed text)
+- [x] Debounced team auto-save (1.5 s + unload flush) with panel/game listener split so typing
+      keeps focus and edits appear live in-game
+- [x] Tests (capital scale, autosave debounce), docs; released **2.5.0**
+
+**Verify:** drag the slider → capitals resize live; capitals cover their balls but not event text;
+rename a team and see it update + survive a reload without clicking Save.
+
+---
+
 ## Phase 14 — Stronghold photos, ball identity, lean debug
 - [x] Team photo upload applies live (`uploadFlag` notifies) + row thumbnail/status
 - [x] `src/bases.js`: 3D circular stronghold medallion with the team photo (emoji fallback)

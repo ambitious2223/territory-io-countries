@@ -4,6 +4,24 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-04 — Capital slider, layering, autosave (2.5.0)
+
+**Done**
+- Capital-size slider (Teams tab, 0.5x–2.5x) persisted as `capitalScale` in the teams config;
+  `bases.js` scales the medallion, emoji and name banner from it.
+- Render order fixed: balls draw **before** capitals, so fighters sit under the stronghold; event
+  text stays topmost.
+- Name banner restyled as a dark rounded pill with team-colour border + shadowed bold text.
+- `teamRegistry`: split panel/game listener sets, added `setBaseUrl`, debounced auto-save
+  (`TEAMS_AUTOSAVE_MS` 1.5 s) with a `beforeunload` flush; saves notify only the game so typed
+  text keeps focus and edits appear live in-game. `main.js` switched to `subscribeGame`.
+
+**Verified**
+- `npm run lint` clean · `npm test` **100 passed** (capital scale + autosave debounce tests) ·
+  build + smoke green.
+
+---
+
 ## 2026-10-04 — Fix team-photo upload CORS (2.4.1)
 
 The team picker still did nothing. Root cause: the Express REST API had **no CORS headers**, so a

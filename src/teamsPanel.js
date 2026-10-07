@@ -1,10 +1,13 @@
 import { t } from './i18n.js'
+import { CONFIG } from './config.js'
 import { cropToAspect } from './imageUtils.js'
 import {
   addTeam,
+  getCapitalScale,
   getTeams,
   removeTeam,
   saveToServer,
+  setCapitalScale,
   subscribe,
   updateTeam,
   uploadFlag
@@ -22,8 +25,24 @@ export function initTeamsPanel(game) {
     saveToServer(activeGame?.bridge?.url || '')
   })
 
+  initCapitalSlider()
   subscribe(() => renderTeamsPanel())
   renderTeamsPanel()
+}
+
+function initCapitalSlider() {
+  const slider = document.getElementById('capital-scale')
+  const label = document.getElementById('capital-scale-value')
+  if (!slider || !label) return
+  slider.min = String(CONFIG.CAP_SCALE_MIN)
+  slider.max = String(CONFIG.CAP_SCALE_MAX)
+  slider.step = String(CONFIG.CAP_SCALE_STEP)
+  slider.value = String(getCapitalScale())
+  label.textContent = `${getCapitalScale().toFixed(1)}x`
+  slider.addEventListener('input', () => {
+    setCapitalScale(slider.value)
+    label.textContent = `${getCapitalScale().toFixed(1)}x`
+  })
 }
 
 export function renderTeamsPanel() {

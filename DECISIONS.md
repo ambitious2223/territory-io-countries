@@ -4,6 +4,21 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-031 — Capital size slider, capitals above fighters, auto-saving teams
+- **Context:** The streamer wanted a per-nation capital size, clear visual layering (capitals not
+  buried under balls), a readable country-name label, and team edits persisted without clicking
+  Save.
+- **Decision:** `capitalScale` lives in the teams config (server-persisted, slider in the Teams tab,
+  0.5x–2.5x) and scales the medallion, emoji and name pill in `bases.js`. Render order is grid →
+  powerups/particles → **balls → capitals** → event text. Name banner = dark rounded pill +
+  team-colour border + shadowed bold text. Team edits **auto-save** 1.5 s after the last change
+  (`TEAMS_AUTOSAVE_MS`) with a `beforeunload` flush.
+- **Rationale:** Focus-preserving saves required splitting panel listeners from game listeners in
+  `teamRegistry` (a panel re-render would recreate the text inputs mid-typing); the game still
+  learns about edits on each save. Capitals above balls matches "stronghold as a place".
+- **Alternatives:** Notify listeners on save and accept focus loss; keep manual Save only; scale
+  capitals per team (unnecessary — one streamer preference).
+
 ## D-030 — Stronghold team photo + ball team identity; live upload; lean debug menu
 - **Context:** Uploading a team photo appeared to do nothing (the registry never notified after
   upload, and the stronghold drew the emoji/letter, never the photo). In play, the viewer's TikTok

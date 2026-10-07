@@ -53,7 +53,7 @@
 | `map.js` | Wall/map generation |
 | `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
 | `marble.js` | Viewer ball: confined ricochet + capture; avatar with team ring/glow/tint/nameplate |
-| `bases.js` | Stronghold rendering: 3D circular medallion + team photo |
+| `bases.js` | Stronghold rendering: scaled 3D medallion + team photo + name pill |
 | `outline.js` | Marching-squares union outline + rounded-corner path (pure) |
 | `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
@@ -67,7 +67,7 @@
 | `debugFab.js` | Draggable debug FAB, tab switching, overlay-link copy |
 | `debug.js` | Canvas debug overlay (vectors, hitboxes, FPS) |
 | `teams.js` | Team model + join-keyword matcher (pure) |
-| `teamRegistry.js` | Team sync via `/api/teams`, localStorage, flag images |
+| `teamRegistry.js` | Team sync via `/api/teams`, localStorage, flag images, capitalScale, debounced auto-save |
 | `teamsPanel.js` | Teams editor UI |
 | `scoring.js` | Interaction → score engine (pure) |
 | `round.js` | Round lifecycle state machine |
@@ -136,10 +136,10 @@ render()
   ctx.clear
   camera.apply()            # pan/zoom/shake; world space begins
     grid.draw               # tiles + freshness tint + rounded union nation outlines
-    drawBases               # 3D medallion + team photo + name banner per nation
     powerups.draw
     particles.draw
     balls.draw (avatar + team ring/glow/tint + nameplate)
+    drawBases               # capital medallion (capitalScale) + photo + name pill — above balls
     vfx.draw
     debug.draw (if enabled)
   camera.restore()

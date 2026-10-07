@@ -1,6 +1,16 @@
 import { CONFIG } from './config.js';
 import { shade } from './utils.js';
-import { getFlagImage } from './teamRegistry.js';
+import { getCapitalScale, getFlagImage } from './teamRegistry.js';
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
 
 function drawPhoto(ctx, image, x, y, size) {
   const sw = image.naturalWidth;
@@ -16,17 +26,46 @@ function drawPhoto(ctx, image, x, y, size) {
   ctx.restore();
 }
 
+function drawNamePill(ctx, team, x, y, fontSize) {
+  const label = team.name?.en || '';
+  if (!label) return;
+  const padX = 10;
+  const height = fontSize + 10;
+  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const width = ctx.measureText(label).width + padX * 2;
+  const left = x - width / 2;
+
+  roundRect(ctx, left, y, width, height, height / 2);
+  ctx.fillStyle = 'rgba(8, 8, 10, 0.78)';
+  ctx.fill();
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = team.color;
+  ctx.stroke();
+
+  ctx.shadowColor = 'rgba(0,0,0,0.9)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetY = 1;
+  ctx.fillStyle = '#fff';
+  ctx.fillText(label, x, y + height / 2 + 0.5);
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+}
+
 export function drawBases(ctx, game) {
+  const scale = getCapitalScale();
+  const radius = (CONFIG.MARBLE_RADIUS + 6) * scale;
+
   for (let i = 0; i < game.teams.length; i++) {
     const team = game.teams[i];
     if (team.eliminated) continue;
     const point = game.baseCenters[i];
     if (!point) continue;
 
-    const radius = CONFIG.MARBLE_RADIUS + 6;
-
     ctx.beginPath();
-    ctx.arc(point.x, point.y + 3, radius + 2, 0, Math.PI * 2);
+    ctx.arc(point.x, point.y + 3 * scale, radius + 2, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0,0,0,0.4)';
     ctx.fill();
 
@@ -50,7 +89,7 @@ export function drawBases(ctx, game) {
       drawPhoto(ctx, image, point.x, point.y, radius - 4);
     } else {
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 15px sans-serif';
+      ctx.font = `bold ${Math.round(15 * scale)}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(team.emoji || (team.name?.en || '?').slice(0, 1).toUpperCase(), point.x, point.y);
@@ -61,14 +100,6 @@ export function drawBases(ctx, game) {
     ctx.fillStyle = 'rgba(255,255,255,0.28)';
     ctx.fill();
 
-    ctx.font = 'bold 12px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    const label = team.name?.en || '';
-    const w = ctx.measureText(label).width;
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(point.x - w / 2 - 4, point.y + radius + 6, w + 8, 16);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(label, point.x, point.y + radius + 8);
+    drawNamePill(ctx, team, point.x, point.y + radius + 6, Math.round(CONFIG.BANNER_FONT_PX * scale));
   }
 }

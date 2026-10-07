@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.5.0] - 2026-10-04
+
+### Added
+- **Capital size slider** (Debug → Teams): scales every stronghold medallion and its name banner
+  from 0.5x to 2.5x (default 1.0x), persisted in the teams config (`capitalScale`).
+- **Auto-save for teams**: any edit (name, colour, ISO, photo, capital size, add/remove team) is
+  saved to `/api/teams` automatically **1.5 s** after the last change, with a flush on page close.
+  The Save button remains as an instant save.
+
+### Changed
+- **Render layering**: strongholds now draw **above the balls** (fighters) and below floating event
+  text — a capital is never covered by its own units.
+- **Capital name banner** restyled: rounded dark pill with a team-colour border and bold white
+  shadowed text, scaling with the capital slider.
+- Team registry now keeps **panel listeners** (debug UI re-render) separate from **game listeners**:
+  auto-saves update the running game live without stealing focus from the text fields.
+
 ## [2.4.1] - 2026-10-04
 
 ### Fixed

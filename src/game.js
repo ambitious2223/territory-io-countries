@@ -501,13 +501,14 @@ export class Game {
     }
 
     this.grid.draw(this.ctx);
-    drawBases(this.ctx, this);
     this.powerups.draw(this.ctx);
     this.particles.draw(this.ctx);
 
     for (const m of this.marbles) {
       if (m.alive && !m.eliminated) m.draw(this.ctx);
     }
+
+    drawBases(this.ctx, this);
 
     this.vfx.draw(this.ctx);
 

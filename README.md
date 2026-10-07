@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.4.1
+## Status — v2.5.0
 
-Every gate is green: `npm run lint`, `npm test` (96 tests incl. hub-identity/team-registry/outline/
-overlay + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (100 tests incl. team-registry/hub-identity/
+outline/overlay + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -42,7 +42,9 @@ overlay + a headless game-loop test), `npm run build`, and `npm run smoke`.
   Balls show the viewer's TikTok photo with a **team-colour ring, glow, tint and nameplate**, so you
   always know who belongs to which nation.
 - **Team photos:** upload a flag/photo per team in **Debug → Teams**; it appears in the stronghold,
-  the leaderboard and the overlay. Uploads apply live.
+  the leaderboard and the overlay. Uploads apply live and **all team edits auto-save** (~1.5 s
+  debounce; the Save button stays as an instant save). A **capital size slider** (0.5x–2.5x) scales
+  every stronghold.
 - **Lean debug menu:** Connection · Teams · Overlay · Advanced (secondary tools collapsed). A
   floating draggable button opens it (position + state persist).
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)

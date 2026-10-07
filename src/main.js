@@ -5,7 +5,7 @@ import { initDebugFab, initDebugTabs, initOverlayLink } from './debugFab.js';
 import { initConnectionPanel, initViewersPanel, initCinematicPanel, initScoringPanel } from './ui.js';
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
-import { getTeams, loadFromServer, subscribe } from './teamRegistry.js';
+import { getTeams, loadFromServer, subscribeGame, setBaseUrl as setTeamBaseUrl } from './teamRegistry.js';
 import { setBaseUrl, loadWinners } from './winnersStore.js';
 import { initMappingsPanel } from './mappingsPanel.js';
 import { setBaseUrl as setMappingsBaseUrl, loadFromServer as loadMappings } from './mappingsStore.js';
@@ -33,7 +33,7 @@ bridge.onEvent((event) => {
   game.handleBridgeEvent(event);
 });
 
-subscribe((config) => {
+subscribeGame((config) => {
   game.setTeams(config.teams);
 });
 
@@ -81,6 +81,7 @@ initLanguageSelector();
 
 setBaseUrl(bridge.url);
 setMappingsBaseUrl(bridge.url);
+setTeamBaseUrl(bridge.url);
 bridge.connect();
 loadFromServer(bridge.url);
 loadWinners();

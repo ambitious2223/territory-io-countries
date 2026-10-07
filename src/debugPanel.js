@@ -51,6 +51,14 @@ const PANEL = `
 
     <div class="debug-tab-panel" data-tab-panel="teams">
       <div class="debug-section">
+        <h5 data-i18n="debug.capital">Capital</h5>
+        <div class="debug-row">
+          <span data-i18n="debug.capitalSize">Size</span>
+          <input id="capital-scale" type="range" min="0.5" max="2.5" step="0.1" value="1" style="width:110px;">
+          <span class="val" id="capital-scale-value">1.0x</span>
+        </div>
+      </div>
+      <div class="debug-section">
         <h5 data-i18n="debug.teams">Teams</h5>
         <div id="teams-panel-body"></div>
         <div class="debug-row" style="gap:6px;margin-top:6px;">

@@ -31,7 +31,8 @@
 - `src/mappings.js` — gift-rule matching (first match wins).
 - `src/tikoraClient.js` — relay → `hub-client.js` URL derivation + manifest shape.
 - `server/tikoraIdentity.js` — hub identity precedence (env → launch URL → config → manifest).
-- `src/teamRegistry.js` — flag upload stores the URL and notifies subscribers (live update).
+- `src/teamRegistry.js` — flag upload notifies, capital scale clamps/notifies the game only,
+  debounced auto-save (fake timers), save-to-server notifies the game but not the panel.
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
 - `server/mock.js` — mock event construction.
 - `server/uploads.js` — flag image validation.
@@ -62,6 +63,10 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Flag upload saves a 3:2 image, shows a thumbnail in the team row, and appears **live** in that
       team's stronghold, the leaderboard and the overlay (no reload needed).
 - [ ] Each ball shows a viewer profile photo with a team-colour ring/glow/tint and nameplate.
+- [ ] Capital-size slider (0.5x–2.5x) rescales every stronghold + its name banner immediately.
+- [ ] Capitals render **above** balls; the name pill stays readable on any territory colour.
+- [ ] Edit a team name/colour and wait ~2 s → it shows live in-game and persists after a reload
+      (no Save click needed).
 - [ ] 30 mock joins: ≤ 24 active, the rest queued and swapped in on death.
 - [ ] Join cinematic pans/zooms to spawn; blur slider changes the backdrop.
 - [ ] The arena starts neutral with one visible home base per nation.

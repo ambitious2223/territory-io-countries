@@ -1,6 +1,7 @@
 {
   "minTeams": 2,
   "maxTeams": 12,
+  "capitalScale": 1,
   "teams": [
     {
       "id": 1,
@@ -12,7 +13,7 @@
       "iso2": "SA",
       "emoji": "🇸🇦",
       "color": "#00CC44",
-      "flagImage": "/flags/1_2c06b8.png",
+      "flagImage": "/flags/1_72fc16.png",
       "aliases": [
         "saudi",
         "ksa",
@@ -29,7 +30,7 @@
       "iso2": "EG",
       "emoji": "🇪🇬",
       "color": "#FFD700",
-      "flagImage": null,
+      "flagImage": "/flags/2_b745ad.png",
       "aliases": [
         "masr",
         "misr"
@@ -45,7 +46,7 @@
       "iso2": "AE",
       "emoji": "🇦🇪",
       "color": "#FF8C00",
-      "flagImage": null,
+      "flagImage": "/flags/3_94c98d.png",
       "aliases": [
         "emirates",
         "uae",
@@ -63,7 +64,7 @@
       "iso2": "MA",
       "emoji": "🇲🇦",
       "color": "#9B30FF",
-      "flagImage": null,
+      "flagImage": "/flags/4_ce8b49.png",
       "aliases": [
         "maroc",
         "maghrib"
