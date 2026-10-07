@@ -208,6 +208,25 @@ export function initConnectionPanel(game) {
     };
     game.bridge?.injectMock(body);
   });
+
+  const bypass = document.getElementById('bypass-prompt');
+  if (bypass) {
+    try {
+      const saved = localStorage.getItem('twf.bypassPrompt');
+      if (saved !== null) CONFIG.PROMPT_BYPASS = saved === '1';
+    } catch {
+      void 0;
+    }
+    bypass.checked = CONFIG.PROMPT_BYPASS;
+    bypass.addEventListener('change', () => {
+      CONFIG.PROMPT_BYPASS = bypass.checked;
+      try {
+        localStorage.setItem('twf.bypassPrompt', bypass.checked ? '1' : '0');
+      } catch {
+        void 0;
+      }
+    });
+  }
 }
 
 function initSpeedSlider(game) {

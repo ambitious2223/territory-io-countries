@@ -111,6 +111,10 @@ const PANEL = `
           <input id="mock-username" placeholder="viewer" data-i18n-placeholder="misc.viewer" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
           <input id="mock-value" placeholder="1" value="1" style="width:38px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
         </div>
+        <div class="debug-row" style="gap:6px;">
+          <span data-i18n="debug.bypassPrompt" style="flex:1;">Skip pick-a-side</span>
+          <input id="bypass-prompt" type="checkbox" />
+        </div>
         <button class="ctrl-btn" id="btn-mock-inject" style="width:100%;margin-top:6px;" data-i18n="debug.inject">Inject</button>
       </div>
       <div class="debug-section">

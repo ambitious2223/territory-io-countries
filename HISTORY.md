@@ -4,6 +4,23 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Pick-a-side bypass for testing (2.10.0)
+
+User likes the pick-a-side flow but it blocked debugging (held effects dropped while waiting for
+a join).
+
+**Done**
+- `CONFIG.PROMPT_BYPASS` + checkbox in debug → Advanced → **Mock Event** ("Skip pick-a-side"),
+  persisted (`twf.bypassPrompt`, default off). When on, `executeEffect` resolves an unknown
+  activator to `pickBypassTeam` (target teamId → least-loaded nation) and registers the user so
+  follow-up effects reuse that team — no prompt.
+- Tests: bypass applies without prompting + off-by-default still prompts.
+
+**Verified**
+- `npm run lint` clean · `npm test` **134 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Total Arabic, positions fixed (2.9.0)
 
 User: "total accurate Arabic translation **without switching the UI positions of anything**".

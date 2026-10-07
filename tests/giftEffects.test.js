@@ -31,7 +31,10 @@ function fakeGame(grid = null) {
   return {
     teams: [team],
     marbles: [],
-    scoring: { teamOf: (id) => (id === 'leader' ? 1 : null) },
+    scoring: {
+      teamOf: (id) => (id === 'leader' ? 1 : null),
+      registerUser: vi.fn(),
+    },
     viewers: { viewers: new Map() },
     joinPrompt: { request: vi.fn(() => true) },
     vfx: { addPickupText: vi.fn() },
@@ -88,6 +91,25 @@ describe('effect identity', () => {
     const game = fakeGame()
     expect(fx.executeEffect(game, 'nope', {}, { userId: 'leader' })).toBeNull()
     expect(fx.executeEffect(game, 'boost', {}, {})).toBeNull()
+  })
+
+  it('bypasses the prompt and applies to the least-loaded nation when testing mode is on', () => {
+    const game = fakeGame()
+    CONFIG.PROMPT_BYPASS = true
+    try {
+      const out = fx.executeEffect(game, 'boost', { duration: 3 }, {
+        userId: 'stranger', username: 'stranger',
+      })
+      expect(out).toBe('boost')
+      expect(game.joinPrompt.request).not.toHaveBeenCalled()
+      expect(game.scoring.registerUser).toHaveBeenCalledWith('stranger', 1)
+    } finally {
+      CONFIG.PROMPT_BYPASS = false
+    }
+
+    const again = fx.executeEffect(game, 'boost', {}, { userId: 'stranger', username: 'stranger' })
+    expect(again).toBe('pending')
+    expect(game.joinPrompt.request).toHaveBeenCalledTimes(1)
   })
 })
 

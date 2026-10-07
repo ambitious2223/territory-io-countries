@@ -4,6 +4,18 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-037 — "Skip pick-a-side" testing bypass
+- **Context:** The pick-a-side prompt (D-034) is right for real viewers but blocked debugging —
+  injected gifts sat held until timeout and the effect dropped.
+- **Decision:** `CONFIG.PROMPT_BYPASS` (persisted checkbox in debug → Advanced → Mock Event,
+  **default off**) short-circuits the prompt: an unaffiliated activator's effect resolves to
+  `pickBypassTeam` (explicit teamId → least-loaded nation) and the user is registered via
+  `scoring.registerUser`, so follow-up effects hit the same team. Real flow unchanged when off.
+- **Rationale:** One toggle, obvious defaults: viewers still get the prompt; testers don't wait
+  20 s per injection.
+- **Alternatives:** Auto-bypass for mock-sourced events only (breaks hub ▶Run testing); shorten
+  the timeout (still drops the effect).
+
 ## D-036 — Complete Arabic, text-only switch (no layout mirroring)
 - **Context:** The switch to Arabic set `document.dir = 'rtl'`, which **reordered the whole UI**;
   several surfaces were also still English-only (round states, map/mode/mock options, effect and

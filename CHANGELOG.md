@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.10.0] - 2026-10-08
+
+### Added
+- **"Skip pick-a-side" testing toggle** (debug → Advanced → Mock Event): when on, an effect from
+  someone without a nation applies immediately to the **least-loaded nation** (and registers them
+  there so follow-up effects hit the same team) instead of showing the join prompt. Persisted across
+  restarts; **off by default**, so real viewers still get the prompt. Fixes prompt-driven drag
+  during mock-injection / hub ▶Run testing.
+
 ## [2.9.0] - 2026-10-08
 
 ### Changed

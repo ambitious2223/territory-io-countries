@@ -159,6 +159,8 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   with their **profile photo + nickname** asking them to comment a country; the effect is **held**
   and fires automatically the moment they join (dropped after `JOIN_PROMPT_TIMEOUT`, 20 s).
   Effect soldiers always carry the activator's **photo and nickname**.
+  For testing, the **"Skip pick-a-side"** toggle (debug → Advanced → Mock Event, persisted)
+  applies such effects immediately to the least-loaded nation instead of prompting.
 - **i18n:** English default, complete **Arabic** for every user-facing string (round/map/mode/mock
   labels, effect + floating texts, scoring weights, team names on canvas, leaderboard, cinematic
   and overlay). The language switch is **text-only — positions never mirror** (fixed decision

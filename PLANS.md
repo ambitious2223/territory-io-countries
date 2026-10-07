@@ -95,6 +95,16 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 20 — Pick-a-side bypass for testing
+- [x] `PROMPT_BYPASS` toggle (debug → Advanced → Mock Event, persisted, default off); unknown
+      activators apply instantly to the least-loaded nation + are registered there
+- [x] Tests (bypass applies / default still prompts); docs; released **2.10.0**
+
+**Verify:** inject a gift as a stranger with the toggle on → effect fires instantly, no pop-up;
+toggle off → the pick-a-side prompt returns.
+
+---
+
 ## Phase 19 — Total Arabic, no layout mirroring
 - [x] Language switch is text-only (`dir` stays `ltr`); docs updated (D-036)
 - [x] Translate hardcoded English: round/map/mode/mock labels, 12 effect labels, VFX texts,

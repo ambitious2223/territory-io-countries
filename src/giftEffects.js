@@ -23,6 +23,24 @@ function countParam(params) {
   return Math.round(Math.min(CONFIG.EFFECT_COUNT_MAX, Math.max(1, toNumber(params.count, CONFIG.SUMMON_COUNT))))
 }
 
+function pickBypassTeam(game, target) {
+  if (target.teamId !== undefined && target.teamId !== null) {
+    const byId = game.teams.find((team) => team.id === target.teamId)
+    if (byId) return byId
+  }
+  let best = null
+  let bestCount = Infinity
+  for (const team of game.teams) {
+    if (team.eliminated) continue
+    const count = game.countTeamMarbles ? game.countTeamMarbles(team.id) : 0
+    if (count < bestCount) {
+      bestCount = count
+      best = team
+    }
+  }
+  return best || game.teams[0] || null
+}
+
 function teamMarbles(ctx) {
   return ctx.game.marbles.filter(
     (marble) => marble.teamId === ctx.team.id && marble.alive && !marble.eliminated
@@ -148,15 +166,21 @@ export function executeEffect(game, effectKey, params = {}, target = {}) {
   }
   if (!team) {
     if (!hasUser) return null
-    const queued = game.joinPrompt?.request({
-      username: String(target.username ?? lookup),
-      name: target.name || target.username || String(lookup),
-      avatar: target.avatar || '',
-      userId: String(lookup),
-      effect: effectKey,
-      params
-    })
-    return queued ? 'pending' : null
+    if (CONFIG.PROMPT_BYPASS) {
+      team = pickBypassTeam(game, target)
+      if (!team) return null
+      game.scoring?.registerUser?.(String(lookup), team.id)
+    } else {
+      const queued = game.joinPrompt?.request({
+        username: String(target.username ?? lookup),
+        name: target.name || target.username || String(lookup),
+        avatar: target.avatar || '',
+        userId: String(lookup),
+        effect: effectKey,
+        params
+      })
+      return queued ? 'pending' : null
+    }
   }
 
   const viewer = hasUser

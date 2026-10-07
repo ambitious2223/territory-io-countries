@@ -88,6 +88,8 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Soldiers are readable on their **own** colour (black/white ring), team tint still obvious.
 - [ ] Mock-inject a gift from a username who never commented → photo pop-up "Pick a side!" appears;
       when that user comments a nation, the held effect fires on their soldier (with their photo).
+- [ ] With **Skip pick-a-side** (Advanced → Mock Event) checked, the same injection applies
+      instantly to a nation and no pop-up appears; uncheck → prompt returns (default).
 - [ ] Restart Tikora → Game Hub lists **all 12 effects**; mapping dropdown in-game shows the same
       list; map each new effect (freeze / shield / team speed / claim storm / mega bomb / summon)
       and inject it: frozen soldiers get the icy ring, a shield shows the **white dashed border**
