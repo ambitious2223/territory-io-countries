@@ -1,4 +1,4 @@
-const FAB = '<button class="debug-fab" id="debug-fab" title="Debug" aria-label="Debug">&#9881;</button>';
+const FAB = '<button class="debug-fab" id="debug-fab" title="Debug" aria-label="Debug" data-i18n-title="debug.header">&#9881;</button>';
 
 const PANEL = `
 <div class="debug-panel" id="debug-panel">
@@ -23,12 +23,12 @@ const PANEL = `
         <div class="debug-row"><span data-i18n="debug.events">Events</span><span class="val" id="dbg-conn-events">0</span></div>
         <div class="debug-row"><span data-i18n="debug.error">Error</span><span class="val" id="dbg-conn-error">-</span></div>
         <div class="debug-row" style="gap:6px;margin-top:6px;">
-          <input id="conn-username" placeholder="tiktok username" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
+          <input id="conn-username" placeholder="tiktok username" data-i18n-placeholder="debug.username" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
           <select id="conn-mode" style="background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">
-            <option value="auto">Auto</option>
-            <option value="direct">Direct</option>
-            <option value="tikfinity">TikFinity</option>
-            <option value="mock">Mock</option>
+            <option value="auto" data-i18n="mode.auto">Auto</option>
+            <option value="direct" data-i18n="mode.direct">Direct</option>
+            <option value="tikfinity" data-i18n="mode.tikfinity">TikFinity</option>
+            <option value="mock" data-i18n="mode.mock">Mock</option>
           </select>
         </div>
         <div class="debug-row" style="gap:6px;margin-top:4px;">
@@ -101,14 +101,14 @@ const PANEL = `
         <h5 data-i18n="debug.mockEvent">Mock Event</h5>
         <div class="debug-row" style="gap:6px;">
           <select id="mock-type" style="background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">
-            <option value="chat">chat</option>
-            <option value="gift">gift</option>
-            <option value="like">like</option>
-            <option value="follow">follow</option>
-            <option value="share">share</option>
-            <option value="member">member</option>
+            <option value="chat" data-i18n="mock.chat">chat</option>
+            <option value="gift" data-i18n="mock.gift">gift</option>
+            <option value="like" data-i18n="mock.like">like</option>
+            <option value="follow" data-i18n="mock.follow">follow</option>
+            <option value="share" data-i18n="mock.share">share</option>
+            <option value="member" data-i18n="mock.member">member</option>
           </select>
-          <input id="mock-username" placeholder="viewer" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
+          <input id="mock-username" placeholder="viewer" data-i18n-placeholder="misc.viewer" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
           <input id="mock-value" placeholder="1" value="1" style="width:38px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
         </div>
         <button class="ctrl-btn" id="btn-mock-inject" style="width:100%;margin-top:6px;" data-i18n="debug.inject">Inject</button>

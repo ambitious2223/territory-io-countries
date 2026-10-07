@@ -4,6 +4,27 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Total Arabic, positions fixed (2.9.0)
+
+User: "total accurate Arabic translation **without switching the UI positions of anything**".
+
+**Done**
+- `applyLanguage` no longer sets `dir='rtl'` — Arabic is a **text-only** switch (D-036 updates the
+  AGENTS/GAME_DESIGN/README/TESTING "RTL" wording accordingly).
+- Translated the hardcoded English: round states, map/mode/mock options, 12 effect labels +
+  floating VFX texts, scoring weights, placeholders, FAB title, `Viewer`/`Winner` fallbacks.
+- Localized team names via `teamLabel(team, getLanguage())` on canvas (banners/capital letters),
+  leaderboard, join cinematic, effect identities, bot names, debug tile list; overlay payload gains
+  `nameAr` and the overlay honours `?lang=ar`/saved language (title, round labels, names).
+- Language switch now re-renders scoring + mappings panels (labels refresh live).
+- `tests/i18n.test.js`: key parity, non-empty values, `data-i18n` markup scan, dynamic key
+  families, `dir=ltr` assertion.
+
+**Verified**
+- `npm run lint` clean · `npm test` **133 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Power-up catalog for the hub (2.8.0)
 
 Phase 18 ("declare every kind of power-up and wire it to the hub").

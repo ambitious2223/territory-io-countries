@@ -1,4 +1,5 @@
-import { matchTeam } from './teams.js'
+import { matchTeam, teamLabel } from './teams.js'
+import { getLanguage, t } from './i18n.js'
 
 export class ViewerManager {
   constructor(options = {}) {
@@ -62,7 +63,7 @@ export class ViewerManager {
 
     const viewer = {
       id,
-      name: event.name || event.username || 'Viewer',
+      name: event.name || event.username || t('misc.viewer'),
       avatar: event.avatar || '',
       teamId: team.id,
       team,
@@ -130,7 +131,7 @@ export class ViewerManager {
     if (this.countTeam(team.id) > 0) return null
     const bot = {
       id: `ai_${team.id}`,
-      name: team.name?.en || 'AI',
+      name: teamLabel(team, getLanguage()) || 'AI',
       avatar: '',
       teamId: team.id,
       team,

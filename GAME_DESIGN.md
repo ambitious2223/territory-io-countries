@@ -159,7 +159,10 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   with their **profile photo + nickname** asking them to comment a country; the effect is **held**
   and fires automatically the moment they join (dropped after `JOIN_PROMPT_TIMEOUT`, 20 s).
   Effect soldiers always carry the activator's **photo and nickname**.
-- **i18n:** English default, full **Arabic + RTL** for all UI; Arabic join aliases always work.
+- **i18n:** English default, complete **Arabic** for every user-facing string (round/map/mode/mock
+  labels, effect + floating texts, scoring weights, team names on canvas, leaderboard, cinematic
+  and overlay). The language switch is **text-only — positions never mirror** (fixed decision
+  D-036). Arabic join aliases always work.
 
 ---
 

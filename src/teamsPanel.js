@@ -83,7 +83,7 @@ function buildRow(team) {
   const en = document.createElement('input')
   en.className = 'team-name'
   en.value = team.name?.en || ''
-  en.placeholder = 'English'
+  en.placeholder = t('teams.en')
   en.addEventListener('input', () => {
     updateTeam(team.id, (current) => ({ name: { ...current.name, en: en.value } }))
   })

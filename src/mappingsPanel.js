@@ -1,4 +1,5 @@
 import { EFFECT_OPTIONS } from './mappings.js'
+import { t } from './i18n.js'
 import {
   addMapping,
   getMappings,
@@ -37,14 +38,14 @@ function buildRow(mapping) {
 
   const gift = document.createElement('input')
   gift.className = 'mapping-input'
-  gift.placeholder = 'gift name'
+  gift.placeholder = t('mapping.giftPlaceholder')
   gift.value = mapping.match?.giftName || ''
   gift.addEventListener('input', () => updateMapping(mapping.id, { match: { giftName: gift.value } }))
 
   const coins = document.createElement('input')
   coins.className = 'mapping-coins'
   coins.type = 'number'
-  coins.placeholder = 'min'
+  coins.placeholder = t('mapping.minPlaceholder')
   coins.value = mapping.match?.minCoins ?? ''
   coins.addEventListener('input', () => {
     updateMapping(mapping.id, {
@@ -57,7 +58,7 @@ function buildRow(mapping) {
   for (const option of EFFECT_OPTIONS) {
     const opt = document.createElement('option')
     opt.value = option.key
-    opt.textContent = option.label
+    opt.textContent = t(`effect.${option.key}`, option.label)
     select.appendChild(opt)
   }
   select.value = mapping.effect

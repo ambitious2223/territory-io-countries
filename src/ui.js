@@ -1,4 +1,5 @@
-import { t } from './i18n.js';
+import { t, getLanguage } from './i18n.js';
+import { teamLabel } from './teams.js';
 import { CONFIG } from './config.js';
 import { getSoldierSpeed, setSoldierSpeed } from './speedControl.js';
 import { getWinners } from './winnersStore.js';
@@ -161,7 +162,8 @@ export function updateDebugPanel(game, particles, grid) {
   document.getElementById('dbg-frametime').textContent = game.lastFrameTime.toFixed(1) + 'ms';
   document.getElementById('dbg-particles').textContent = particles.active.length + ' / ' + particles.maxParticles;
   document.getElementById('dbg-pool-free').textContent = particles.pool.length;
-  document.getElementById('dbg-map').textContent = game.currentMap || 'Empty';
+  const mapName = game.currentMap || 'Empty';
+  document.getElementById('dbg-map').textContent = t(`map.${String(mapName).toLowerCase()}`, mapName);
   document.getElementById('dbg-walls').textContent = grid.claimableTiles + ' / ' + (grid.rows * grid.cols);
 
   const tileContainer = document.getElementById('dbg-tiles');
@@ -170,7 +172,7 @@ export function updateDebugPanel(game, particles, grid) {
     const count = grid.countTiles(team.color);
     html += `<div class="debug-tile-item">
       <span class="debug-tile-dot" style="background:${team.color}"></span>
-      <span>${escapeHtml((team.name?.en || '').slice(0, 5))}:${count}</span>
+      <span>${escapeHtml(teamLabel(team, getLanguage()).slice(0, 5))}:${count}</span>
     </div>`;
   }
   tileContainer.innerHTML = html;
@@ -288,7 +290,7 @@ export function initScoringPanel(game) {
   const container = document.getElementById('scoring-panel-body');
   if (!container) return;
   container.innerHTML = SCORING_FIELDS.map((key) => (
-    `<div class="debug-row"><span>${key}</span><input class="scoring-input" data-key="${key}" type="number" step="0.01" min="0" value="${game.scoring.weights[key]}" style="width:64px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>`
+    `<div class="debug-row"><span>${escapeHtml(t(`scoring.${key}`, key))}</span><input class="scoring-input" data-key="${key}" type="number" step="0.01" min="0" value="${game.scoring.weights[key]}" style="width:64px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>`
   )).join('');
   container.querySelectorAll('input[data-key]').forEach((input) => {
     input.addEventListener('change', () => {

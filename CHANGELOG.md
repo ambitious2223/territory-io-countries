@@ -4,6 +4,25 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.9.0] - 2026-10-08
+
+### Changed
+- **Language switch no longer mirrors the UI.** Arabic now changes **text only** — `dir` stays
+  `ltr`, so nothing on screen ever changes position (fixed decision D-036; supersedes the earlier
+  "full Arabic + RTL" wording in the docs).
+
+### Added — total Arabic coverage
+- Translated everything that was still hardcoded English: round states (IDLE/GET READY/LIVE/…),
+  map names, connection modes, mock event types, **all 12 effect labels** (mappings dropdown) and
+  **all floating VFX texts** (`+N TILES!`, DOMINATION!, ELIMINATED!, per-effect toasts), scoring
+  weight labels, input placeholders, FAB tooltip, and the `Viewer`/`Winner` fallbacks.
+- **Team names are localized everywhere**: stronghold banners, capital letters, leaderboard,
+  join cinematic, effect identities, bot names, debug tile list — plus `nameAr` in the overlay
+  payload; the overlay reads `?lang=ar` (or the saved language) and shows Arabic names/title/round
+  labels.
+- New `tests/i18n.test.js` guards it: EN↔AR key parity, every `data-i18n` key in markup exists,
+  all dynamic key families present, `dir` stays `ltr` in both languages.
+
 ## [2.8.0] - 2026-10-08
 
 ### Added — full power-up catalog declared for the hub (12 effects)

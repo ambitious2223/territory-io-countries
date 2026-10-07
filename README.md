@@ -8,16 +8,16 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 - **Frontend:** HTML5 Canvas, vanilla JS (ES modules), bundled by Vite
 - **Bridge server:** Node.js + Express + Socket.IO (Direct + TikFinity chat sources, Mock; Tikora effect hub)
 - **Persistence:** on-disk JSON stores with localStorage fallback
-- **Languages:** English (default) + Arabic (RTL)
+- **Languages:** English (default) + complete Arabic (text-only switch — layout never mirrors)
 
 > Repository: `https://github.com/ambitious2223/territory-io-countries`
 
 ---
 
-## Status — v2.8.0
+## Status — v2.9.0
 
-Every gate is green: `npm run lint`, `npm test` (127 tests incl. manifest-sync/power-up/effect-
-identity suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (133 tests incl. i18n-parity/manifest/power-up
+suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -62,7 +62,8 @@ identity suites + a headless game-loop test), `npm run build`, and `npm run smok
   color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim) with an in-app
   mappings editor; the hub maps gifts/**free triggers** to them; auto-looping timed rounds and
   persisted all-time winners.
-- Full English + Arabic (RTL) UI.
+- Complete English + Arabic UI — switching language translates every string (test-enforced) and
+  never changes layout positions.
 
 **Before going live** (not testable in CI): a visual/browser pass via `npm run dev`, a real Direct
 connect with your username, and a Tikora relay test against a running Tikora install.

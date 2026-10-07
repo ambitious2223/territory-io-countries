@@ -95,6 +95,17 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 19 — Total Arabic, no layout mirroring
+- [x] Language switch is text-only (`dir` stays `ltr`); docs updated (D-036)
+- [x] Translate hardcoded English: round/map/mode/mock labels, 12 effect labels, VFX texts,
+      scoring weights, placeholders, fallbacks
+- [x] Localize team names everywhere (canvas/leaderboard/cinematic/effects/bots/overlay `nameAr`)
+- [x] `tests/i18n.test.js` (parity + markup scan + dynamic keys + no-mirror); released **2.9.0**
+
+**Verify:** switch Arabic — every string translates and **nothing moves**; switch back — English.
+
+---
+
 ## Phase 18 — Power-up catalog declared for the hub
 - [x] Six new power-ups in `giftEffects` + manifest (freeze, shield, team_speed, claim_storm,
       mega_bomb, summon) incl. clamped params

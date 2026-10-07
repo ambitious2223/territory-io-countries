@@ -4,6 +4,21 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-036 — Complete Arabic, text-only switch (no layout mirroring)
+- **Context:** The switch to Arabic set `document.dir = 'rtl'`, which **reordered the whole UI**;
+  several surfaces were also still English-only (round states, map/mode/mock options, effect and
+  floating-VFX texts, scoring weights, team names on canvas/leaderboard/cinematic, the overlay).
+- **Decision:** `applyLanguage` now always keeps `dir="ltr"` — the language switch translates
+  **text only, never positions**. Everything above was moved onto the dictionaries (round, map,
+  mode, mock, `effect.*` ×12, `vfx.*` ×12, scoring ×6, placeholders, viewer/winner fallbacks);
+  team labels resolve through `teamLabel(team, getLanguage())` everywhere, and the overlay
+  payload carries `nameAr` with `?lang=ar`/localStorage-driven `setLanguage()`. Enforced by
+  `tests/i18n.test.js` (key parity, `data-i18n` markup scan, dynamic key families, `dir=ltr`).
+- **Rationale:** Owner decision — fixed geometry/OBS layouts must not jump when translating;
+  "total translation" means every visible string.
+- **Alternatives:** Keep RTL mirroring (rejected — positions must not change); ship Arabic only
+  for the sidebar (rejected — half-translated UI reads as broken).
+
 ## D-035 — Twelve-effect power-up catalog; manifest as single source of truth
 - **Context:** The hub was asked to control every power-up, but the game declared only six effects
   and `mappings.js` carried a second hardcoded copy of the list.

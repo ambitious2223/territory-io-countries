@@ -8,7 +8,7 @@ import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
 import { getTeams, loadFromServer, subscribeGame, setBaseUrl as setTeamBaseUrl } from './teamRegistry.js';
 import { setBaseUrl, loadWinners } from './winnersStore.js';
-import { initMappingsPanel } from './mappingsPanel.js';
+import { initMappingsPanel, renderMappingsPanel } from './mappingsPanel.js';
 import { setBaseUrl as setMappingsBaseUrl, loadFromServer as loadMappings } from './mappingsStore.js';
 
 createDebugPanel();
@@ -46,6 +46,8 @@ function initLanguageSelector() {
   select.addEventListener('change', () => {
     setLanguage(select.value);
     renderTeamsPanel();
+    renderMappingsPanel();
+    initScoringPanel(game);
   });
 }
 

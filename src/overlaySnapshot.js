@@ -5,6 +5,7 @@ export function buildOverlayPayload(game) {
     id: row.id,
     rank: row.rank,
     name: row.team.name?.en || '',
+    nameAr: row.team.name?.ar || row.team.name?.en || '',
     iso2: row.team.iso2 || '',
     emoji: row.team.emoji || '',
     color: row.team.color,

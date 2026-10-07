@@ -1,4 +1,6 @@
 import { CONFIG } from './config.js'
+import { teamLabel } from './teams.js'
+import { getLanguage } from './i18n.js'
 
 function toNumber(value, fallback) {
   const number = Number(value)
@@ -31,7 +33,7 @@ function activatorProfile(ctx, prefix) {
   const activator = ctx.activator
   return {
     id: `${prefix}_${activator?.userId || ctx.team.id}_${Date.now()}`,
-    name: activator?.name || ctx.team.name?.en || 'AI',
+    name: activator?.name || teamLabel(ctx.team, getLanguage()) || 'AI',
     avatar: activator?.avatar || '',
     isBot: true
   }

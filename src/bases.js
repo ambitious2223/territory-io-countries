@@ -1,5 +1,6 @@
 import { CONFIG } from './config.js';
 import { shade } from './utils.js';
+import { getLanguage } from './i18n.js';
 import { getCapitalScale, getFlagImage } from './teamRegistry.js';
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -27,7 +28,8 @@ function drawPhoto(ctx, image, x, y, size) {
 }
 
 function drawNamePill(ctx, team, x, y, fontSize) {
-  const label = team.name?.en || '';
+  const language = getLanguage();
+  const label = team.name?.[language] || team.name?.en || '';
   if (!label) return;
   const padX = 10;
   const height = fontSize + 10;
@@ -92,7 +94,8 @@ export function drawBases(ctx, game) {
       ctx.font = `bold ${Math.round(15 * scale)}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(team.emoji || (team.name?.en || '?').slice(0, 1).toUpperCase(), point.x, point.y);
+      const language = getLanguage();
+      ctx.fillText(team.emoji || (team.name?.[language] || team.name?.en || '?').slice(0, 1).toUpperCase(), point.x, point.y);
     }
 
     ctx.beginPath();

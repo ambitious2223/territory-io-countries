@@ -1,4 +1,5 @@
 import { hexToRgba } from './utils.js';
+import { t } from './i18n.js';
 
 class FloatingText {
   constructor(x, y, text, color, duration = 0.8, size = 14) {
@@ -60,33 +61,37 @@ export class VFXSystem {
   }
 
   addPickupText(x, y, type) {
-    const labels = {
-      overcharge: 'OVERCHARGED!',
-      boost: 'SPEED BOOST!',
-      colorbomb: 'COLOR BOMB!',
-    };
     const colors = {
       overcharge: '#FFFF00',
       boost: '#00FFEE',
       colorbomb: '#FF4444',
+      freeze: '#9FE8FF',
+      shield: '#DDEEFF',
+      team_speed: '#00FFEE',
+      area_convert: '#00FF88',
+      mega_bomb: '#FF4444',
+      claim_storm: '#FFD700',
+      spawn: '#00FF88',
+      summon: '#9B30FF',
+      instant_claim: '#FF8C00',
     };
-    this.addText(x, y - 20, labels[type] || type.toUpperCase(), colors[type] || '#fff');
+    this.addText(x, y - 20, t(`vfx.${type}`, String(type).toUpperCase()), colors[type] || '#fff');
   }
 
   addColorBombText(x, y, tiles) {
-    this.addText(x, y - 30, `+${tiles} TILES!`, '#FFD700', 0.8, 16);
+    this.addText(x, y - 30, `+${tiles} ${t('vfx.tiles')}`, '#FFD700', 0.8, 16);
   }
 
   addInterruptText(x, y) {
-    this.addText(x, y - 20, 'INTERRUPTED!', '#FF8C00', 0.8, 14);
+    this.addText(x, y - 20, t('vfx.interrupted'), '#FF8C00', 0.8, 14);
   }
 
   addEliminatedText(x, y, _name) {
-    this.addText(x, y - 20, 'ELIMINATED!', '#8B0000', 0.8, 18);
+    this.addText(x, y - 20, t('vfx.eliminated'), '#8B0000', 0.8, 18);
   }
 
   addDominationText(x, y, _name) {
-    this.addText(x, y - 20, 'DOMINATION!', '#FFD700', 0.8, 22);
+    this.addText(x, y - 20, t('vfx.domination'), '#FFD700', 0.8, 22);
   }
 
   update(dt) {

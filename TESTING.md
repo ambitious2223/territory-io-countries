@@ -36,6 +36,8 @@
 - `src/speedControl.js` — clamps/persists the soldier speed and rescales live balls.
 - `tests/joinPrompt.test.js` — prompt queue, resolve-by-username, timeout, clear.
 - `tests/manifest.test.js` — manifest ↔ `EFFECT_KEYS` ↔ mappings dropdown stay in sync (12 effects).
+- `tests/i18n.test.js` — EN↔AR key parity, every `data-i18n` key in markup is covered, dynamic
+  key families exist, and `dir` stays `ltr` in both languages (no layout mirroring).
 - `tests/giftEffects.test.js` — effect identity, plus freeze/shield/claim_storm/mega_bomb/
   summon/team_speed behaviour and param clamping.
 - `tests/cinematic.test.js` — cinematic tracks a moving soldier and stops when it dies.
@@ -108,7 +110,8 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Debug → **Winners** lists persisted winners after a round.
 - [ ] Launched from the Chic Aura Hub (▶ Run), the game connects on its own — the debug Tikora tab
       shows `connected` plus the injected slug/relay, with no key pasted.
-- [ ] Arabic UI renders RTL with no clipped text; all strings translated.
+- [ ] Switching to Arabic translates **every** string (key-parity test green) with **no layout
+      mirroring** and no clipped text; team names render in Arabic on canvas/leaderboard/overlay.
 - [ ] FPS stays ≥ 58 with the avatar cap reached (Diagnostics tab).
 - [ ] No secrets, uploads, `node_modules/` or `dist/` staged in git.
 

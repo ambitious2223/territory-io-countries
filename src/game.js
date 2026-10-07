@@ -1,5 +1,7 @@
 import { CONFIG } from './config.js';
 import { randomRange } from './utils.js';
+import { getLanguage, t } from './i18n.js';
+import { teamLabel } from './teams.js';
 import { generateBaseLayout, baseCentroids, baseSpawnTiles } from './zones.js';
 import { ViewerManager } from './viewerManager.js';
 import { JoinCinematic } from './joinCinematic.js';
@@ -233,8 +235,8 @@ export class Game {
     this.winReason = reason;
     if (team) {
       this.winColor = team.color;
-      this.winner = { name: team.name?.en || 'Winner', color: team.color, tiles: top.tiles };
-      this.vfx.addDominationText(CONFIG.CANVAS_WIDTH / 2, CONFIG.CANVAS_HEIGHT / 2, team.name?.en || '');
+      this.winner = { name: teamLabel(team, getLanguage()) || t('misc.winner'), color: team.color, tiles: top.tiles };
+      this.vfx.addDominationText(CONFIG.CANVAS_WIDTH / 2, CONFIG.CANVAS_HEIGHT / 2, teamLabel(team, getLanguage()));
       this.saveWinner(team, top);
     }
     this.analytics.updateDuration();
@@ -327,7 +329,7 @@ export class Game {
       x + randomRange(-jitter, jitter),
       y + randomRange(-jitter, jitter),
       team.color,
-      profile.name || 'Viewer',
+      profile.name || t('misc.viewer'),
       { teamId: team.id, viewerId: profile.id, isBot: !!profile.isBot, avatar: profile.avatar }
     );
     this.marbles.push(marble);
@@ -340,7 +342,7 @@ export class Game {
           name: marble.name,
           avatar: profile.avatar,
           color: team.color,
-          teamName: team.name?.en || '',
+          teamName: teamLabel(team, getLanguage()),
           track: marble
         });
       }
@@ -402,7 +404,7 @@ export class Game {
       }
     }
     this.vfx.addEliminatedText(this.baseCenters[this.teams.indexOf(team)]?.x || CONFIG.CANVAS_WIDTH / 2,
-      this.baseCenters[this.teams.indexOf(team)]?.y || CONFIG.CANVAS_HEIGHT / 2, team.name?.en || '');
+      this.baseCenters[this.teams.indexOf(team)]?.y || CONFIG.CANVAS_HEIGHT / 2, teamLabel(team, getLanguage()));
     this.audio.playElimination(CONFIG.CANVAS_WIDTH / 2);
   }
 

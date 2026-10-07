@@ -46,7 +46,7 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Round | **3 min** + ~**20 s** intermission, auto-loop, manual override always available |
 | Win | **Most territory** at time-up (or 65% domination) |
 | Persistence | Server JSON stores (atomic) **+ localStorage fallback** |
-| i18n | English default, **full Arabic + RTL** for all UI |
+| i18n | English default, **complete Arabic** for all UI; the language switch changes **text only** — the layout stays LTR and never mirrors |
 | Gifts | Mapped to power-ups via a **mappings UI** |
 
 If a change conflicts with the table above, stop and raise it — do not just implement it.

@@ -1,14 +1,9 @@
-const STATE_LABELS = {
-  idle: 'IDLE',
-  countdown: 'GET READY',
-  playing: 'LIVE',
-  roundEnd: 'FINISH',
-  intermission: 'NEXT ROUND',
-}
+import { t, getLanguage } from './i18n.js'
+import { teamLabel } from './teams.js'
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => {
-    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
     return map[char]
   })
 }
@@ -32,11 +27,16 @@ export function buildStandings(game) {
   return rows
 }
 
+export function roundLabel(state) {
+  return t(`round.${state || 'idle'}`)
+}
+
 export function renderScoreboard(game) {
   const container = document.getElementById('leaderboard')
   if (!container) return
 
   const rows = buildStandings(game)
+  const language = getLanguage()
 
   let html = ''
   rows.forEach((row) => {
@@ -49,14 +49,12 @@ export function renderScoreboard(game) {
     html += `<div class="${cls}">
       <span class="sb-rank">${rank}</span>
       ${flag}
-      <span class="sb-name">${escapeHtml(team.name?.en || '')}${crown}</span>
+      <span class="sb-name">${escapeHtml(teamLabel(team, language))}${crown}</span>
       <span class="sb-terr">${percent}%</span>
     </div>`
   })
-  container.innerHTML = html
+  container.innerHTML = html || `<div class="lb-wait">${escapeHtml(t('state.waiting'))}</div>`
 
   const stateEl = document.getElementById('round-state')
-  if (stateEl) stateEl.textContent = STATE_LABELS[game.round?.state] || ''
+  if (stateEl) stateEl.textContent = roundLabel(game.round?.state)
 }
-
-export { STATE_LABELS }

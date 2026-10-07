@@ -1,5 +1,6 @@
 import { CONFIG } from './config.js';
 import { hexToRgba } from './utils.js';
+import { t } from './i18n.js';
 
 function roundRect(ctx, x, y, w, h, radius) {
   ctx.beginPath();
@@ -103,7 +104,7 @@ export class JoinCinematic {
     const x = (CONFIG.CANVAS_WIDTH - width) / 2;
     const y = CONFIG.CANVAS_HEIGHT - height - 28;
     const color = this.current.color || '#ffffff';
-    const name = this.current.name || 'Viewer';
+    const name = this.current.name || t('misc.viewer');
     const teamName = this.current.teamName || '';
 
     ctx.save();

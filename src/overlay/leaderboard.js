@@ -1,6 +1,6 @@
 import './overlay.css';
 import { BridgeClient } from '../net/bridgeClient.js';
-import { STATE_LABELS } from '../scoreboard.js';
+import { setLanguage, getLanguage, t } from '../i18n.js';
 
 const params = new URLSearchParams(window.location.search);
 const OPTIONS = {
@@ -10,6 +10,18 @@ const OPTIONS = {
   rtl: params.get('rtl') === '1',
   scale: Number(params.get('scale')) || 1,
 };
+
+function initialLang() {
+  const explicit = params.get('lang');
+  if (explicit) return explicit;
+  try {
+    return localStorage.getItem('twf_language') || 'en';
+  } catch {
+    return 'en';
+  }
+}
+
+setLanguage(initialLang());
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => {
@@ -35,24 +47,26 @@ function render(payload) {
   if (!root) return;
 
   const state = payload.round?.state || 'idle';
-  const stateLabel = STATE_LABELS[state] || '';
+  const stateLabel = t(`round.${state}`);
   const teams = (payload.teams || []).slice(0, OPTIONS.rows);
+  const arabic = getLanguage() === 'ar';
 
   const board = teams.map((team, index) => {
     const crown = index === 0 && team.tiles > 0 && !team.eliminated ? '<span class="ov-crown">♛</span>' : '';
     const cls = ['ov-row', `ov-rank-${index + 1}`];
     if (team.eliminated) cls.push('ov-out');
+    const label = arabic && team.nameAr ? team.nameAr : team.name;
     return `<li class="${cls.join(' ')}">
       <span class="ov-rank">${index + 1}</span>
       <span class="ov-flag">${flagMarkup(team)}</span>
-      <span class="ov-name">${escapeHtml(team.name)}${crown}</span>
+      <span class="ov-name">${escapeHtml(label)}${crown}</span>
       <span class="ov-pct">${team.percent}%</span>
     </li>`;
   }).join('');
 
   root.innerHTML = `<div class="ov" data-theme="${escapeHtml(OPTIONS.theme)}" data-bg="${OPTIONS.bg ? 'on' : 'off'}" style="--scale:${OPTIONS.scale};" dir="${OPTIONS.rtl ? 'rtl' : 'ltr'}">
     <header class="ov-head">
-      <span class="ov-title">Territory With Flags</span>
+      <span class="ov-title">${escapeHtml(t('app.title'))}</span>
       <span class="ov-meta">
         <span class="ov-state ov-${escapeHtml(state)}">${escapeHtml(stateLabel)}</span>
         <span class="ov-timer">${formatTime(payload.round?.timeLeft || 0)}</span>
