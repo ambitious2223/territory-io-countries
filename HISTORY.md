@@ -4,6 +4,27 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Auto-zoom, contrast outline, pick-a-side (2.7.0)
+
+**Done**
+- `JoinCinematic` tracks the joiner's **live position** during focus/hold (`track` marble ref);
+  persisted **Auto-zoom** toggle (debug Cinematic section, `CONFIG.AUTOZOOM_ON_JOIN`); join sound
+  now plays even when auto-zoom is off.
+- New `src/joinPrompt.js`: photo + nickname **"Pick a side!"** pop-up; effects from non-members are
+  **queued** and fired the moment they join (`JOIN_PROMPT_TIMEOUT` 20 s, EN/AR). Wired into
+  `executeEffect` (both hub effects and in-game gift mappings funnel through it) and resolved in
+  `handleBridgeEvent`.
+- `giftEffects`: `activatorProfile()` — spawned/affected soldiers use the gifter's **name + photo**
+  instead of the team name; `tikora.js` forwards `username/name/avatar/userId` from the hub event.
+- Marble outline switched to **black outer + white inner ring** (team glow/tint retained).
+- Tests: cinematic tracking/dead-soldier, joinPrompt queue/resolve/timeout, giftEffects identity →
+  116 passed. Hub companion patch forwards avatar/name/userId (separate repo commit).
+
+**Verified**
+- `npm run lint` clean · `npm test` **116 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Finer grid, slow soldiers, real seconds (2.6.0)
 
 User: grid too coarse (one soldier eats percentages), soldiers should default slow with TikTok

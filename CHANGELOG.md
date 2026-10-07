@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.7.0] - 2026-10-08
+
+### Added
+- **Auto-zoom tracks the moving joiner**: the join cinematic now follows the soldier's live
+  position during focus + hold (not the stale spawn point), with a persisted **Auto-zoom** toggle
+  in the debug Cinematic section.
+- **"Pick a side!" prompt**: when a gift/effect arrives from someone without a nation, an animated
+  pop-up shows **their profile photo + nickname** asking them to comment a country; the effect is
+  **held** and fires automatically once they join (20 s timeout). EN/AR.
+- **Effect soldiers carry their activator**: spawned/affected soldiers use the gifter's **photo and
+  nickname** instead of the team name. In-game gift mappings and hub effects both resolve team,
+  photo and name the same way.
+
+### Changed
+- **Contrast outline**: soldiers now wear a **black outer ring + white inner ring** — readable on
+  their own colour, neutral and enemy land alike; the team glow + tint still say which nation they
+  belong to. Overcharge shows the inner ring yellow.
+
+### Fixed (hub side, companion commit)
+- The Tikora hub now forwards `avatar`, `name` and `userId` with each effect, so games can show who
+  triggered it (previously stripped to gift metadata).
+
 ## [2.6.0] - 2026-10-08
 
 ### Changed

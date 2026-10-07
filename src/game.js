@@ -3,6 +3,7 @@ import { randomRange } from './utils.js';
 import { generateBaseLayout, baseCentroids, baseSpawnTiles } from './zones.js';
 import { ViewerManager } from './viewerManager.js';
 import { JoinCinematic } from './joinCinematic.js';
+import { JoinPrompt } from './joinPrompt.js';
 import { ScoringEngine } from './scoring.js';
 import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
@@ -10,7 +11,7 @@ import { buildOverlayPayload } from './overlaySnapshot.js';
 import { addWinner } from './winnersStore.js';
 import { matchMapping } from './mappings.js';
 import { getMappings } from './mappingsStore.js';
-import { executeGiftEffect } from './giftEffects.js';
+import { executeGiftEffect, executeEffect } from './giftEffects.js';
 import { TikoraHub } from './tikora.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
@@ -38,6 +39,7 @@ export class Game {
 
     this.camera = new Camera();
     this.cinematic = new JoinCinematic(this.camera);
+    this.joinPrompt = new JoinPrompt();
     this.debug = new DebugOverlay();
     this.grid = new Grid();
     this.particles = new ParticleSystem();
@@ -251,6 +253,7 @@ export class Game {
     this.winReason = null;
     this.camera.reset();
     this.cinematic.skip();
+    this.joinPrompt.clear();
     this.victoryFillRow = 0;
     this.victoryFillCol = 0;
     this.powerups.reset();
@@ -287,6 +290,16 @@ export class Game {
     const result = this.viewers.handleEvent(event, this.teams);
     if (result && result.viewer) {
       this.scoring.registerUser(event.userId ?? event.username, result.viewer.teamId);
+      const resolved = this.joinPrompt.resolve([event.userId ?? '', event.username ?? '']);
+      if (resolved) {
+        executeEffect(this, resolved.effect, resolved.params, {
+          userId: resolved.userId,
+          username: resolved.username,
+          name: resolved.name,
+          avatar: resolved.avatar,
+          teamId: result.viewer.teamId
+        });
+      }
     }
     this.scoring.applyEvent(event);
     if (event && event.type === 'gift') {
@@ -319,15 +332,18 @@ export class Game {
     );
     this.marbles.push(marble);
     if (!profile.isBot && !this.suppressCinematic) {
-      this.cinematic.enqueue({
-        x: marble.x,
-        y: marble.y,
-        name: marble.name,
-        avatar: profile.avatar,
-        color: team.color,
-        teamName: team.name?.en || '',
-      });
       this.audio.playJoin(marble.x);
+      if (CONFIG.AUTOZOOM_ON_JOIN) {
+        this.cinematic.enqueue({
+          x: marble.x,
+          y: marble.y,
+          name: marble.name,
+          avatar: profile.avatar,
+          color: team.color,
+          teamName: team.name?.en || '',
+          track: marble
+        });
+      }
     }
     return marble;
   }
@@ -419,6 +435,7 @@ export class Game {
 
   update(dt) {
     this.cinematic.update(dt);
+    this.joinPrompt.update(dt);
     this.camera.update(dt);
 
     const transition = this.round.update(dt);
@@ -521,6 +538,7 @@ export class Game {
     if (this.cinematic.active) {
       this.cinematic.draw(this.ctx);
     }
+    this.joinPrompt.draw(this.ctx);
 
     this.territoryCounts = this.tileCountsByTeam();
     this.overlayTimer += this.lastFrameTime / 1000;

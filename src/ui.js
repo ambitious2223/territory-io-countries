@@ -262,6 +262,24 @@ export function initCinematicPanel(game) {
   if (skip) {
     skip.addEventListener('click', () => game.cinematic.skip());
   }
+  const autozoom = document.getElementById('cine-autozoom');
+  if (autozoom) {
+    try {
+      const saved = localStorage.getItem('twf.autozoom');
+      if (saved !== null) CONFIG.AUTOZOOM_ON_JOIN = saved === '1';
+    } catch {
+      void 0;
+    }
+    autozoom.checked = CONFIG.AUTOZOOM_ON_JOIN;
+    autozoom.addEventListener('change', () => {
+      CONFIG.AUTOZOOM_ON_JOIN = autozoom.checked;
+      try {
+        localStorage.setItem('twf.autozoom', autozoom.checked ? '1' : '0');
+      } catch {
+        void 0;
+      }
+    });
+  }
 }
 
 const SCORING_FIELDS = ['giftPerCoin', 'like', 'comment', 'follow', 'share', 'tile'];

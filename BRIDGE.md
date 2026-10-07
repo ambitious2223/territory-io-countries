@@ -124,6 +124,10 @@ Socket events are listed in [ARCHITECTURE.md](./ARCHITECTURE.md) §8.
 - On connect, `src/tikora.js` loads Tikora's served `hub-client.js`, connects to the relay, sends
   its **capabilities**, receives mapped `effect` messages, routes them through the shared effect
   executor, and **acks** each one.
+- The effect's `event` carries the **activator's identity** (`username`, `name`, `avatar`,
+  `userId` in addition to gift metadata), so effect soldiers can show who triggered them. If the
+  activator has no nation, the game queues a "pick a side" prompt and applies the effect when they
+  join.
 - Use **either** Tikora effect routing **or** the game's own gift mappings for a given gift —
   not both.
 

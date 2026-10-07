@@ -144,6 +144,13 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   controls. Teams holds the capital-size slider, the editor + photo upload (all team edits
   **auto-save** after ~1.5 s); Advanced (collapsed) holds the dev tools. The Tikora section is
   **read-only** — the hub owns activating/deactivating effects.
+- **Auto-zoom:** on every new viewer join the camera **follows their moving soldier** during focus
+  and hold (photo + nickname card), then returns. Toggle it with **Auto-zoom** in the Cinematic
+  section (persisted); with it off, joins still announce (sound) but the camera stays put.
+- **Pick-a-side prompt:** a gift/effect from someone **without a nation** raises an animated pop-up
+  with their **profile photo + nickname** asking them to comment a country; the effect is **held**
+  and fires automatically the moment they join (dropped after `JOIN_PROMPT_TIMEOUT`, 20 s).
+  Effect soldiers always carry the activator's **photo and nickname**.
 - **i18n:** English default, full **Arabic + RTL** for all UI; Arabic join aliases always work.
 
 ---

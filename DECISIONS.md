@@ -4,6 +4,33 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-034 — Pick-a-side prompt + effects carry the activator's identity (game + hub)
+- **Context:** Effect-spawned soldiers used the team name and a blank avatar; a gift from someone
+  who hadn't joined a nation did nothing; the hub stripped `avatar/name/userId` from the effect
+  event it already receives.
+- **Decision:** The effect `event` is forwarded whole (game) and the hub now sends
+  `avatar/name/userId` (companion hub commit). `giftEffects` builds soldiers via
+  `activatorProfile()`. Non-members get a **"Pick a side!"** pop-up (photo + nickname, EN/AR) and
+  the effect is **held in a queue** (`src/joinPrompt.js`), fired on their join, dropped after
+  `JOIN_PROMPT_TIMEOUT` (20 s). Both effect paths (hub + in-game mappings) funnel through
+  `executeEffect`, so the rules are identical.
+- **Rationale:** Gifts should visibly belong to a person, and "supporting" a team before picking
+  one makes no sense — the prompt turns a no-op gift into a join driver.
+- **Alternatives:** Skip non-member gifts (wasted revenue); auto-join them silently (decides for
+  the viewer); show the prompt without holding the effect (inconsistent).
+
+## D-033 — Tracking auto-zoom + black/white contrast outline
+- **Context:** The join cinematic locked onto the spawn point while the soldier was already moving
+  away, could not be disabled, and team-colour ball rings vanished on the team's own territory.
+- **Decision:** The cinematic **follows the marble's live position** during focus/hold
+  (`track` ref); a persisted **Auto-zoom toggle** (debug → Cinematic, `CONFIG.AUTOZOOM_ON_JOIN`)
+  gates it (join sound still plays); ball outline = **black outer ring + white inner ring**, keeping
+  team glow/tint for ownership.
+- **Rationale:** Follow = you actually see the new viewer's soldier; black/white contrasts against
+  *every* background while tint/glow still say "belongs to nation X".
+- **Alternatives:** Complementary-hue ring (clashes with some enemy colours); longer static focus
+  (still stale); no toggle (streamers want camera control).
+
 ## D-032 — Finer grid, slow base speed with live control, durations in seconds
 - **Context:** On 384 tiles a single soldier ate percentages almost instantly, the default pace was
   fast, and TikTok interactions were supposed to grant speed — but `POWERUP_OVERCHARGE_DURATION`

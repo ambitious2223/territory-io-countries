@@ -95,6 +95,31 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 18 — Power-up catalog declared for the hub *(deferred)*
+- [ ] Extend `giftEffects` + `tikora.manifest.json` with new power-ups (candidates: freeze,
+      shield, claim-storm, team-speed, mega-bomb, summon) incl. params
+- [ ] Verify the hub Game Hub lists them (manifest sync) and Trigger→Effect mappings run them,
+      including **free triggers** (chat/like/follow/share/member)
+- [ ] Docs + tests
+
+**Note:** the manifest already matches `EFFECT_KEYS` exactly today (6 effects), and the hub's
+mapper already supports every trigger type — this phase only *extends the catalog*.
+
+---
+
+## Phase 17 — Auto-zoom tracking, contrast outline, pick-a-side
+- [x] Cinematic tracks the joiner's live position + persisted **Auto-zoom** toggle (debug Cinematic)
+- [x] Black/white **contrast ring** on soldiers (team glow/tint retained)
+- [x] **Pick-a-side** pop-up (photo + nickname) with held-effect queue for non-member gifters
+- [x] Effect soldiers use the activator's **photo + name**; hub forwards avatar/name/userId
+      (companion commit in the hub repo)
+- [x] Tests (cinematic tracking, joinPrompt, giftEffects identity); released **2.7.0**
+
+**Verify:** zoom follows the moving soldier; soldier readable on own colour; gift from a stranger
+pops "Pick a side!" and fires when they join; effect soldier shows the gifter's photo.
+
+---
+
 ## Phase 16 — Finer grid + slow soldiers + real seconds
 - [x] Grid 48×32 @ 25 px (1536 tiles) with physical-look compensations (base 8×8, 2×2 wall blocks,
       outline 3 px, ball radius 11, color-bomb 4, score weight ÷4)

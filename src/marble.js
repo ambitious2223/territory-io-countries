@@ -180,10 +180,16 @@ export class Marble {
       ctx.fill();
     }
 
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = this.overcharge ? '#FFFF00' : this.color;
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = '#0a0a0a';
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius + 0.5, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = this.overcharge ? '#FFFF00' : '#ffffff';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius + 1, 0, Math.PI * 2);
     ctx.stroke();
 
     if (this.bounceFlash > 0) {

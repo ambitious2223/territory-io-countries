@@ -14,10 +14,11 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.6.0
+## Status — v2.7.0
 
-Every gate is green: `npm run lint`, `npm test` (106 tests incl. team-registry/speed/durations/
-hub-identity/outline/overlay + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (116 tests incl. cinematic/join-prompt/effect-
+identity/team-registry/speed/durations + a headless game-loop test), `npm run build`, and
+`npm run smoke`.
 
 **Shipped**
 
@@ -42,8 +43,12 @@ hub-identity/outline/overlay + a headless game-loop test), `npm run build`, and 
 - Balls with profile photos, a hard cap + reinforcement queue, and AI fill.
 - **Presentation:** one minimal **live leaderboard** (`rank · flag · name · territory %`, leader
   crown), **3D circular strongholds** showing the uploaded team photo, and **rounded union borders**.
-  Balls show the viewer's TikTok photo with a **team-colour ring, glow, tint and nameplate**, so you
-  always know who belongs to which nation.
+  Balls show the viewer's TikTok photo with a **black/white contrast ring** (readable on your own
+  colour too), team tint/glow and a **team-colour nameplate** — always know who belongs to which
+  nation.
+- **Auto-zoom** follows each new viewer's *moving* soldier (toggle in debug → Cinematic). A gifter
+  who hasn't picked a nation gets a **photo pop-up asking them to pick a side** — the effect is held
+  and fires the moment they join; effect soldiers carry the gifter's photo + nickname.
 - **Team photos:** upload a flag/photo per team in **Debug → Teams**; it appears in the stronghold,
   the leaderboard and the overlay. Uploads apply live and **all team edits auto-save** (~1.5 s
   debounce; the Save button stays as an instant save). A **capital size slider** (0.5x–2.5x) scales
@@ -52,7 +57,8 @@ hub-identity/outline/overlay + a headless game-loop test), `npm run build`, and 
   floating draggable button opens it (position + state persist).
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
-- Camera pan/zoom **join cinematic** with a profile-photo intro card and adjustable blur.
+- Camera pan/zoom **join cinematic** that tracks the new viewer's soldier, with a profile-photo
+  intro card, adjustable blur and an auto-zoom on/off switch.
 - Gift → power-up mappings (overcharge, color bomb, area convert, spawn ally, instant claim) with
   an in-app editor; auto-looping timed rounds and persisted all-time winners.
 - Full English + Arabic (RTL) UI.

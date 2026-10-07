@@ -45,8 +45,12 @@ export class TikoraHub {
 
   _handleEffect(message = {}) {
     const payload = message.payload || {}
+    const event = message.event || {}
     const effectKey = executeEffect(this.game, message.effect, payload, {
-      userId: message.event?.uniqueId ?? message.event?.userId ?? payload.username,
+      userId: event.userId ?? event.uniqueId ?? event.username ?? payload.username,
+      username: event.username ?? payload.username,
+      name: event.name ?? payload.username,
+      avatar: event.avatar || payload.avatar || '',
       teamId: payload.teamId
     })
     this.api?.ackEffect?.(message.id, { ok: Boolean(effectKey) })

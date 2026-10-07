@@ -125,6 +125,7 @@ const PANEL = `
         <h5 data-i18n="debug.cinematic">Cinematic</h5>
         <div class="debug-row"><span data-i18n="debug.queue">Queue</span><span class="val" id="dbg-cine-queue">0</span></div>
         <div class="debug-row"><span data-i18n="debug.blur">Blur</span><input id="cine-blur" type="range" min="0" max="100" value="100" style="width:80px;" /></div>
+        <div class="debug-row"><span data-i18n="debug.autozoom">Auto-zoom</span><input id="cine-autozoom" type="checkbox" /></div>
         <button class="ctrl-btn" id="btn-cine-skip" style="width:100%;margin-top:6px;" data-i18n="debug.skip">Skip Intro</button>
       </div>
       <div class="debug-section">

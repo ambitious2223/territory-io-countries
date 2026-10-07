@@ -34,6 +34,10 @@
 - `src/teamRegistry.js` — flag upload notifies, capital scale clamps/notifies the game only,
   debounced auto-save (fake timers), save-to-server notifies the game but not the panel.
 - `src/speedControl.js` — clamps/persists the soldier speed and rescales live balls.
+- `tests/joinPrompt.test.js` — prompt queue, resolve-by-username, timeout, clear.
+- `tests/giftEffects.test.js` — effect soldiers carry the activator's photo/name; non-members queue
+  a prompt; unknown effects/targets return null.
+- `tests/cinematic.test.js` — cinematic tracks a moving soldier and stops when it dies.
 - `tests/durations.test.js` — overcharge lasts 6 s, capture hold 2.5 s, power-ups wait their
   interval (all in seconds, not frames).
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
@@ -76,6 +80,11 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       speed up) and the value survives a reload.
 - [ ] A gift overcharge is clearly visible for ~6 s; power-ups appear every ~8–15 s (not
       constantly); claim sounds are throttled.
+- [ ] A new viewer's join zooms in and **follows their moving soldier** (Auto-zoom off = no camera
+      move, join sound still plays).
+- [ ] Soldiers are readable on their **own** colour (black/white ring), team tint still obvious.
+- [ ] Mock-inject a gift from a username who never commented → photo pop-up "Pick a side!" appears;
+      when that user comments a nation, the held effect fires on their soldier (with their photo).
 - [ ] 30 mock joins: ≤ 24 active, the rest queued and swapped in on death.
 - [ ] Join cinematic pans/zooms to spawn; blur slider changes the backdrop.
 - [ ] The arena starts neutral with one visible home base per nation.

@@ -11,17 +11,21 @@ function teamMarbles(ctx) {
   )
 }
 
+function activatorProfile(ctx, prefix) {
+  const activator = ctx.activator
+  return {
+    id: `${prefix}_${activator?.userId || ctx.team.id}_${Date.now()}`,
+    name: activator?.name || ctx.team.name?.en || 'AI',
+    avatar: activator?.avatar || '',
+    isBot: true
+  }
+}
+
 function ensureMarble(ctx) {
   if (ctx.marble && ctx.marble.alive && !ctx.marble.eliminated) return ctx.marble
   const existing = teamMarbles(ctx)[0]
   if (existing) return existing
-  const profile = {
-    id: `gift_${ctx.team.id}_${Date.now()}`,
-    name: ctx.team.name?.en || 'AI',
-    avatar: '',
-    isBot: true,
-  }
-  return ctx.game.spawnViewerMarble(profile, ctx.team)
+  return ctx.game.spawnViewerMarble(activatorProfile(ctx, 'gift'), ctx.team)
 }
 
 function paint(ctx, radius) {
@@ -51,13 +55,7 @@ const EFFECTS = {
     return paint(ctx, toNumber(ctx.params.radius, 4))
   },
   spawn(ctx) {
-    const profile = {
-      id: `gift_spawn_${ctx.team.id}_${Date.now()}`,
-      name: ctx.team.name?.en || 'AI',
-      avatar: '',
-      isBot: true,
-    }
-    const marble = ctx.game.spawnViewerMarble(profile, ctx.team)
+    const marble = ctx.game.spawnViewerMarble(activatorProfile(ctx, 'spawn'), ctx.team)
     ctx.game.camera.shake(8, 0.18)
     return { x: marble.x, y: marble.y }
   },
@@ -77,15 +75,44 @@ export function executeEffect(game, effectKey, params = {}, target = {}) {
   if (!effect) return null
 
   const hasTeam = target.teamId !== undefined && target.teamId !== null
-  const hasUser = target.userId !== undefined && target.userId !== null
+  const lookup = target.userId ?? target.username
+  const hasUser = lookup !== undefined && lookup !== null && String(lookup) !== ''
   let team = hasTeam ? game.teams.find((entry) => entry.id === target.teamId) || null : null
   if (!team && hasUser) {
-    team = game.teams.find((entry) => entry.id === game.scoring.teamOf(String(target.userId))) || null
+    team = game.teams.find((entry) => entry.id === game.scoring.teamOf(String(lookup))) || null
   }
-  if (!team) return null
+  if (!team) {
+    if (!hasUser) return null
+    const queued = game.joinPrompt?.request({
+      username: String(target.username ?? lookup),
+      name: target.name || target.username || String(lookup),
+      avatar: target.avatar || '',
+      userId: String(lookup),
+      effect: effectKey,
+      params
+    })
+    return queued ? 'pending' : null
+  }
 
-  const viewer = hasUser ? game.viewers?.viewers.get(String(target.userId)) || null : null
-  const ctx = { game, team, params, marble: viewer?.marble || null }
+  const viewer = hasUser
+    ? game.viewers?.viewers.get(String(lookup)) ||
+      game.viewers?.viewers.get(String(target.username || '')) ||
+      null
+    : null
+  const ctx = {
+    game,
+    team,
+    params,
+    marble: viewer?.marble || null,
+    activator: hasUser
+      ? {
+          userId: String(lookup),
+          username: String(target.username ?? lookup),
+          name: target.name || target.username || String(lookup),
+          avatar: target.avatar || viewer?.avatar || ''
+        }
+      : null
+  }
 
   const at = effect(ctx)
   if (at && game.vfx) {
@@ -98,5 +125,8 @@ export function executeGiftEffect(game, mapping, event) {
   if (!mapping || !event) return null
   return executeEffect(game, mapping.effect, mapping.params || {}, {
     userId: event.userId ?? event.username,
+    username: event.username,
+    name: event.name || event.username,
+    avatar: event.avatar || ''
   })
 }

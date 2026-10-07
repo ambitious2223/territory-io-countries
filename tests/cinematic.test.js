@@ -67,4 +67,36 @@ describe('JoinCinematic', () => {
     expect(camera.resetFocus).toHaveBeenCalled()
     expect(camera.setBlur).toHaveBeenCalledWith(0)
   })
+
+  it('tracks the moving joiner during focus and hold', () => {
+    const camera = fakeCamera()
+    const cinematic = new JoinCinematic(camera)
+    const soldier = { x: 100, y: 120, alive: true, eliminated: false }
+    cinematic.enqueue({ x: 100, y: 120, name: 'V', color: '#fff', track: soldier })
+
+    cinematic.update(60)
+    expect(camera.focusOn).toHaveBeenLastCalledWith(100, 120, CONFIG.CINEMATIC_ZOOM)
+
+    soldier.x = 500
+    soldier.y = 60
+    cinematic.update(60)
+    expect(camera.focusOn).toHaveBeenLastCalledWith(500, 60, CONFIG.CINEMATIC_ZOOM)
+
+    soldier.x = 777
+    cinematic.update(60)
+    expect(camera.focusOn).toHaveBeenLastCalledWith(777, 60, CONFIG.CINEMATIC_ZOOM)
+  })
+
+  it('stops tracking a dead soldier but keeps the last position', () => {
+    const camera = fakeCamera()
+    const cinematic = new JoinCinematic(camera)
+    const soldier = { x: 10, y: 20, alive: true, eliminated: false }
+    cinematic.enqueue({ x: 10, y: 20, name: 'V', color: '#fff', track: soldier })
+
+    cinematic.update(60)
+    soldier.alive = false
+    camera.focusOn.mockClear()
+    cinematic.update(60)
+    expect(camera.focusOn).not.toHaveBeenCalled()
+  })
 })

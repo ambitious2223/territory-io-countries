@@ -40,6 +40,13 @@ export class JoinCinematic {
     this.queue.push(item);
   }
 
+  _track() {
+    const target = this.current && this.current.track;
+    if (target && target.alive && !target.eliminated) {
+      this.camera.focusOn(target.x, target.y, CONFIG.CINEMATIC_ZOOM);
+    }
+  }
+
   skip() {
     this.queue.length = 0;
     this.current = null;
@@ -61,12 +68,14 @@ export class JoinCinematic {
       this.phase = 'focus';
       this.timer = 0;
     } else if (this.phase === 'focus') {
+      this._track();
       this.timer += step;
       if (this.timer >= CONFIG.CINEMATIC_FOCUS_TIME) {
         this.phase = 'hold';
         this.timer = 0;
       }
     } else if (this.phase === 'hold') {
+      this._track();
       this.timer += step;
       if (this.timer >= CONFIG.CINEMATIC_HOLD_TIME) {
         this.camera.resetFocus();

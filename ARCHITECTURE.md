@@ -78,8 +78,9 @@
 | `mappings.js` | Gift-mapping matcher (pure) |
 | `mappingsStore.js` | Mapping persistence + sync |
 | `mappingsPanel.js` | Gift-mapping editor UI |
-| `joinCinematic.js` | Camera intro queue for new joiners |
-| `giftEffects.js` | Gift → power-up effect executor |
+| `joinCinematic.js` | Camera intro queue for new joiners (tracks the moving soldier) |
+| `joinPrompt.js` | "Pick a side" pop-up + held-effect queue for non-member gifters |
+| `giftEffects.js` | Gift → power-up effect executor (runs as the activator's identity) |
 | `tikora.js` | Tikora effect hub (manifest + served `hub-client.js`); auto-connects, hub-driven |
 | `tikoraClient.js` | Loads Tikora's `hub-client.js` over the relay |
 | `imageUtils.js` | Image load + 3:2 cover-crop |
