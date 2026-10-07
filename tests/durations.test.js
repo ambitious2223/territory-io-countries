@@ -45,6 +45,22 @@ describe('duration constants run in seconds, not frames', () => {
     expect(powerups.powerups.length).toBe(0)
   })
 
+  it('a frozen soldier holds still and unfreezes in seconds', () => {
+    const grid = makeGrid()
+    const marble = spawnMarble(grid)
+    marble.freeze(1)
+
+    const origin = { x: marble.x, y: marble.y }
+    for (let frame = 0; frame < 30; frame++) marble.update(1, grid)
+    expect(marble.frozenTimer).toBeGreaterThan(0)
+    expect(marble.x).toBe(origin.x)
+    expect(marble.y).toBe(origin.y)
+
+    for (let frame = 0; frame < 150; frame++) marble.update(1, grid)
+    expect(marble.frozenTimer).toBeLessThanOrEqual(0)
+    expect(marble.x !== origin.x || marble.y !== origin.y).toBe(true)
+  })
+
   it('holds a captured tile for TILE_HOLD_TIME seconds', () => {
     const grid = makeGrid()
     grid.convertOnHit(4, 4, '#FF2222')

@@ -35,8 +35,9 @@
   debounced auto-save (fake timers), save-to-server notifies the game but not the panel.
 - `src/speedControl.js` — clamps/persists the soldier speed and rescales live balls.
 - `tests/joinPrompt.test.js` — prompt queue, resolve-by-username, timeout, clear.
-- `tests/giftEffects.test.js` — effect soldiers carry the activator's photo/name; non-members queue
-  a prompt; unknown effects/targets return null.
+- `tests/manifest.test.js` — manifest ↔ `EFFECT_KEYS` ↔ mappings dropdown stay in sync (12 effects).
+- `tests/giftEffects.test.js` — effect identity, plus freeze/shield/claim_storm/mega_bomb/
+  summon/team_speed behaviour and param clamping.
 - `tests/cinematic.test.js` — cinematic tracks a moving soldier and stops when it dies.
 - `tests/durations.test.js` — overcharge lasts 6 s, capture hold 2.5 s, power-ups wait their
   interval (all in seconds, not frames).
@@ -85,6 +86,10 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Soldiers are readable on their **own** colour (black/white ring), team tint still obvious.
 - [ ] Mock-inject a gift from a username who never commented → photo pop-up "Pick a side!" appears;
       when that user comments a nation, the held effect fires on their soldier (with their photo).
+- [ ] Restart Tikora → Game Hub lists **all 12 effects**; mapping dropdown in-game shows the same
+      list; map each new effect (freeze / shield / team speed / claim storm / mega bomb / summon)
+      and inject it: frozen soldiers get the icy ring, a shield shows the **white dashed border**
+      and survives a bomb, claim storm sweeps the frontier, summon spawns photo-carrying allies.
 - [ ] 30 mock joins: ≤ 24 active, the rest queued and swapped in on death.
 - [ ] Join cinematic pans/zooms to spawn; blur slider changes the backdrop.
 - [ ] The arena starts neutral with one visible home base per nation.

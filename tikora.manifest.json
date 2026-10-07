@@ -4,9 +4,15 @@
   "effects": [
     { "key": "overcharge", "label": "Overcharge", "kind": "powerup", "params": [{ "key": "duration", "label": "Seconds", "type": "number" }] },
     { "key": "boost", "label": "Speed Boost", "kind": "powerup", "params": [{ "key": "duration", "label": "Seconds", "type": "number" }] },
+    { "key": "freeze", "label": "Freeze", "kind": "powerup", "params": [{ "key": "duration", "label": "Seconds", "type": "number" }] },
+    { "key": "shield", "label": "Shield", "kind": "powerup", "params": [{ "key": "duration", "label": "Seconds", "type": "number" }] },
+    { "key": "team_speed", "label": "Team Speed", "kind": "powerup", "params": [{ "key": "duration", "label": "Seconds", "type": "number" }] },
     { "key": "colorbomb", "label": "Color Bomb", "kind": "action", "params": [{ "key": "radius", "label": "Tiles", "type": "number" }] },
     { "key": "area_convert", "label": "Area Convert", "kind": "action", "params": [{ "key": "radius", "label": "Tiles", "type": "number" }] },
+    { "key": "mega_bomb", "label": "Mega Bomb", "kind": "action", "params": [{ "key": "radius", "label": "Tiles", "type": "number" }] },
+    { "key": "claim_storm", "label": "Claim Storm", "kind": "action", "params": [{ "key": "tiles", "label": "Tiles", "type": "number" }] },
     { "key": "spawn", "label": "Spawn Ally", "kind": "action" },
+    { "key": "summon", "label": "Summon Allies", "kind": "action", "params": [{ "key": "count", "label": "Soldiers", "type": "number" }] },
     { "key": "instant_claim", "label": "Instant Claim", "kind": "action", "params": [{ "key": "duration", "label": "Seconds", "type": "number" }] }
   ],
   "events": []

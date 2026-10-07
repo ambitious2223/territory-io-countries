@@ -100,15 +100,23 @@ Every team accumulates a live **score** from interaction (displayed in the debug
 reconstruction, gift `msgId` dedupe, gift-streak combo rule.
 
 ### Gifts → power-ups
-A **mappings UI** maps each gift (by id, name, or min coins) to a power-up with tunable params:
-- **Overcharge** — a ball moves and converts noticeably faster for N seconds.
-- **Speed Boost** — alias of overcharge for quick gift rules.
-- **Color Bomb / Area Convert** — instantly paints a radius around the gifter's ball.
-- **Spawn Ally** — adds an AI ball to the nation.
-- **Instant Claim** — temporary overcharge, used for "instant" style gifts.
+A **mappings UI** maps each gift (by id, name, or min coins) to a power-up with tunable params —
+and the same list is declared in `tikora.manifest.json`, so the **hub** maps gifts *and free
+triggers* (chat, like, follow, share, member) onto them:
+- **Overcharge / Speed Boost** — one soldier moves faster for N seconds.
+- **Team Speed** — every soldier of the nation gets that burst.
+- **Freeze** — enemy soldiers stop for N seconds (icy ring; movement only — no damage).
+- **Shield** — the nation's tiles can't be captured for N seconds (bombs/enclosures respect it);
+  shown as a white dashed border.
+- **Color Bomb / Area Convert** — instantly paint a radius around the gifter's soldier.
+- **Mega Bomb** — the same, up to 8 tiles.
+- **Claim Storm** — instantly claim up to N frontier tiles of your border.
+- **Spawn Ally / Summon Allies** — one or up to eight new soldiers carrying the activator's
+  photo + nickname.
+- **Instant Claim** — temporary overcharge, for "instant" style gifts.
 
-Only these effects exist now that HP/shields are gone; the mappings UI, the Tikora manifest and
-`config/mappings.json` all reflect the same list.
+All params are clamped to safe config limits. These are the **12 effects** in the manifest; the
+mappings UI dropdown is generated from it, and a test keeps the two in sync.
 
 ---
 

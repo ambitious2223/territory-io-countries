@@ -4,6 +4,27 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.8.0] - 2026-10-08
+
+### Added — full power-up catalog declared for the hub (12 effects)
+- **Freeze** — stops every enemy soldier for N seconds (icy ring; movement only, no damage).
+- **Shield** — hardens a nation's borders for N seconds: no other colour can capture its tiles
+  (bombs, enclosures and frontier claims included). Shown as a **white dashed outline**; expires
+  on its own clock.
+- **Team Speed** — overcharge for the whole nation.
+- **Claim Storm** — instantly claims up to N frontier tiles of your border.
+- **Mega Bomb** — color bomb with a much bigger radius (max 8 tiles).
+- **Summon** — spawns N allied soldiers carrying the activator's photo/nickname (1–8).
+- All params are **clamped** to named config limits (`EFFECT_*_MAX`); pre-existing effects use the
+  same clamped helpers.
+
+### Changed
+- **Manifest is the single source of truth**: `tikora.manifest.json` now lists all 12 effects and
+  drives the in-game mappings dropdown (`EFFECT_OPTIONS` derives from it); a manifest-sync test
+  fails if the game and the manifest ever drift. The hub picks all 12 up via manifest sync (restart
+  Tikora or reconnect the game).
+- Board power-up spawn list unchanged (overcharge, color bomb).
+
 ## [2.7.0] - 2026-10-08
 
 ### Added

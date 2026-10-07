@@ -361,7 +361,7 @@ export class Game {
     const speed = CONFIG.VICTORY_PAINT_SPEED * this.speed;
     let painted = 0;
     while (painted < speed && this.victoryFillRow < this.grid.rows) {
-      this.grid.paintTile(this.victoryFillRow, this.victoryFillCol, this.winColor);
+      this.grid.paintTile(this.victoryFillRow, this.victoryFillCol, this.winColor, true);
       painted++;
       this.victoryFillCol++;
       if (this.victoryFillCol >= this.grid.cols) {

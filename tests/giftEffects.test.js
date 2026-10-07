@@ -1,4 +1,7 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest'
+import { CONFIG } from '../src/config.js'
+import { Grid } from '../src/grid.js'
+import { Marble } from '../src/marble.js'
 
 let fx
 
@@ -6,8 +9,25 @@ beforeAll(async () => {
   fx = await import('../src/giftEffects.js')
 })
 
-function fakeGame() {
-  const team = { id: 1, name: { en: 'Egypt' }, color: '#FFD700', eliminated: false }
+const RED = '#FF2222'
+const BLUE = '#1E90FF'
+
+function makeWalls() {
+  return Array.from({ length: CONFIG.GRID_ROWS }, () => new Array(CONFIG.GRID_COLS).fill(false))
+}
+
+function baseGrid() {
+  const layout = Array.from({ length: CONFIG.GRID_ROWS }, () => new Array(CONFIG.GRID_COLS).fill(-1))
+  for (let r = 14; r < 18; r++) {
+    for (let c = 22; c < 26; c++) layout[r][c] = 0
+  }
+  const grid = new Grid()
+  grid.init(makeWalls(), layout, [RED])
+  return grid
+}
+
+function fakeGame(grid = null) {
+  const team = { id: 1, name: { en: 'Egypt' }, color: RED, eliminated: false }
   return {
     teams: [team],
     marbles: [],
@@ -17,7 +37,7 @@ function fakeGame() {
     vfx: { addPickupText: vi.fn() },
     camera: { shake: vi.fn() },
     particles: { emitSparks: vi.fn() },
-    grid: { worldToGrid: () => ({ row: 0, col: 0 }), paintColorBomb: () => 4 },
+    grid: grid || { worldToGrid: () => ({ row: 0, col: 0 }), paintColorBomb: () => 4 },
     spawnViewerMarble: vi.fn(() => ({
       x: 1, y: 1,
       applyPowerup: vi.fn(),
@@ -25,6 +45,10 @@ function fakeGame() {
       powerupTimer: 0,
     })),
   }
+}
+
+function mine() {
+  return new Marble(600, 400, RED, 'me', { teamId: 1 })
 }
 
 describe('effect identity', () => {
@@ -64,5 +88,90 @@ describe('effect identity', () => {
     const game = fakeGame()
     expect(fx.executeEffect(game, 'nope', {}, { userId: 'leader' })).toBeNull()
     expect(fx.executeEffect(game, 'boost', {}, {})).toBeNull()
+  })
+})
+
+describe('new power-ups', () => {
+  it('freezes enemy soldiers but not its own', () => {
+    const game = fakeGame()
+    const friendly = mine()
+    const enemy = new Marble(700, 300, BLUE, 'foe', { teamId: 2 })
+    game.marbles.push(friendly, enemy)
+
+    expect(fx.executeEffect(game, 'freeze', {}, { teamId: 1 })).toBe('freeze')
+    expect(enemy.frozenTimer).toBeCloseTo(CONFIG.POWERUP_FREEZE_DURATION, 5)
+    expect(friendly.frozenTimer).toBe(0)
+  })
+
+  it('overcharges the whole team on team_speed', () => {
+    const game = fakeGame()
+    const friendly = mine()
+    const enemy = new Marble(700, 300, BLUE, 'foe', { teamId: 2 })
+    game.marbles.push(friendly, enemy)
+
+    expect(fx.executeEffect(game, 'team_speed', { duration: 5 }, { teamId: 1 })).toBe('team_speed')
+    expect(friendly.overcharge).toBe(true)
+    expect(friendly.powerupTimer).toBeCloseTo(5, 5)
+    expect(enemy.overcharge).toBe(false)
+  })
+
+  it('hardens a shielded nation against capture, bombs and enclosures', () => {
+    const grid = baseGrid()
+    const game = fakeGame(grid)
+    game.marbles.push(mine())
+
+    expect(fx.executeEffect(game, 'shield', {}, { teamId: 1 })).toBe('shield')
+    expect(grid.isShielded(RED)).toBe(true)
+
+    const before = grid.countTiles(RED)
+    expect(grid.convertOnHit(14, 25, BLUE).owned).toBe(false)
+    grid.paintColorBomb(25, 15, BLUE, 2)
+    expect(grid.countTiles(RED)).toBe(before)
+
+    grid.tick((CONFIG.POWERUP_SHIELD_DURATION + 1) * 60)
+    expect(grid.isShielded(RED)).toBe(false)
+    expect(grid.convertOnHit(14, 25, BLUE).owned).toBe(true)
+  })
+
+  it('claims the whole frontier on claim_storm', () => {
+    const grid = baseGrid()
+    const game = fakeGame(grid)
+    game.marbles.push(mine())
+
+    const before = grid.countTiles(RED)
+    expect(fx.executeEffect(game, 'claim_storm', {}, { teamId: 1 })).toBe('claim_storm')
+    expect(grid.countTiles(RED)).toBe(before + 16)
+  })
+
+  it('paints a big area with mega_bomb', () => {
+    const grid = baseGrid()
+    const game = fakeGame(grid)
+    game.marbles.push(new Marble(2, 2, RED, 'me', { teamId: 1 }))
+
+    const before = grid.countTiles(RED)
+    expect(fx.executeEffect(game, 'mega_bomb', {}, { teamId: 1 })).toBe('mega_bomb')
+    expect(grid.countTiles(RED)).toBeGreaterThan(before)
+  })
+
+  it('summons allies carrying the activator identity', () => {
+    const game = fakeGame()
+    const out = fx.executeEffect(game, 'summon', { count: 3 }, {
+      teamId: 1, userId: 'ahmad', username: 'ahmad', name: 'Ahmad', avatar: 'https://cdn/a.jpg',
+    })
+    expect(out).toBe('summon')
+    expect(game.spawnViewerMarble).toHaveBeenCalledTimes(3)
+    const profiles = game.spawnViewerMarble.mock.calls.map((call) => call[0])
+    for (const profile of profiles) {
+      expect(profile.name).toBe('Ahmad')
+      expect(profile.avatar).toBe('https://cdn/a.jpg')
+    }
+    const ids = new Set(profiles.map((profile) => profile.id))
+    expect(ids.size).toBe(3)
+  })
+
+  it('clamps out-of-range params', () => {
+    const game = fakeGame()
+    expect(fx.executeEffect(game, 'summon', { count: 9999 }, { teamId: 1, userId: 'leader' })).toBe('summon')
+    expect(game.spawnViewerMarble).toHaveBeenCalledTimes(CONFIG.EFFECT_COUNT_MAX)
   })
 })

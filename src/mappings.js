@@ -1,11 +1,6 @@
-export const EFFECT_OPTIONS = [
-  { key: 'overcharge', label: 'Overcharge' },
-  { key: 'boost', label: 'Speed Boost' },
-  { key: 'colorbomb', label: 'Color Bomb' },
-  { key: 'area_convert', label: 'Area Convert' },
-  { key: 'spawn', label: 'Spawn Ally' },
-  { key: 'instant_claim', label: 'Instant Claim' },
-]
+import manifest from '../tikora.manifest.json'
+
+export const EFFECT_OPTIONS = manifest.effects.map((effect) => ({ key: effect.key, label: effect.label }))
 
 export function matchMapping(mappings, event) {
   if (!event || event.type !== 'gift') return null

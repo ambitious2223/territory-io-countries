@@ -4,6 +4,21 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-035 — Twelve-effect power-up catalog; manifest as single source of truth
+- **Context:** The hub was asked to control every power-up, but the game declared only six effects
+  and `mappings.js` carried a second hardcoded copy of the list.
+- **Decision:** Added **freeze** (enemy soldiers stop — movement control, no damage), **shield**
+  (nation's tiles unclaimable for N s; respected by bombs/enclosures/claims; white dashed border),
+  **team_speed**, **claim_storm** (shuffled frontier sweep, capped), **mega_bomb** (radius ≤ 8),
+  **summon** (1–8 photo-carrying allies). `tikora.manifest.json` now holds all 12 and **derives**
+  `EFFECT_OPTIONS` for the mappings UI; `tests/manifest.test.js` fails on drift. Every hub-supplied
+  param is clamped (`EFFECT_*_MAX`). Freeze/shield are control/border effects, consistent with the
+  fixed "no combat, territory only" rule.
+- **Rationale:** One list, three consumers (game executor, mappings UI, hub UI); clamps protect the
+  round economy from bad mapping values.
+- **Alternatives:** Freeze as a board-only pickup (hub couldn't map it); shield bypassing bombs
+  (removes the counter-play); clamping in the hub only (game must stay safe standalone).
+
 ## D-034 — Pick-a-side prompt + effects carry the activator's identity (game + hub)
 - **Context:** Effect-spawned soldiers used the team name and a blank avatar; a gift from someone
   who hadn't joined a nation did nothing; the hub stripped `avatar/name/userId` from the effect

@@ -33,6 +33,7 @@ export class Marble {
     this.alive = true;
     this.eliminated = false;
     this.overcharge = false;
+    this.frozenTimer = 0;
     this.powerupTimer = 0;
     this.conversions = 0;
     this.bounceFlash = 0;
@@ -50,6 +51,10 @@ export class Marble {
     }
   }
 
+  freeze(seconds) {
+    this.frozenTimer = Math.max(this.frozenTimer, Math.max(0, seconds));
+  }
+
   update(dt, grid) {
     if (!this.alive || this.eliminated) return null;
 
@@ -65,6 +70,11 @@ export class Marble {
     if (!this._rescueIfTrapped(grid)) {
       this.alive = false;
       this.eliminated = true;
+      return null;
+    }
+
+    if (this.frozenTimer > 0) {
+      this.frozenTimer -= dt / 60;
       return null;
     }
 
@@ -187,7 +197,8 @@ export class Marble {
     ctx.stroke();
 
     ctx.lineWidth = 2.5;
-    ctx.strokeStyle = this.overcharge ? '#FFFF00' : '#ffffff';
+    const innerRing = this.overcharge ? '#FFFF00' : this.frozenTimer > 0 ? '#9fe8ff' : '#ffffff';
+    ctx.strokeStyle = innerRing;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius + 1, 0, Math.PI * 2);
     ctx.stroke();

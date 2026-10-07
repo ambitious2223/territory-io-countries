@@ -4,6 +4,28 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Power-up catalog for the hub (2.8.0)
+
+Phase 18 ("declare every kind of power-up and wire it to the hub").
+
+**Done**
+- Six new effects: `freeze` (enemy soldiers stop, icy ring), `shield` (nation's tiles unclaimable
+  for N s — white dashed border; respected by bombs/enclosures/claims), `team_speed`,
+  `claim_storm` (frontier sweep, shuffled, capped), `mega_bomb`, `summon` (1–8 allies with the
+  activator's identity). All params clamped via `EFFECT_*_MAX` constants; old effects use the same
+  clamped helpers.
+- Grid gained `setShield/isShielded` (+ `paintTile` shield guard, dashed outline); marble gained
+  `freeze(seconds)`; victory paint bypasses shields.
+- `tikora.manifest.json` = 12 effects and now **drives** `EFFECT_OPTIONS` (mappings dropdown);
+  `tests/manifest.test.js` enforces manifest ↔ `EFFECT_KEYS` sync so they can't drift.
+- Hub needs no change: manifest sync (path seeded earlier) or live capabilities show all 12.
+
+**Verified**
+- `npm run lint` clean · `npm test` **127 passed** (manifest/shield/claim_storm/freeze/summon) ·
+  build + smoke green.
+
+---
+
 ## 2026-10-08 — Auto-zoom, contrast outline, pick-a-side (2.7.0)
 
 **Done**

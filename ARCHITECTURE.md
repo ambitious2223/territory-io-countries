@@ -49,7 +49,7 @@
 | `main.js` | Bootstrap: create `Game`, connect bridge client, init panels, start loop |
 | `game.js` | Loop, round state machine, base setup, elimination, rendering orchestration, input |
 | `config.js` | All tunable constants (canvas, grid, convert, camera, scoring, cinematic) |
-| `grid.js` | Tile ownership, one-touch capture + hold, containment/bounce, enclosure fill |
+| `grid.js` | Tile ownership, one-touch capture + hold, shield, claimFrontier, containment |
 | `map.js` | Wall/map generation |
 | `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
 | `marble.js` | Viewer ball: confined ricochet + capture; avatar with team ring/glow/tint/nameplate |

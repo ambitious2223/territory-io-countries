@@ -95,15 +95,18 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
-## Phase 18 — Power-up catalog declared for the hub *(deferred)*
-- [ ] Extend `giftEffects` + `tikora.manifest.json` with new power-ups (candidates: freeze,
-      shield, claim-storm, team-speed, mega-bomb, summon) incl. params
-- [ ] Verify the hub Game Hub lists them (manifest sync) and Trigger→Effect mappings run them,
-      including **free triggers** (chat/like/follow/share/member)
-- [ ] Docs + tests
+## Phase 18 — Power-up catalog declared for the hub
+- [x] Six new power-ups in `giftEffects` + manifest (freeze, shield, team_speed, claim_storm,
+      mega_bomb, summon) incl. clamped params
+- [x] `tikora.manifest.json` = 12 effects and **drives** the in-game mappings dropdown
+      (`EFFECT_OPTIONS`); `tests/manifest.test.js` enforces sync
+- [x] Grid `setShield/isShielded` (+ bomb/enclosure/claim guards, dashed outline), marble `freeze`
+- [x] Hub shows them automatically (manifest sync via seeded path / live capabilities)
+- [x] Tests (127) + docs; released **2.8.0**
 
-**Note:** the manifest already matches `EFFECT_KEYS` exactly today (6 effects), and the hub's
-mapper already supports every trigger type — this phase only *extends the catalog*.
+**Verify:** restart Tikora (or reconnect the game) → Game Hub lists all 12 effects; map a gift to
+each new effect and use **▶ Run**/Gift Gallery inject to see freeze, shield's dashed border, the
+claim-storm sweep and a summon of photo-carrying allies.
 
 ---
 

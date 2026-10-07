@@ -16,6 +16,7 @@ export class Grid {
     this.walls = null;
     this.claimableTiles = 0;
     this.now = 0;
+    this.shieldUntil = {};
   }
 
   init(walls, layout = null, colors = null) {
@@ -25,6 +26,7 @@ export class Grid {
     this.hold = [];
     this.claimableTiles = 0;
     this.now = 0;
+    this.shieldUntil = {};
 
     for (let r = 0; r < this.rows; r++) {
       this.tiles[r] = [];
@@ -54,6 +56,14 @@ export class Grid {
     this.now += dt / 60;
   }
 
+  setShield(color, seconds) {
+    this.shieldUntil[color] = this.now + Math.max(0, seconds);
+  }
+
+  isShielded(color) {
+    return (this.shieldUntil[color] || 0) > this.now;
+  }
+
   inBounds(row, col) {
     return row >= 0 && row < this.rows && col >= 0 && col < this.cols;
   }
@@ -68,9 +78,11 @@ export class Grid {
     return this.owners[row][col];
   }
 
-  paintTile(row, col, color) {
+  paintTile(row, col, color, ignoreShield = false) {
     if (!this.inBounds(row, col)) return;
-    if (this.owners[row][col] === WALL) return;
+    const owner = this.owners[row][col];
+    if (owner === WALL) return;
+    if (!ignoreShield && owner !== color && this.isShielded(owner)) return;
     this.tiles[row][col] = color;
     this.owners[row][col] = color;
   }
@@ -112,6 +124,7 @@ export class Grid {
     const owner = this.owners[row][col];
     if (owner === WALL || owner === color) return { owned: false };
     if (this.isHeld(row, col)) return { owned: false, blocked: true };
+    if (this.isShielded(owner)) return { owned: false, blocked: true };
 
     this.paintTile(row, col, color);
     this.hold[row][col] = this.now + CONFIG.TILE_HOLD_TIME;
@@ -169,21 +182,44 @@ export class Grid {
       for (let c = 0; c < this.cols; c++) {
         if (!visited[r][c] && this.owners[r][c] !== color && this.owners[r][c] !== WALL) {
           this.paintTile(r, c, color);
-          filled++;
+          if (this.owners[r][c] === color) filled++;
         }
       }
     }
     return filled;
   }
 
+  claimFrontier(color, limit) {
+    const candidates = [];
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const owner = this.owners[r][c];
+        if (owner === WALL || owner === color) continue;
+        if (DIRS.some(([dr, dc]) => this.getOwner(r + dr, c + dc) === color)) {
+          candidates.push({ row: r, col: c });
+        }
+      }
+    }
+    for (let i = candidates.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+
+    let painted = 0;
+    for (const tile of candidates.slice(0, limit)) {
+      this.paintTile(tile.row, tile.col, color);
+      if (this.owners[tile.row][tile.col] === color) painted++;
+    }
+    return painted;
+  }
+
   paintColorBomb(cx, cy, color, radius) {
     let painted = 0;
     for (let r = cy - radius; r <= cy + radius; r++) {
       for (let c = cx - radius; c <= cx + radius; c++) {
-        if (this.inBounds(r, c) && this.owners[r][c] !== WALL && this.owners[r][c] !== color) {
-          this.paintTile(r, c, color);
-          painted++;
-        }
+        if (!this.inBounds(r, c) || this.owners[r][c] === WALL || this.owners[r][c] === color) continue;
+        this.paintTile(r, c, color);
+        if (this.owners[r][c] === color) painted++;
       }
     }
     return painted;
@@ -257,14 +293,17 @@ export class Grid {
       }
     }
 
-    ctx.lineWidth = CONFIG.OUTLINE_WIDTH;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
     const radius = size * CONFIG.OUTLINE_CORNER_RADIUS;
     for (const [color, mask] of colors) {
-      ctx.strokeStyle = shade(color, -0.28);
+      const shielded = this.isShielded(color);
+      ctx.strokeStyle = shielded ? '#ffffff' : shade(color, -0.28);
+      ctx.lineWidth = shielded ? CONFIG.OUTLINE_WIDTH + CONFIG.OUTLINE_SHIELD_WIDTH_ADD : CONFIG.OUTLINE_WIDTH;
+      ctx.setLineDash(shielded ? CONFIG.OUTLINE_SHIELD_DASH : []);
       strokeLoops(ctx, traceOutline(mask, this.rows, this.cols, size), radius);
     }
+    ctx.setLineDash([]);
   }
 }
