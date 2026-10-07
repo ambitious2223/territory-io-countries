@@ -4,7 +4,7 @@ export const DEFAULT_WEIGHTS = {
   comment: 1,
   follow: 25,
   share: 50,
-  tile: 0.5,
+  tile: 0.125,
 }
 
 export class ScoringEngine {

@@ -438,7 +438,7 @@ export class Game {
     }
 
     this.grid.tick(dt);
-    if (this.claimSfxTimer > 0) this.claimSfxTimer -= dt;
+    if (this.claimSfxTimer > 0) this.claimSfxTimer -= dt / 60;
 
     const alive = this.marbles.filter((m) => m.alive && !m.eliminated);
     const changedColors = new Set();

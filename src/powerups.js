@@ -102,7 +102,7 @@ export class PowerUpManager {
   }
 
   update(dt, marbles, grid) {
-    this.spawnTimer += dt;
+    this.spawnTimer += dt / 60;
     if (this.spawnTimer >= this.nextSpawn) {
       this.spawnTimer = 0;
       this.nextSpawn = CONFIG.POWERUP_SPAWN_MIN +

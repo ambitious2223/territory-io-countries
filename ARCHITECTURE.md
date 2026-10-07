@@ -204,7 +204,7 @@ re-syncs when the server is reachable.
 | Resource | Budget |
 | --- | --- |
 | Active marbles | ≤ 26 |
-| Grid tiles | ≤ 384 |
+| Grid tiles | ≤ 1536 |
 | Particles | ≤ 250 (pooled) |
 | Frame time | ≤ 16.6 ms (60 FPS) |
 | Socket emissions | batched, ≤ ~10/s |

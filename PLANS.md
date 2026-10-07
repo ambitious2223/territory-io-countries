@@ -95,6 +95,21 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 16 — Finer grid + slow soldiers + real seconds
+- [x] Grid 48×32 @ 25 px (1536 tiles) with physical-look compensations (base 8×8, 2×2 wall blocks,
+      outline 3 px, ball radius 11, color-bomb 4, score weight ÷4)
+- [x] Default speed 1.1 + **live Soldiers slider** (Connection tab, 0.5–3.0, persisted, rescales
+      live balls); overcharge ×2.2
+- [x] Normalized duration constants to seconds (overcharge, hold, claim-SFX, power-up spawn, AI
+      fill, bounce flash) — previously frame-counted and effectively broken
+- [x] Tests (`speedControl`, `durations`), docs; released **2.6.0**
+
+**Verify:** one soldier creeps (no % jumps), slider changes pace live on stream, a gift gives a
+clear 6-second speed burst, power-ups appear every ~8–15 s (not constantly), map walls look as
+thick as before.
+
+---
+
 ## Phase 15 — Capital slider, layering, auto-save
 - [x] Capital-size slider (Teams tab, 0.5x–2.5x) persisted as `capitalScale`; `bases.js` scales
       the medallion, emoji and name pill

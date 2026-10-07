@@ -51,7 +51,7 @@ export class Grid {
   }
 
   tick(dt) {
-    this.now += dt;
+    this.now += dt / 60;
   }
 
   inBounds(row, col) {

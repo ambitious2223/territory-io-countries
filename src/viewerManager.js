@@ -109,7 +109,7 @@ export class ViewerManager {
 
   update(dt, teams) {
     if (!this.aiFill || !teams || teams.length === 0) return
-    this.aiTimer += dt
+    this.aiTimer += dt / 60
     if (this.aiTimer < this.aiInterval) return
     this.aiTimer = 0
     for (const team of teams) this.spawnBotIfEmpty(team)

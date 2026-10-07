@@ -140,7 +140,8 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 - Top bar: pause, speed, round timer, map select, mute, restart; the debug panel opens from the
   floating gear button.
 - Debug panel: a floating gear opens a tabbed workspace — **Connection · Teams · Overlay ·
-  Advanced**. Teams holds the capital-size slider, the editor + photo upload (all team edits
+  Advanced**. Connection holds a **Soldiers speed slider** (live, persisted) beside the bridge
+  controls. Teams holds the capital-size slider, the editor + photo upload (all team edits
   **auto-save** after ~1.5 s); Advanced (collapsed) holds the dev tools. The Tikora section is
   **read-only** — the hub owns activating/deactivating effects.
 - **i18n:** English default, full **Arabic + RTL** for all UI; Arabic join aliases always work.
@@ -152,14 +153,15 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 | Parameter | Value |
 | --- | --- |
 | Canvas | 1200×800 |
-| Grid | 24×16 tiles (50 px) |
+| Grid | 48×32 tiles (25 px) — each old square = 4 small squares (1536 total) |
 | Nations | 2–12 (default 8) |
-| Home base | 4×4 tiles, spread across the arena |
-| Ball radius / speed | 15 px / 1.9 px·frame |
+| Home base | 8×8 tiles (same physical size as before), spread across the arena |
+| Soldier radius / speed | 11 px / **1.1 px·frame slow default**; live slider 0.5–3.0 (persisted) |
+| Overcharge | ×2.2 speed for 6 s — the reward for gifts/interaction |
 | Capture | one touch per tile (neutral or enemy) |
 | Tile hold | ~2.5 s before a captured tile can be retaken |
 | Bounce jitter | ±0.3 rad per bounce |
-| Borders | rounded union outline, ~4 px nation colour (darkened) |
+| Borders | rounded union outline, ~3 px nation colour (darkened) |
 | Active ball cap | 24 |
 | Round / intermission | 180 s / 20 s |
 | Win | Most territory (or 65% domination) |

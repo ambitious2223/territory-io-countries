@@ -1,6 +1,7 @@
 import { Game } from './game.js';
 import { BridgeClient } from './net/bridgeClient.js';
 import { createDebugPanel } from './debugPanel.js';
+import { initSpeedControl } from './speedControl.js';
 import { initDebugFab, initDebugTabs, initOverlayLink } from './debugFab.js';
 import { initConnectionPanel, initViewersPanel, initCinematicPanel, initScoringPanel } from './ui.js';
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
@@ -11,6 +12,7 @@ import { initMappingsPanel } from './mappingsPanel.js';
 import { setBaseUrl as setMappingsBaseUrl, loadFromServer as loadMappings } from './mappingsStore.js';
 
 createDebugPanel();
+initSpeedControl();
 
 const canvas = document.getElementById('game-canvas');
 canvas.width = 1200;

@@ -62,7 +62,7 @@ describe('Grid one-touch capture', () => {
     const grid = new Grid()
     grid.init(makeWalls(), baseLayout(), [RED, BLUE])
     grid.convertOnHit(7, 13, RED)
-    grid.tick(CONFIG.TILE_HOLD_TIME + 0.1)
+    grid.tick((CONFIG.TILE_HOLD_TIME + 0.1) * 60)
     expect(grid.isHeld(7, 13)).toBe(false)
     expect(grid.convertOnHit(7, 13, BLUE).owned).toBe(true)
     expect(grid.getOwner(7, 13)).toBe(BLUE)

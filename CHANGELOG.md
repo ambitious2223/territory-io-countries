@@ -4,6 +4,29 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.6.0] - 2026-10-08
+
+### Changed
+- **Fine-grained grid**: 24×16 @ 50 px → **48×32 @ 25 px** (384 → **1536 tiles**; each old square
+  is now 4 small squares). One touch claims **0.065 %** instead of 0.26 %, so a lone soldier no
+  longer snowballs percentages. Compensations keep the physical look: base **8×8** (same size),
+  map walls drawn as **2×2 blocks** with full base clearance, outline 3 px / radius 0.4, color-bomb
+  radius 4, soldier radius 11.
+- **Slow default soldier speed**: `MARBLE_SPEED` 1.9 → **1.1**, with a new **live "Soldiers"
+  speed slider** (Connection tab, 0.5–3.0, persisted, rescales balls already on the field).
+  Overcharge multiplier 1.8 → **2.2** so interaction-earned speed clearly beats the base pace.
+
+### Fixed
+- **Duration constants were counting frames as seconds.** Overcharge lasted **0.1 s** instead of
+  6 s, the capture hold ~40 ms instead of 2.5 s, power-ups spawned every ~0.15 s instead of every
+  8–15 s, the claim-SFX throttle never engaged, the AI-fill interval never elapsed and the bounce
+  flash never rendered. Normalized (÷60) in marble, grid, game, power-ups and viewerManager —
+  matching the already-correct cinematic/vfx/camera timers.
+- Territory score weight 0.5 → 0.125 so a 4× finer grid keeps score magnitudes comparable.
+
+### Removed
+- Dead constants `BASE_INSET`, `OUTLINE_SMOOTH_PASSES`.
+
 ## [2.5.0] - 2026-10-04
 
 ### Added

@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.5.0
+## Status — v2.6.0
 
-Every gate is green: `npm run lint`, `npm test` (100 tests incl. team-registry/hub-identity/
-outline/overlay + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (106 tests incl. team-registry/speed/durations/
+hub-identity/outline/overlay + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -27,6 +27,9 @@ outline/overlay + a headless game-loop test), `npm run build`, and `npm run smok
   couple of seconds so contested borders don't flicker. No swords, no HP — territory is the only
   conflict.
 - **Conquerable bases / last stand:** a nation at zero tiles is **eliminated** for the round.
+- **Pacing:** fine **48×32 grid** (1536 tiles, one touch = 0.065 %), **slow default soldier speed**
+  with a **live speed slider** (Connection tab), and TikTok interactions award a real **6-second
+  speed boost** (overcharge ×2.2).
 - **Win by land:** most territory at time-up, or an immediate 65% **domination** win.
 - TikTok bridge with **auto-connect**: **Direct** (`tiktok-live-connector`) + **TikFinity**
   (`ws://127.0.0.1:21213`) chat sources with auto-fallback, plus **Mock** for offline.

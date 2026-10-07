@@ -4,6 +4,22 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-032 — Finer grid, slow base speed with live control, durations in seconds
+- **Context:** On 384 tiles a single soldier ate percentages almost instantly, the default pace was
+  fast, and TikTok interactions were supposed to grant speed — but `POWERUP_OVERCHARGE_DURATION`
+  (6.0) was decremented by frame-dt, so overcharge lasted **0.1 s**, the capture hold ~40 ms,
+  power-ups spawned every ~0.15 s and the claim-SFX throttle never engaged.
+- **Decision:** Grid **48×32 @ 25 px** (1536 tiles, one touch = 0.065 %) with compensations keeping
+  the physical look (base 8×8, map walls as 2×2 blocks, outline 3 px / radius 0.4, ball radius 11,
+  color-bomb radius 4, territory score weight ÷4). `MARBLE_SPEED` 1.9 → **1.1** with a persisted
+  **live Soldiers slider** (0.5–3.0) that rescales balls already on the field; overcharge ×2.2.
+  All second-based duration accumulators normalize `dt / 60` (matching cinematic/vfx/camera).
+- **Rationale:** Finer tiles make expansion earned instead of instant; a slow baseline makes
+  interaction-earned speed the main lever; seconds-vs-frames normalization makes every existing
+  duration constant mean what its docs say.
+- **Alternatives:** Keep 50 px and slow growth only via ball speed (still lumpy at 384 tiles);
+  convert constants to frame counts (opaque, fps-fragile).
+
 ## D-031 — Capital size slider, capitals above fighters, auto-saving teams
 - **Context:** The streamer wanted a per-nation capital size, clear visual layering (capitals not
   buried under balls), a readable country-name label, and team edits persisted without clicking

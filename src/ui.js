@@ -1,4 +1,6 @@
 import { t } from './i18n.js';
+import { CONFIG } from './config.js';
+import { getSoldierSpeed, setSoldierSpeed } from './speedControl.js';
 import { getWinners } from './winnersStore.js';
 
 function escapeHtml(value) {
@@ -175,6 +177,7 @@ export function updateDebugPanel(game, particles, grid) {
 }
 
 export function initConnectionPanel(game) {
+  initSpeedSlider(game);
   const connectBtn = document.getElementById('btn-conn-connect');
   if (!connectBtn) return;
 
@@ -202,6 +205,24 @@ export function initConnectionPanel(game) {
       value: Number(document.getElementById('mock-value').value) || 1,
     };
     game.bridge?.injectMock(body);
+  });
+}
+
+function initSpeedSlider(game) {
+  const slider = document.getElementById('soldier-speed');
+  const label = document.getElementById('soldier-speed-value');
+  if (!slider || !label) return;
+  slider.min = String(CONFIG.SPEED_CTRL_MIN);
+  slider.max = String(CONFIG.SPEED_CTRL_MAX);
+  slider.step = String(CONFIG.SPEED_CTRL_STEP);
+  const sync = () => {
+    slider.value = String(getSoldierSpeed());
+    label.textContent = getSoldierSpeed().toFixed(1);
+  };
+  sync();
+  slider.addEventListener('input', () => {
+    setSoldierSpeed(slider.value, game.marbles);
+    sync();
   });
 }
 

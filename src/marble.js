@@ -54,13 +54,13 @@ export class Marble {
     if (!this.alive || this.eliminated) return null;
 
     if (this.powerupTimer > 0) {
-      this.powerupTimer -= dt;
+      this.powerupTimer -= dt / 60;
       if (this.powerupTimer <= 0) {
         this.overcharge = false;
         this.powerupTimer = 0;
       }
     }
-    if (this.bounceFlash > 0) this.bounceFlash -= dt;
+    if (this.bounceFlash > 0) this.bounceFlash -= dt / 60;
 
     if (!this._rescueIfTrapped(grid)) {
       this.alive = false;

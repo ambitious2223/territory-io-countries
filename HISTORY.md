@@ -4,6 +4,28 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Finer grid, slow soldiers, real seconds (2.6.0)
+
+User: grid too coarse (one soldier eats percentages), soldiers should default slow with TikTok
+interactions granting speed — "and anything related, plan it with this".
+
+**Done**
+- Grid 48×32 @ 25 px (1536 tiles), base 8×8, radius 11, outline/border/color-bomb compensations,
+  map walls as 2×2 blocks + spawn clearance so physical look is unchanged.
+- Default speed 1.1 + **live Soldiers slider** (Connection tab, 0.5–3.0, localStorage, rescales
+  live balls via `src/speedControl.js`); overcharge ×2.2.
+- **Related discovery:** all duration constants were accumulating **frames while stored as
+  seconds** — overcharge 0.1 s, hold 40 ms, power-ups every 0.15 s, claim-SFX throttle dead,
+  bounce flash invisible. Normalized to seconds (÷60) in marble/grid/game/powerups/viewerManager;
+  cinematic/vfx/camera were already correct.
+- Territory score weight ÷4; removed dead `BASE_INSET`/`OUTLINE_SMOOTH_PASSES`.
+
+**Verified**
+- `npm run lint` clean · `npm test` **106 passed** (new `speedControl` + `durations` tests) ·
+  build + smoke green.
+
+---
+
 ## 2026-10-04 — Capital slider, layering, autosave (2.5.0)
 
 **Done**
