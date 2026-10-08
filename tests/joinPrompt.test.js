@@ -68,4 +68,22 @@ describe('JoinPrompt', () => {
     expect(prompt.count).toBe(0)
     expect(prompt.current).toBeNull()
   })
+
+  it('ages queued prompts from creation and counts drops', () => {
+    const prompt = new JoinPrompt()
+    prompt.request({ username: 'first', effect: 'boost' })
+    prompt.request({ username: 'second', effect: 'shield' })
+    prompt.update(60)
+    expect(prompt.current.username).toBe('first')
+    expect(prompt.pending).toHaveLength(1)
+
+    prompt.update((CONFIG.JOIN_PROMPT_TIMEOUT - 2) * 60)
+    expect(prompt.current.username).toBe('first')
+    expect(prompt.dropped).toBe(0)
+
+    prompt.update(2 * 60)
+    expect(prompt.current).toBeNull()
+    expect(prompt.count).toBe(0)
+    expect(prompt.dropped).toBe(2)
+  })
 })

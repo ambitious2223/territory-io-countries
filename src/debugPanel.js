@@ -53,6 +53,8 @@ const PANEL = `
         <div class="debug-row"><span data-i18n="debug.status">Status</span><span class="val" id="dbg-tikora-status">off</span></div>
         <div class="debug-row"><span data-i18n="debug.slug">Game</span><span class="val" id="dbg-tikora-slug">--</span></div>
         <div class="debug-row"><span data-i18n="debug.relay">Relay</span><span class="val" id="dbg-tikora-relay">--</span></div>
+        <div class="debug-row"><span data-i18n="debug.effects">Effects</span><span class="val" id="dbg-tikora-effects">0</span></div>
+        <div class="debug-row"><span data-i18n="debug.lastEffect">Last effect</span><span class="val" id="dbg-tikora-last">-</span></div>
         <div class="debug-row" style="margin-top:6px;"><span style="color:#555;font-size:9px;font-style:italic;" data-i18n="debug.managedByHub">Managed by the hub</span></div>
       </div>
     </div>

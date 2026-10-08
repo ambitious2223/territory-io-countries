@@ -96,6 +96,7 @@ export class Game {
     this.lastFrameTime = 16.67;
     this.claimSfxTimer = 0;
     this.overlayTimer = 0;
+    this.effectStats = { received: 0, lastKey: '', outcome: '-' };
 
     this._bindInput();
     initControls(this);
@@ -278,6 +279,13 @@ export class Game {
     this.viewers.respawn();
     this.viewers.seed(this.teams);
     this.suppressCinematic = false;
+    for (const viewer of this.viewers.viewers.values()) {
+      if (viewer.teamId === null || viewer.teamId === undefined) continue;
+      this.scoring.registerUser(viewer.id, viewer.teamId);
+      if (viewer.username && viewer.username !== viewer.id) {
+        this.scoring.registerUser(viewer.username, viewer.teamId);
+      }
+    }
   }
 
   updateTerritoryScores() {
@@ -297,21 +305,41 @@ export class Game {
   }
 
   handleBridgeEvent(event) {
+    const userId = event.userId ?? event.username;
+    const username = event.username ?? '';
     const result = this.viewers.handleEvent(event, this.teams);
+
+    let teamId = null;
     if (result && result.viewer) {
-      this.scoring.registerUser(event.userId ?? event.username, result.viewer.teamId);
+      teamId = result.viewer.teamId;
       this.onboarding?.notify('join');
-      const resolved = this.joinPrompt.resolve([event.userId ?? '', event.username ?? '']);
+    } else {
+      const known =
+        (userId && this.viewers.viewers.get(String(userId))) ||
+        (username && this.viewers.viewers.get(String(username)));
+      if (known) teamId = known.teamId;
+    }
+
+    if (teamId !== null && teamId !== undefined) {
+      this.scoring.registerUser(userId, teamId);
+      if (username && String(username) !== String(userId)) {
+        this.scoring.registerUser(username, teamId);
+      }
+    }
+
+    if (event.type === 'chat' && teamId !== null && teamId !== undefined) {
+      const resolved = this.joinPrompt.resolve([userId ?? '', username]);
       if (resolved) {
         executeEffect(this, resolved.effect, resolved.params, {
           userId: resolved.userId,
           username: resolved.username,
           name: resolved.name,
           avatar: resolved.avatar,
-          teamId: result.viewer.teamId
+          teamId
         });
       }
     }
+
     this.scoring.applyEvent(event);
     if (event && event.type === 'gift') {
       const mapping = matchMapping(getMappings(), event);
@@ -457,6 +485,9 @@ export class Game {
     if (roundState !== this.lastRoundState) {
       if (roundState === ROUND.COUNTDOWN) this.onboarding.startRound();
       this.lastRoundState = roundState;
+    }
+    if (roundState === ROUND.IDLE && this.round.autoLoop && !this.gameOver) {
+      this.round.start();
     }
     if (roundState === ROUND.PLAYING) this.onboarding.checkPhase(this.round.timeLeft);
 

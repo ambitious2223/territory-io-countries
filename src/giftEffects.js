@@ -152,52 +152,84 @@ const EFFECTS = {
 
 export const EFFECT_KEYS = Object.keys(EFFECTS)
 
+function setStats(game, patch) {
+  if (game.effectStats) Object.assign(game.effectStats, patch)
+}
+
 export function executeEffect(game, effectKey, params = {}, target = {}) {
   if (!game) return null
+  setStats(game, { lastKey: String(effectKey) })
   const effect = EFFECTS[effectKey]
-  if (!effect) return null
+  if (!effect) {
+    setStats(game, { outcome: 'unknown' })
+    return null
+  }
 
+  const keys = []
+  for (const value of [target.userId, target.username]) {
+    const key = value === undefined || value === null ? '' : String(value)
+    if (key && !keys.includes(key)) keys.push(key)
+  }
   const hasTeam = target.teamId !== undefined && target.teamId !== null
-  const lookup = target.userId ?? target.username
-  const hasUser = lookup !== undefined && lookup !== null && String(lookup) !== ''
   let team = hasTeam ? game.teams.find((entry) => entry.id === target.teamId) || null : null
-  if (!team && hasUser) {
-    team = game.teams.find((entry) => entry.id === game.scoring.teamOf(String(lookup))) || null
+  let viewer = null
+
+  if (!team) {
+    for (const key of keys) {
+      const teamId = game.scoring?.teamOf?.(key)
+      if (teamId !== null && teamId !== undefined) {
+        team = game.teams.find((entry) => entry.id === teamId) || null
+        if (team) break
+      }
+    }
   }
   if (!team) {
-    if (!hasUser) return null
+    for (const key of keys) {
+      viewer = game.viewers?.viewers.get(key) || null
+      if (viewer) break
+    }
+    if (viewer && viewer.teamId !== null && viewer.teamId !== undefined) {
+      team = game.teams.find((entry) => entry.id === viewer.teamId) || null
+    }
+  }
+
+  if (!team) {
+    if (keys.length === 0) return null
     if (CONFIG.PROMPT_BYPASS) {
       team = pickBypassTeam(game, target)
       if (!team) return null
-      game.scoring?.registerUser?.(String(lookup), team.id)
+      for (const key of keys) game.scoring?.registerUser?.(key, team.id)
     } else {
       const queued = game.joinPrompt?.request({
-        username: String(target.username ?? lookup),
-        name: target.name || target.username || String(lookup),
+        username: String(target.username ?? keys[0]),
+        name: target.name || target.username || keys[0],
         avatar: target.avatar || '',
-        userId: String(lookup),
+        userId: keys[0],
         effect: effectKey,
         params
       })
+      setStats(game, { outcome: 'queued' })
       return queued ? 'pending' : null
     }
   }
 
-  const viewer = hasUser
-    ? game.viewers?.viewers.get(String(lookup)) ||
-      game.viewers?.viewers.get(String(target.username || '')) ||
-      null
-    : null
+  if (!viewer) {
+    for (const key of keys) {
+      viewer = game.viewers?.viewers.get(key) || null
+      if (viewer) break
+    }
+  }
+
   const ctx = {
     game,
     team,
     params,
     marble: viewer?.marble || null,
-    activator: hasUser
+    activator: keys.length
       ? {
-          userId: String(lookup),
-          username: String(target.username ?? lookup),
-          name: target.name || target.username || String(lookup),
+          userId: keys[0],
+          username: String(target.username ?? keys[0]),
+          name: target.name || target.username || keys[0],
           avatar: target.avatar || viewer?.avatar || ''
         }
       : null
@@ -208,6 +240,7 @@ export function executeEffect(game, effectKey, params = {}, target = {}) {
     game.vfx.addPickupText(at.x, at.y, effectKey)
   }
   game.onboarding?.notify('gift')
+  setStats(game, { outcome: 'applied' })
   return effectKey
 }
 

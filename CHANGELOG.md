@@ -4,6 +4,31 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.13.0] - 2026-10-08
+
+### Fixed — hub effects delivered but not activating (root causes from the hub's own effect log)
+Investigation proved the hub **did** deliver (`effect_log` shows `delivered` to the game socket)
+and the failure was inside the game:
+- **Registrations survive round resets** — `resetRound()` re-registers every known viewer under
+  *both* their `userId` and `username` (previously `scoring.reset()` wiped them, so round-≥2 gifts
+  found no team).
+- **Multi-key team resolution** for effects: `teamId` → `teamOf()` over userId **and** username →
+  the viewer roster's team → only then the pick-a-side prompt (previously a username-vs-userId
+  mismatch silently dropped effects into the prompt).
+- **Known viewers resolve prompts** — a chat from someone already in the roster now re-registers
+  and resolves their queued effect instead of leaving it to expire.
+- **Prompt items age from creation** (a queued item can no longer wait forever), and every drop is
+  counted instead of being silent.
+
+### Added — effect telemetry (debug → Connection → Tikora)
+- `Effects` (count received) and `Last effect` (`<key> · applied|queued|dropped|unknown · queue N ·
+  dropped N`) so the next live test shows exactly where a gift lands; every hub effect also logs to
+  the console.
+
+### Fixed — stranded rounds
+- If the round ever lands in `IDLE` while **Auto** is on (e.g. End pressed during the countdown),
+  it now restarts the countdown instead of leaving the arena frozen.
+
 ## [2.12.0] - 2026-10-08
 
 ### Changed — much looser join matching

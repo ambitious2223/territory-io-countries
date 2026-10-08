@@ -37,7 +37,10 @@
 - `src/teamRegistry.js` — flag upload notifies, capital scale clamps/notifies the game only,
   debounced auto-save (fake timers), save-to-server notifies the game but not the panel.
 - `src/speedControl.js` — clamps/persists the soldier speed and rescales live balls.
-- `tests/joinPrompt.test.js` — prompt queue, resolve-by-username, timeout, clear.
+- `tests/effectRouting.test.js` — effects survive round resets, queued prompts resolve on re-comment
+  (known roster), username-only lookups find the team, telemetry counters, IDLE+Auto recovery.
+- `tests/joinPrompt.test.js` — prompt queue, resolve-by-username, timeout, clear, **age-from-
+  creation with drop counting**.
 - `tests/manifest.test.js` — manifest ↔ `EFFECT_KEYS` ↔ mappings dropdown stay in sync (12 effects).
 - `tests/i18n.test.js` — EN↔AR key parity, every `data-i18n` key in markup is covered, dynamic
   key families exist, and `dir` stays `ltr` in both languages (no layout mirroring).
@@ -97,6 +100,12 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       when that user comments a nation, the held effect fires on their soldier (with their photo).
 - [ ] With **Skip pick-a-side** (Advanced → Mock Event) checked, the same injection applies
       instantly to a nation and no pop-up appears; uncheck → prompt returns (default).
+- [ ] **Effect telemetry:** debug → Connection → Tikora shows `Effects` counting up and
+      `Last effect` reading `applied` after a working gift (or `queued`/`dropped` when it isn't —
+      that's your diagnosis instead of guessing). Console shows `[hub] effect <key> from <user>`.
+- [ ] **Round regression:** after a round resets, a gift from a viewer who played last round still
+      applies immediately; pressing End during the countdown doesn't strand the game (Auto on
+      restarts it).
 - [ ] Round start shows the big **How to Join** card (≈ half the arena, steps + nation chips);
       it auto-hides after ~10 s, ✕ dismisses it, and **Advanced → Guide & Tips** turns it off/on
       (persists). Contextual tips appear once each (join/gift/halfway/final 30 s) and are ✕-able.

@@ -95,6 +95,26 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 23 — Hub-effect delivery fixes + telemetry
+- [x] Registrations survive round resets (both keys, at join and on reset)
+- [x] Layered effect team resolution (teamId → teamOf both keys → roster → prompt/bypass)
+- [x] Known-viewer chats resolve queued prompts; prompt items age from creation with drop counts
+- [x] Effect telemetry (effectStats + Effects/Last effect debug rows + console) and IDLE+Auto guard
+- [x] Tests (158) + docs; released **2.13.0** — root cause proven via the hub's `effect_log`
+
+**Verify:** debug → Connection → Tikora shows `Last effect · applied` for a gift; the same gift
+after a round reset still works without re-commenting.
+
+---
+
+## Phase 24 — Win celebration (approved, D-041, not started)
+- [ ] Confetti (pooled, winner colours + flag-clipped pieces), flag medallion, VICTORY + stats
+- [ ] Top-3 nations row + overall top-3 supporters (avatars/nicknames, per-viewer scores in
+      `ScoringEngine`)
+- [ ] Full-screen canvas overlay above the kept colour sweep; EN/AR; tests; release **2.14.0**
+
+---
+
 ## Phase 22 — Loose join matching + cinematic performance
 - [x] `matchTeam`: Arabic in fuzzy/prefix, `ال` article optional, any-word/first-word matching,
       length-scaled typo tolerance with lookalike negatives

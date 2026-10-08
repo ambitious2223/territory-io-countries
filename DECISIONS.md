@@ -4,6 +4,33 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-042 — Effect identity resolution across layers; prompt aging; effect telemetry
+- **Context:** Live test: the hub logged a `freeze` effect as **delivered** to the game's socket,
+  yet nothing happened in-game. Traced to three game-side holes: `scoring.reset()` wiping user→team
+  each round; known viewers' re-comments returning `null` so queued prompts never resolved
+  (silent 20 s drop); chat registering `userId` while hub events can fall back to `username`.
+- **Decision:** Team resolution is layered — explicit `teamId` → `scoring.teamOf` over **both keys**
+  → the viewer roster's `teamId` → only then prompt/bypass. Joins and round resets register under
+  both keys; known-viewer chats re-register and resolve queued prompts. Prompt items age from
+  creation time with a counted `dropped`. New **effect telemetry** (`effectStats` +
+  `Effects`/`Last effect` debug rows + console log) makes the next live test self-diagnosing; an
+  `IDLE + autoLoop` guard restarts stranded rounds.
+- **Rationale:** The hub's own log proved delivery; the game must resolve identity independently of
+  which key each layer happens to carry, and never fail silently.
+- **Alternatives:** Patch the hub to always send `userId` (helps but doesn't cover resets);
+  drop the prompt (kills the join driver); only fix registration (leaves key mismatch).
+
+## D-041 — Win celebration: confetti + flag + podium (approved, Phase 24)
+- **Context:** The win screen was an arena colour sweep plus a small sidebar panel; owner wants
+  "a much better win screen… confetti with the flag of the winner… name and most contributors
+  profile pictures and their nicknames. Top three."
+- **Decision (approved):** a **full-screen canvas celebration** on top of the kept colour-sweep
+  backdrop — pooled confetti (winner-colour + gold/white + pieces clipped from the winner's flag),
+  a flag medallion + VICTORY + localized winner name + stats, a **top-3 nations** row, and the
+  **overall top-3 supporters** (avatar + nickname + score, ringed in their nation's colour),
+  fed by new per-viewer score tracking in `ScoringEngine`. EN/AR strings; hide on round reset.
+- **Not yet implemented** — scheduled as Phase 24, after the 2.13.0 effect fixes.
+
 ## D-040 — Cinematic performance: blur opt-in, cached nation outlines
 - **Context:** Owner: "automatic zoom or cinematic is making the game look so laggy." Two causes:
   `ctx.filter = blur(6px)` re-blitting the whole 1200×800 canvas every frame during the intro,

@@ -4,6 +4,37 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Hub effects not activating: root-caused (2.13.0)
+
+User report: "Game is not resetting every time, players stay each new round; some hub effects
+don't activate (Pebble's freeze) — investigate."
+
+**Investigation (read-only, hub DB `%APPDATA%\Tikora\tikora.db`)**
+- Mappings for `territory-with-flags` are clean (5 gift mappings, `who: everyone`, enabled,
+  no cooldown).
+- **`effect_log` shows `freeze` DELIVERED to the game socket twice** (17:47:03, 17:50:11,
+  `ahmadabostaiti`) → hub, relay and the game's connection all worked; the drop was inside the
+  game.
+- Code trace found three holes: `scoring.reset()` wipes user→team each round; known viewers'
+  re-comments returned `null` so prompts never resolved (20 s drop); chat registers `userId` while
+  hub events may fall back to `username` (key mismatch).
+- Roster: players persisting each round = by design (user confirmed; fixed registration instead).
+- Note: `colorbomb` mapping payload `radius: 259` is clamped to 8 by `EFFECT_*_MAX` (safety from
+  2.8.0); the other 4 mappings have `trigger_count: 0` (those gift IDs were never sent).
+
+**Fixed**
+- Both-key registration at join and re-registration of all viewers in `resetRound`.
+- `executeEffect`: `teamId` → `teamOf` over both keys → viewer roster team → prompt/bypass.
+- Known-viewer chats resolve queued prompts; prompt items age from creation with a `dropped` count.
+- Telemetry: `effectStats` + `Effects`/`Last effect` debug rows + console log per hub effect.
+- `IDLE + Auto on` guard restarts the countdown (End-during-countdown no longer strands the game).
+
+**Verified**
+- `npm run lint` clean · `npm test` **158 passed** (new `effectRouting` regression suite + prompt
+  aging) · build + smoke green.
+
+---
+
 ## 2026-10-08 — Loose join matching + cinematic performance (2.12.0)
 
 Two user reports: "remove letter-sensitivity, especially Arabic — first part of a word and

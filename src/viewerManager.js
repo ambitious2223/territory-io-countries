@@ -63,6 +63,7 @@ export class ViewerManager {
 
     const viewer = {
       id,
+      username: event.username || '',
       name: event.name || event.username || t('misc.viewer'),
       avatar: event.avatar || '',
       teamId: team.id,

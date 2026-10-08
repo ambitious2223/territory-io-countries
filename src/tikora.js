@@ -46,6 +46,12 @@ export class TikoraHub {
   _handleEffect(message = {}) {
     const payload = message.payload || {}
     const event = message.event || {}
+    const stats = this.game?.effectStats
+    if (stats) {
+      stats.received += 1
+      stats.lastKey = message.effect || '-'
+    }
+    console.log(`[hub] effect ${message.effect || '?'} from ${event.username || 'unknown'}`)
     const effectKey = executeEffect(this.game, message.effect, payload, {
       userId: event.userId ?? event.uniqueId ?? event.username ?? payload.username,
       username: event.username ?? payload.username,

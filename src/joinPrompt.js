@@ -32,6 +32,7 @@ export class JoinPrompt {
     this.pending = [];
     this.current = null;
     this.alpha = 0;
+    this.dropped = 0;
   }
 
   get count() {
@@ -44,7 +45,7 @@ export class JoinPrompt {
     if (matches(this.current, keys) || this.pending.some((item) => matches(item, keys))) {
       return false;
     }
-    const item = { ...entry, timer: 0 };
+    const item = { ...entry, age: 0 };
     if (item.avatar) {
       const image = new Image();
       image.src = item.avatar;
@@ -77,14 +78,21 @@ export class JoinPrompt {
     const step = dt / 60;
     if (!this.current && this.pending.length > 0) {
       this.current = this.pending.shift();
-      this.current.timer = 0;
     }
     if (this.current) {
-      this.current.timer += step;
-      if (this.current.timer >= CONFIG.JOIN_PROMPT_TIMEOUT) {
+      this.current.age += step;
+      if (this.current.age >= CONFIG.JOIN_PROMPT_TIMEOUT) {
         this.current = null;
+        this.dropped += 1;
       }
     }
+    const survivors = [];
+    for (const item of this.pending) {
+      item.age += step;
+      if (item.age < CONFIG.JOIN_PROMPT_TIMEOUT) survivors.push(item);
+      else this.dropped += 1;
+    }
+    this.pending = survivors;
     const target = this.current ? 1 : 0;
     this.alpha += (target - this.alpha) * Math.min(1, dt * 0.18);
   }

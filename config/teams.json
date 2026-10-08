@@ -18,7 +18,8 @@
         "saudi",
         "ksa",
         "السعوديه"
-      ]
+      ],
+      "eliminated": false
     },
     {
       "id": 2,
@@ -34,25 +35,27 @@
       "aliases": [
         "masr",
         "misr"
-      ]
+      ],
+      "eliminated": false
     },
     {
       "id": 3,
       "index": 3,
       "name": {
-        "en": "United Arab Emirates",
-        "ar": "الإمارات"
+        "en": "turkiye",
+        "ar": "تركيا"
       },
-      "iso2": "AE",
+      "iso2": "TR",
       "emoji": "🇦🇪",
       "color": "#FF8C00",
-      "flagImage": "/flags/3_94c98d.png",
+      "flagImage": "/flags/3_454c5f.png",
       "aliases": [
         "emirates",
         "uae",
         "dubai",
         "الامارات"
-      ]
+      ],
+      "eliminated": false
     },
     {
       "id": 4,
@@ -68,70 +71,89 @@
       "aliases": [
         "maroc",
         "maghrib"
-      ]
+      ],
+      "eliminated": false
     },
     {
       "id": 5,
       "index": 5,
       "name": {
-        "en": "Algeria",
-        "ar": "الجزائر"
+        "en": "syria",
+        "ar": "سوريا"
       },
-      "iso2": "DZ",
+      "iso2": "SY",
       "emoji": "🇩🇿",
       "color": "#1E90FF",
-      "flagImage": null,
+      "flagImage": "/flags/5_e24d43.png",
       "aliases": [
         "algerie",
         "dzayer"
-      ]
+      ],
+      "eliminated": false
     },
     {
       "id": 6,
       "index": 6,
       "name": {
-        "en": "Brazil",
-        "ar": "البرازيل"
+        "en": "iraq",
+        "ar": "العراق"
       },
-      "iso2": "BR",
+      "iso2": "IQ",
       "emoji": "🇧🇷",
       "color": "#FF2222",
-      "flagImage": null,
+      "flagImage": "/flags/6_8d86c6.png",
       "aliases": [
         "brasil"
-      ]
+      ],
+      "eliminated": false
     },
     {
       "id": 7,
       "index": 7,
       "name": {
-        "en": "India",
-        "ar": "الهند"
+        "en": "jor",
+        "ar": "الاردن"
       },
-      "iso2": "IN",
+      "iso2": "JO",
       "emoji": "🇮🇳",
       "color": "#FF00FF",
-      "flagImage": null,
+      "flagImage": "/flags/7_f8d22f.png",
       "aliases": [
         "bharat",
         "hind"
-      ]
+      ],
+      "eliminated": false
     },
     {
       "id": 8,
       "index": 8,
       "name": {
-        "en": "Turkey",
-        "ar": "تركيا"
+        "en": "United States",
+        "ar": "امريكا"
       },
-      "iso2": "TR",
+      "iso2": "US",
       "emoji": "🇹🇷",
       "color": "#00CED1",
-      "flagImage": null,
+      "flagImage": "/flags/8_3a73d4.png",
       "aliases": [
         "turkiye",
         "türkiye"
-      ]
+      ],
+      "eliminated": false
+    },
+    {
+      "id": 9,
+      "index": 9,
+      "name": {
+        "en": "palestine",
+        "ar": "فلسطين"
+      },
+      "iso2": "PS",
+      "emoji": "🏳️",
+      "color": "#00CC44",
+      "flagImage": "/flags/9_3dc1b2.png",
+      "aliases": [],
+      "eliminated": false
     }
   ]
 }

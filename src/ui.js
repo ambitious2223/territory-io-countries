@@ -355,6 +355,13 @@ export function updateTikoraPanel(game) {
   set('dbg-tikora-status', game.tikora.status);
   set('dbg-tikora-slug', game.hubIdentity?.slug || '--');
   set('dbg-tikora-relay', game.hubIdentity?.relayUrl || '--');
+  const stats = game.effectStats || { received: 0, lastKey: '', outcome: '-' };
+  set('dbg-tikora-effects', String(stats.received));
+  const prompt = game.joinPrompt;
+  const parts = [stats.lastKey || '-', stats.outcome];
+  if (prompt && prompt.count > 0) parts.push(`queue ${prompt.count}`);
+  if (prompt && prompt.dropped > 0) parts.push(`dropped ${prompt.dropped}`);
+  set('dbg-tikora-last', parts.join(' · '));
 }
 
 export function updateCinematicPanel(game) {
