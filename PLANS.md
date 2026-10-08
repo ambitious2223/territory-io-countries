@@ -95,6 +95,18 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 22 — Loose join matching + cinematic performance
+- [x] `matchTeam`: Arabic in fuzzy/prefix, `ال` article optional, any-word/first-word matching,
+      length-scaled typo tolerance with lookalike negatives
+- [x] Cinematic blur off by default (cheap dark veil; slider opts in) + border outline cache
+      (`rebuildOutlines` on dirty, browser Path2D)
+- [x] Tests (151); docs; released **2.12.0**
+
+**Verify:** Arabic partial/typo comments join the right nation while lookalikes don't; the join
+cinematic no longer drops frames (raise the blur slider to compare).
+
+---
+
 ## Phase 21 — Onboarding: join guide + gameplay tips
 - [x] Half-arena (50 %) "How to Join" card each round start: steps + nation chips, 10 s auto-hide,
       ✕ dismiss, persisted switch + "Show now" in **Advanced → Guide & Tips**

@@ -4,6 +4,31 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Loose join matching + cinematic performance (2.12.0)
+
+Two user reports: "remove letter-sensitivity, especially Arabic — first part of a word and
+misspellings should count" and "auto-zoom/cinematic makes the game look laggy".
+
+**Done — matching** (`src/teams.js` `matchTeam`)
+- Root causes found: Arabic names were excluded from the fuzzy/prefix loop (exact-only), no
+  word-level matching, no `ال` article handling, tight uniform threshold.
+- Now: candidate keys = name.en + name.ar + aliases **+ article-stripped Arabic**; passes run
+  exact → **any-word equality** → **prefix** → **length-scaled Levenshtein** (1/2/3 by target
+  length) over full names *and* their words, with a length pre-filter. Numbers/ISO/emoji unchanged.
+- 6 new test cases (Arabic article/typo, multiword first word, emoji+extra words, case, negatives).
+
+**Done — performance**
+- `Camera.blurScale` default **0**: no full-canvas `ctx.filter` blur during the cinematic
+  (replaced by a 0.32-alpha veil rect); slider in debug still opts in. Cinematic test updated.
+- `Grid` caches border geometry: `rebuildOutlines()` runs only when `outlinesDirty` (set by
+  `paintTile`), storing traced loops per nation + a browser `Path2D` (`buildPath`, null in node →
+  stroke fallback). `drawBorders` now strokes cached paths instead of re-tracing every frame.
+
+**Verified**
+- `npm run lint` clean · `npm test` **151 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Onboarding: half-arena join guide + rotating tips (2.11.0)
 
 User: "50% of the arena size, a big pop-out notification of how to join, and some instructions

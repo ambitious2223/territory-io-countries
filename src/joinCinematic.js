@@ -108,7 +108,11 @@ export class JoinCinematic {
     const teamName = this.current.teamName || '';
 
     ctx.save();
-    ctx.globalAlpha = Math.min(1, this.cardAlpha);
+    const alpha = Math.min(1, this.cardAlpha);
+    ctx.globalAlpha = alpha;
+
+    ctx.fillStyle = `rgba(0, 0, 0, ${(0.32 * alpha).toFixed(3)})`;
+    ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
 
     ctx.fillStyle = 'rgba(10,10,14,0.85)';
     ctx.strokeStyle = color;

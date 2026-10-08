@@ -19,10 +19,13 @@
 | `npm run build` | Production bundle succeeds |
 
 ### Required unit coverage (pure modules)
-- `src/teams.js` — join-keyword matcher: number, ISO2, EN, AR, emoji, fuzzy, negatives.
+- `src/teams.js` — join-keyword matcher: number, ISO2, EN, AR, emoji, any-word/prefix matching,
+  Arabic definite-article variants, length-scaled typo tolerance, negative lookalikes.
 - `src/zones.js` — home-base layout for N = 2…12 (one full base per nation, rest neutral).
-- `src/marble.js` + `src/grid.js` — confined ricochet + one-touch capture and post-capture hold.
-- `src/outline.js` — marching-squares union outline + rounded corner paths.
+- `src/marble.js` + `src/grid.js` — confined ricochet + one-touch capture and post-capture hold;
+  border outline cache rebuilds only on ownership change.
+- `src/outline.js` — marching-squares union outline, rounded corner paths, `buildPath` (Path2D in
+  the browser, null fallback elsewhere).
 - `src/overlaySnapshot.js` — leaderboard snapshot shape, sorting and percents.
 - `src/scoring.js` — each source weight, gift scaling, round settlement/tie-break.
 - `src/round.js` — countdown → playing → intermission transitions.
@@ -72,6 +75,8 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Debug → Connect shows the right status badge for the chosen source (opened via the FAB).
 - [ ] The floating debug button drags, toggles the tabbed panel, and remembers its spot.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
+- [ ] Loose matching: `Egypt ❤`, `I choose EGYPT`, `united`, `الامارت`, `سعودية` all join the
+      right nation; `iran`/`nope` join nothing.
 - [ ] Flag upload saves a 3:2 image, shows a thumbnail in the team row, and appears **live** in that
       team's stronghold, the leaderboard and the overlay (no reload needed).
 - [ ] Each ball shows a viewer profile photo with a team-colour ring/glow/tint and nameplate.
@@ -100,7 +105,8 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       and inject it: frozen soldiers get the icy ring, a shield shows the **white dashed border**
       and survives a bomb, claim storm sweeps the frontier, summon spawns photo-carrying allies.
 - [ ] 30 mock joins: ≤ 24 active, the rest queued and swapped in on death.
-- [ ] Join cinematic pans/zooms to spawn; blur slider changes the backdrop.
+- [ ] Join cinematic pans/zooms to spawn; the backdrop is a dark veil (blur slider starts at 0 —
+      raise it and blur returns).
 - [ ] The arena starts neutral with one visible home base per nation.
 - [ ] Balls ricochet off their border, **never leave their colour**, and a **single touch** flips a
       tile (no half-convert squares). A freshly taken tile resists a retake for a couple of seconds.

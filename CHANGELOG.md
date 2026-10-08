@@ -4,6 +4,24 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.12.0] - 2026-10-08
+
+### Changed — much looser join matching
+- Arabic names/aliases are now included in the **prefix and fuzzy passes** (previously exact-only),
+  with the definite article (`ال…`) treated as optional on both sides.
+- **Any word in the comment counts**: `مصر ❤️`, `I choose EGYPT 🎉`, `أنا من مصر`, or the first
+  word of a multi-word name (`united` → United Arab Emirates) all join.
+- Length-scaled typo tolerance (≤1 for 4–5 letters, ≤2 for 6–9, ≤3 for 10+), applied per word and
+  per full name — so `الامارت` → الإمارات and `brzl` → Brazil count, while lookalikes
+  (`iran` ≠ india) still don't.
+
+### Fixed — cinematic lag
+- The join cinematic's full-canvas `ctx.filter` **blur is off by default** (it forced an expensive
+  GPU blit every frame while zooming) — replaced with a cheap dark veil. The blur slider in
+  debug → Advanced → Cinematic can still opt back in.
+- Nation borders are **cached**: traced loops + `Path2D` are rebuilt only when ownership changes
+  instead of re-scanning 1536 tiles × 8 nations every frame (`grid.rebuildOutlines()`).
+
 ## [2.11.0] - 2026-10-08
 
 ### Added

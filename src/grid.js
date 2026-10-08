@@ -1,7 +1,7 @@
 import { CONFIG } from './config.js';
 import { WALL } from './map.js';
 import { shade } from './utils.js';
-import { traceOutline, strokeLoops } from './outline.js';
+import { traceOutline, strokeLoops, buildPath } from './outline.js';
 
 const DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
@@ -17,6 +17,9 @@ export class Grid {
     this.claimableTiles = 0;
     this.now = 0;
     this.shieldUntil = {};
+    this.outlineLoops = new Map();
+    this.outlinePaths = new Map();
+    this.outlinesDirty = true;
   }
 
   init(walls, layout = null, colors = null) {
@@ -27,6 +30,9 @@ export class Grid {
     this.claimableTiles = 0;
     this.now = 0;
     this.shieldUntil = {};
+    this.outlineLoops = new Map();
+    this.outlinePaths = new Map();
+    this.outlinesDirty = true;
 
     for (let r = 0; r < this.rows; r++) {
       this.tiles[r] = [];
@@ -85,6 +91,7 @@ export class Grid {
     if (!ignoreShield && owner !== color && this.isShielded(owner)) return;
     this.tiles[row][col] = color;
     this.owners[row][col] = color;
+    this.outlinesDirty = true;
   }
 
   worldToGrid(x, y) {
@@ -275,34 +282,51 @@ export class Grid {
     ctx.fillRect(tx + 4, ty + size - 4, size - 6, 2);
   }
 
-  drawBorders(ctx) {
+  rebuildOutlines() {
     const size = this.tileSize;
-    const colors = new Map();
+    const masks = new Map();
 
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         const owner = this.owners[r][c];
         if (owner === WALL || owner === CONFIG.NEUTRAL_COLOR) continue;
-        let mask = colors.get(owner);
+        let mask = masks.get(owner);
         if (!mask) {
           mask = [];
           for (let i = 0; i < this.rows; i++) mask[i] = new Array(this.cols).fill(false);
-          colors.set(owner, mask);
+          masks.set(owner, mask);
         }
         mask[r][c] = true;
       }
     }
 
+    const radius = size * CONFIG.OUTLINE_CORNER_RADIUS;
+    this.outlineLoops = new Map();
+    this.outlinePaths = new Map();
+    for (const [color, mask] of masks) {
+      const loops = traceOutline(mask, this.rows, this.cols, size);
+      this.outlineLoops.set(color, loops);
+      const path = buildPath(loops, radius);
+      if (path) this.outlinePaths.set(color, path);
+    }
+    this.outlinesDirty = false;
+  }
+
+  drawBorders(ctx) {
+    if (this.outlinesDirty) this.rebuildOutlines();
+
+    const radius = this.tileSize * CONFIG.OUTLINE_CORNER_RADIUS;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
-    const radius = size * CONFIG.OUTLINE_CORNER_RADIUS;
-    for (const [color, mask] of colors) {
+    for (const [color, loops] of this.outlineLoops) {
       const shielded = this.isShielded(color);
       ctx.strokeStyle = shielded ? '#ffffff' : shade(color, -0.28);
       ctx.lineWidth = shielded ? CONFIG.OUTLINE_WIDTH + CONFIG.OUTLINE_SHIELD_WIDTH_ADD : CONFIG.OUTLINE_WIDTH;
       ctx.setLineDash(shielded ? CONFIG.OUTLINE_SHIELD_DASH : []);
-      strokeLoops(ctx, traceOutline(mask, this.rows, this.cols, size), radius);
+      const path = this.outlinePaths.get(color);
+      if (path) ctx.stroke(path);
+      else strokeLoops(ctx, loops, radius);
     }
     ctx.setLineDash([]);
   }

@@ -30,10 +30,15 @@ A viewer joins by commenting **any** of:
 4. **Arabic** name (`السعودية`)
 5. **flag emoji** (`🇸🇦`)
 
-Matching is tolerant: case-insensitive, diacritics/tatweel stripped, alef/maqsura folded,
-leading `@` ignored, fuzzy prefix/Levenshtein fallback. Joins are reflected in the **live
-leaderboard** (a nation's active-ball count and territory). Eliminated nations stop accepting joins
-until the next round.
+Matching is deliberately loose: case-insensitive; Arabic diacritics/tatweel stripped and letter
+variants folded (أإآ→ا, ى→ي, ة→ه…); the definite article `ال` optional on both sides; leading
+`@/#/join` ignored. A comment can match a nation by team number, ISO2, flag emoji, **exact name**
+(any language), **any single word** in it (`أنا من مصر`, `مصر ❤️`), the **first word** of a
+multi-word name (`united`), a **prefix** (`saud`, `الامار`), or a **typo within tolerance** that
+scales with word length (≤1 for 4–5 letters, ≤2 for 6–9, ≤3 for 10+ — so `الامارت` and `brzl`
+count, while lookalikes such as `iran` vs `india` do not). Joins are reflected in the **live
+leaderboard** (a nation's active-ball count and territory). Eliminated nations stop accepting
+joins until the next round.
 
 ---
 
@@ -48,9 +53,11 @@ until the next round.
 - **Mock mode** simulates viewers for offline testing.
 
 ### Join cinematic
-When a viewer joins, the camera **pans/zooms** from the arena edge to that nation's base over
-~1.2 s and shows a card with their photo, name and flag. Multiple joins play sequentially with
-a skip. A **blur percentage slider** (0–100, debug panel) blurs the backdrop during the intro.
+When a viewer joins, the camera **pans/zooms** to the **moving** soldier over ~1.2 s and shows a
+card with their photo, name and flag; it follows them until the hold ends, then returns. Multiple
+joins play sequentially with a skip. The backdrop is a **cheap dark veil by default** — the
+**blur percentage slider** (0–100, debug panel) opts back into a GPU blur, off unless you raise it
+(it used to run every frame and cost visible FPS).
 
 ---
 

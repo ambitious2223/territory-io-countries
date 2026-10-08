@@ -116,3 +116,20 @@ export function strokeLoops(ctx, loops, radius) {
     ctx.stroke();
   }
 }
+
+export function buildPath(loops, radius) {
+  if (typeof Path2D === 'undefined') return null;
+  const path = new Path2D();
+  for (const raw of loops) {
+    const loop = simplify(raw);
+    if (loop.length < 3) continue;
+    const verts = roundedVertices(loop, radius);
+    path.moveTo(verts[0].p1.x, verts[0].p1.y);
+    for (let i = 0; i < verts.length; i++) {
+      path.lineTo(verts[i].p1.x, verts[i].p1.y);
+      path.quadraticCurveTo(verts[i].b.x, verts[i].b.y, verts[i].p2.x, verts[i].p2.y);
+    }
+    path.closePath();
+  }
+  return path;
+}

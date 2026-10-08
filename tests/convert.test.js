@@ -99,3 +99,38 @@ describe('Marble ricochet', () => {
     expect(marble.conversions).toBeGreaterThan(0)
   })
 })
+
+describe('border outline cache', () => {
+  function borderCtx() {
+    const noop = () => {}
+    return {
+      beginPath: noop,
+      moveTo: noop,
+      lineTo: noop,
+      quadraticCurveTo: noop,
+      closePath: noop,
+      stroke: noop,
+      setLineDash: noop,
+    }
+  }
+
+  it('rebuilds only after an ownership change', () => {
+    const grid = new Grid()
+    grid.init(makeWalls(), baseLayout(), [RED, BLUE])
+    const ctx = borderCtx()
+
+    grid.drawBorders(ctx)
+    expect(grid.outlinesDirty).toBe(false)
+    const cached = grid.outlineLoops
+
+    grid.drawBorders(ctx)
+    expect(grid.outlineLoops).toBe(cached)
+
+    grid.paintTile(6, 10, RED)
+    expect(grid.outlinesDirty).toBe(true)
+
+    grid.drawBorders(ctx)
+    expect(grid.outlineLoops).not.toBe(cached)
+    expect(grid.outlinesDirty).toBe(false)
+  })
+})

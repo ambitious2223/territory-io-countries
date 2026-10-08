@@ -10,7 +10,7 @@ export class Camera {
     this.tzoom = 1;
     this.blur = 0;
     this.tblur = 0;
-    this.blurScale = 1;
+    this.blurScale = 0;
     this.shakeX = 0;
     this.shakeY = 0;
     this.angle = 0;

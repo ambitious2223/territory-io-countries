@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.11.0
+## Status — v2.12.0
 
-Every gate is green: `npm run lint`, `npm test` (143 tests incl. onboarding/i18n-parity/manifest/
-power-up suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (151 tests incl. join-matching/onboarding/i18n
+suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -60,7 +60,8 @@ power-up suites + a headless game-loop test), `npm run build`, and `npm run smok
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - Camera pan/zoom **join cinematic** that tracks the new viewer's soldier, with a profile-photo
-  intro card, adjustable blur and an auto-zoom on/off switch.
+  intro card, a cheap darkened backdrop (blur off by default, slider re-enables it) and an
+  auto-zoom on/off switch.
 - **12 power-ups declared for the hub** (overcharge, speed boost, freeze, shield, team speed,
   color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim) with an in-app
   mappings editor; the hub maps gifts/**free triggers** to them; auto-looping timed rounds and

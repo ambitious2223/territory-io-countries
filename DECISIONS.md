@@ -4,6 +4,32 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-040 — Cinematic performance: blur opt-in, cached nation outlines
+- **Context:** Owner: "automatic zoom or cinematic is making the game look so laggy." Two causes:
+  `ctx.filter = blur(6px)` re-blitting the whole 1200×800 canvas every frame during the intro,
+  and `drawBorders` re-scanning 1536 tiles × 8 nations + re-tracing outlines each frame.
+- **Decision:** `Camera.blurScale` defaults to **0** (the intro now uses a cheap 0.32-alpha veil
+  rect; the debug slider opts back into blur). Borders are **cached**: `paintTile` sets
+  `outlinesDirty`, `rebuildOutlines()` stores traced loops per nation plus a browser `Path2D`
+  (`outline.buildPath`, `null` when `Path2D` is unavailable → per-frame stroke fallback), and
+  `drawBorders` strokes the cache.
+- **Rationale:** Both were per-frame costs with no per-frame input; ownership is the only thing
+  that invalidates geometry.
+- **Alternatives:** Downscale offscreen blur (complex); throttle outline rebuild (still pays
+  re-trace); remove the cinematic entirely (it's a loved feature).
+
+## D-039 — Looser join matching (words, Arabic articles, scaled typos)
+- **Context:** Owner: Arabic comments were hard to match; first parts of names and misspellings
+  should count. Audit showed Arabic was exact-only (excluded from fuzzy/prefix), no word-level
+  match, no `ال` handling, one uniform threshold.
+- **Decision:** Candidate keys = EN + AR + aliases + article-stripped Arabic; passes run
+  exact → **any-word** → **prefix** → **length-scaled Levenshtein** (1/2/3 by target length,
+  ≤-length pre-filter) over full names and their words; emoji/number/ISO unchanged.
+- **Rationale:** Chat comments are noisy (`مصر ❤️`, `أنا من مصر`, `الامارت`); thresholds scale so
+  short lookalikes (`iran`/`india`) stay rejected.
+- **Alternatives:** Strict equality (unusable in Arabic chat); synonym tables per nation (manual
+  upkeep); pure substring `includes` (too loose: `in` → india).
+
 ## D-038 — Half-arena join guide + rotating gameplay tips
 - **Context:** New stream viewers (and testing sessions) don't know how to join; static banners
   are either too small to notice or hog the arena.

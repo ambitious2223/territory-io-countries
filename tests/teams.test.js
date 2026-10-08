@@ -82,6 +82,38 @@ describe('matchTeam', () => {
     expect(matchTeam(TEAMS, 'saudia').id).toBe(1)
   })
 
+  it('matches the first word of a multi-word name', () => {
+    expect(matchTeam(TEAMS, 'united').id).toBe(3)
+    expect(matchTeam(TEAMS, 'arab').id).toBe(3)
+  })
+
+  it('matches Arabic without the definite article', () => {
+    expect(matchTeam(TEAMS, 'سعودية').id).toBe(1)
+    expect(matchTeam(TEAMS, 'امارات').id).toBe(3)
+  })
+
+  it('matches Arabic misspellings', () => {
+    expect(matchTeam(TEAMS, 'الامارت').id).toBe(3)
+    expect(matchTeam(TEAMS, 'السعودي').id).toBe(1)
+  })
+
+  it('matches comments containing extra words and emoji', () => {
+    expect(matchTeam(TEAMS, 'مصر ❤️').id).toBe(2)
+    expect(matchTeam(TEAMS, 'I choose EGYPT 🎉').id).toBe(2)
+    expect(matchTeam(TEAMS, 'أنا من مصر').id).toBe(2)
+  })
+
+  it('is case-insensitive', () => {
+    expect(matchTeam(TEAMS, 'EGYPT').id).toBe(2)
+    expect(matchTeam(TEAMS, 'kSa').id).toBe(1)
+  })
+
+  it('keeps rejecting lookalikes and nonsense', () => {
+    expect(matchTeam(TEAMS, 'iran')).toBeNull()
+    expect(matchTeam(TEAMS, 'nope nope')).toBeNull()
+    expect(matchTeam(TEAMS, 'zzzzzz')).toBeNull()
+  })
+
   it('returns null for unknown input', () => {
     expect(matchTeam(TEAMS, 'zzzzzz')).toBeNull()
     expect(matchTeam(TEAMS, '')).toBeNull()

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { traceOutline, strokeLoops } from '../src/outline.js'
+import { traceOutline, strokeLoops, buildPath } from '../src/outline.js'
 
 function mask(rows, cols, filled) {
   const m = Array.from({ length: rows }, () => new Array(cols).fill(false))
@@ -27,6 +27,13 @@ describe('traceOutline', () => {
 
   it('ignores empty masks', () => {
     expect(traceOutline(mask(3, 3, []), 3, 3, 50)).toHaveLength(0)
+  })
+})
+
+describe('buildPath', () => {
+  it('falls back outside the browser (no Path2D)', () => {
+    const loops = traceOutline(mask(3, 3, [[1, 1]]), 3, 3, 50)
+    expect(buildPath(loops, 10)).toBeNull()
   })
 })
 

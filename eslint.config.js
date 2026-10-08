@@ -31,7 +31,8 @@ export default [
         FileReader: 'readonly',
         localStorage: 'readonly',
         navigator: 'readonly',
-        URLSearchParams: 'readonly'
+        URLSearchParams: 'readonly',
+        Path2D: 'readonly'
       }
     },
     rules: commonRules

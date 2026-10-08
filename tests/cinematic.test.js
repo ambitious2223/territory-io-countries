@@ -23,6 +23,8 @@ describe('Camera', () => {
 
   it('exposes blur pixels from the scale', () => {
     const camera = new Camera()
+    expect(camera.blurPixels).toBe(0)
+    camera.blurScale = 1
     camera.setBlur(1)
     for (let i = 0; i < 200; i++) camera.update(1)
     expect(camera.blurPixels).toBeGreaterThan(CONFIG.CINEMATIC_BLUR_MAX - 0.5)

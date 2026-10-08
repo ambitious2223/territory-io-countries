@@ -39,6 +39,42 @@ function nameCandidates(team) {
   return [team.name?.en, team.name?.ar, ...(team.aliases || [])].filter(Boolean)
 }
 
+const ARABIC_WORD = /[؀-ۿ]/
+
+function editLimit(length) {
+  if (length >= 10) return 3
+  if (length >= 6) return 2
+  if (length >= 4) return 1
+  return 0
+}
+
+function splitWords(text) {
+  return text.split(/[\s,.،؛:!؟…"'()\-–—]+/).filter(Boolean)
+}
+
+function candidateKeys(team) {
+  const keys = []
+  for (const source of nameCandidates(team)) {
+    const key = normalizeKeyword(source)
+    if (!key) continue
+    keys.push(key)
+    if (ARABIC_WORD.test(key)) {
+      const bare = key.replace(/^ال/, '')
+      if (bare && bare !== key) keys.push(bare)
+    }
+  }
+  return [...new Set(keys)]
+}
+
+function commentVariants(normalized) {
+  const variants = [normalized]
+  if (normalized.startsWith('ال') && normalized.length > 4) {
+    const bare = normalized.slice(2)
+    if (bare) variants.push(bare)
+  }
+  return variants
+}
+
 export function matchTeam(teams, rawInput) {
   const raw = String(rawInput ?? '').trim()
   if (!raw || !Array.isArray(teams) || teams.length === 0) return null
@@ -60,23 +96,57 @@ export function matchTeam(teams, rawInput) {
   const byIso = teams.find((team) => team.iso2 && upper === String(team.iso2).toUpperCase())
   if (byIso) return byIso
 
+  const variants = commentVariants(normalized)
+  const commentWords = new Set(
+    variants.flatMap((variant) => splitWords(variant)).filter((word) => word.length >= 3)
+  )
+
   for (const team of teams) {
-    for (const candidate of nameCandidates(team)) {
-      if (normalizeKeyword(candidate) === normalized) return team
+    const keys = candidateKeys(team)
+    for (const key of keys) {
+      if (variants.includes(key)) return team
+    }
+  }
+
+  for (const team of teams) {
+    for (const key of candidateKeys(team)) {
+      for (const word of splitWords(key)) {
+        if (word.length >= 3 && commentWords.has(word)) return team
+      }
+    }
+  }
+
+  for (const team of teams) {
+    for (const key of candidateKeys(team)) {
+      if (key.length < 3) continue
+      for (const variant of variants) {
+        if (variant.length < 3) continue
+        if (key.startsWith(variant) || variant.startsWith(key)) return team
+      }
     }
   }
 
   let best = null
   let bestDistance = Infinity
   for (const team of teams) {
-    for (const candidate of [team.name?.en, ...(team.aliases || [])].filter(Boolean)) {
-      const key = normalizeKeyword(candidate)
-      if (key.length < 3 || normalized.length < 3) continue
-      const prefix = key.startsWith(normalized) || normalized.startsWith(key)
-      const distance = prefix ? 0 : levenshtein(key, normalized)
-      if ((prefix || distance <= 2) && distance < bestDistance) {
-        bestDistance = distance
-        best = team
+    const keys = candidateKeys(team)
+    const fuzzyTargets = []
+    for (const key of keys) {
+      fuzzyTargets.push(key)
+      if (key.includes(' ')) fuzzyTargets.push(...splitWords(key))
+    }
+    for (const target of fuzzyTargets) {
+      if (target.length < 4) continue
+      const limit = editLimit(target.length)
+      if (limit === 0) continue
+      for (const variant of variants) {
+        if (variant.length < 3) continue
+        if (Math.abs(target.length - variant.length) > limit) continue
+        const distance = levenshtein(target, variant)
+        if (distance <= limit && distance < bestDistance) {
+          bestDistance = distance
+          best = team
+        }
       }
     }
   }
