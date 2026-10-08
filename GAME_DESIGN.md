@@ -152,8 +152,10 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   **Rounded union borders** separate territories.
 - Balls show the viewer's **TikTok profile photo** as the fighter, framed by a **team-colour ring +
   glow**, a light team **tint**, and a **team-colour nameplate** above — so team ownership is clear.
-- Top bar: pause, speed, round timer, map select, mute, restart; the debug panel opens from the
-  floating gear button.
+- Top bar: pause, speed, round timer, map select, mute, restart plus the round controls —
+  **Start · Reset Players · End · Auto**; the debug panel opens from the floating gear button.
+  **Reset Players** wipes the human roster, queued slots, their soldiers and their
+  registrations/prompts in one click (AI + summoned soldiers stay, so the arena is never empty).
 - Debug panel: a floating gear opens a tabbed workspace — **Connection · Teams · Overlay ·
   Advanced**. Connection holds a **Soldiers speed slider** (live, persisted) beside the bridge
   controls. Teams holds the capital-size slider, the editor + photo upload (all team edits

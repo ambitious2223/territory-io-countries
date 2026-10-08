@@ -44,6 +44,18 @@ export class ViewerManager {
     this.aiTimer = 0
   }
 
+  clearHumans() {
+    for (const [id, viewer] of [...this.viewers]) {
+      if (viewer.isBot) continue
+      if (viewer.marble) {
+        viewer.marble.alive = false
+        viewer.marble.eliminated = true
+      }
+      this.viewers.delete(id)
+    }
+    this.queue = this.queue.filter((viewer) => viewer.isBot)
+  }
+
   respawn() {
     for (const viewer of this.viewers.values()) {
       viewer.marble = null

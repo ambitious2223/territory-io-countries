@@ -210,6 +210,13 @@ export class Game {
     this.round.start();
   }
 
+  resetPlayers() {
+    this.viewers.clearHumans();
+    this.marbles = this.marbles.filter((m) => m.alive);
+    this.scoring.clearUsers();
+    this.joinPrompt.clear();
+  }
+
   endRound() {
     if (this.round.state === ROUND.COUNTDOWN) {
       this.round.stop();

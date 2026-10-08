@@ -132,6 +132,9 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Event rate-limits and dedupe suppress spam (rapid repeat gift/like).
 - [ ] Round runs 3:00 and auto-resets to neutral + fresh bases.
 - [ ] Manual End / Next / Pause override the auto-loop.
+- [ ] **Reset Players** (top bar, beside Start): human soldiers vanish immediately, Viewers counts
+      empty, queued humans and prompts/registrations are gone, AI soldiers keep playing — and the
+      next round starts with **no returning players** (fresh comment required).
 - [ ] Debug → **Winners** lists persisted winners after a round.
 - [ ] Launched from the Chic Aura Hub (▶ Run), the game connects on its own — the debug Tikora tab
       shows `connected` plus the injected slug/relay, with no key pasted.

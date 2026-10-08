@@ -117,7 +117,17 @@ card or pick-a-side prompt; the toggle hides it.
 
 ---
 
-## Phase 25 — Win celebration (approved, D-041, not started)
+## Phase 25 — Reset Players button
+- [x] `clearHumans` (roster/queue/balls) + `clearUsers` + `game.resetPlayers()`; button between
+      Start and End; AI/effect soldiers survive so the arena stays filled
+- [x] Tests (161); released **2.15.0**
+
+**Verify:** click Reset Players → human soldiers vanish, Viewers panel empties, next round needs
+fresh comments; AI soldiers keep playing meanwhile.
+
+---
+
+## Phase 26 — Win celebration (approved, D-041, not started)
 - [ ] Confetti (pooled, winner colours + flag-clipped pieces), flag medallion, VICTORY + stats
 - [ ] Top-3 nations row + overall top-3 supporters (avatars/nicknames, per-viewer scores in
       `ScoringEngine`)

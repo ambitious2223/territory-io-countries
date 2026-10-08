@@ -37,6 +37,13 @@ export class ScoringEngine {
     return this.userTeam.get(String(userId)) ?? null
   }
 
+  clearUsers() {
+    this.userTeam.clear()
+    this.commenters.clear()
+    this.followed.clear()
+    this.shared.clear()
+  }
+
   add(teamId, points) {
     if (!teamId || !points) return
     this.scores.set(teamId, (this.scores.get(teamId) || 0) + points)

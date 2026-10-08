@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.15.0] - 2026-10-08
+
+### Added
+- **Reset Players button** (top bar, right beside **Start**): wipes the human roster, their queued
+  slots, their soldiers on the field, and their registrations/prompts in one click — so the next
+  match starts with **zero returning players** and everyone must comment to join again. AI bots
+  and effect-summoned soldiers survive, so the arena is never empty; teams left human-less are
+  refilled by AI within its normal interval. EN/AR label.
+
 ## [2.14.0] - 2026-10-08
 
 ### Added

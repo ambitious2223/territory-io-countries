@@ -44,7 +44,7 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
   a flag medallion + VICTORY + localized winner name + stats, a **top-3 nations** row, and the
   **overall top-3 supporters** (avatar + nickname + score, ringed in their nation's colour),
   fed by new per-viewer score tracking in `ScoringEngine`. EN/AR strings; hide on round reset.
-- **Not yet implemented** — scheduled as Phase 25, after the 2.13.0 effect fixes.
+- **Not yet implemented** — scheduled as Phase 26, after the 2.13.0 effect fixes.
 
 ## D-040 — Cinematic performance: blur opt-in, cached nation outlines
 - **Context:** Owner: "automatic zoom or cinematic is making the game look so laggy." Two causes:

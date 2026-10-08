@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Reset Players button (2.15.0)
+
+User: "old players keep joining next matches — how can I have a reset player to 0 button beside
+the start game button?"
+
+**Done**
+- `ViewerManager.clearHumans()` (drops people + their queued slots, marks their balls dead, keeps
+  bots), `ScoringEngine.clearUsers()` (forget registrations + first-interaction sets), and
+  `game.resetPlayers()` (clears humans → removes dead balls → clears prompts).
+- **Reset Players** button in the top bar between **Start** and **End** (EN `Reset Players` /
+  AR `تصفير اللاعبين`), wired in `ui.js initControls`.
+- Tests: humans/balls/prompts/registrations wiped with bots intact; next round never brings old
+  players back (161 total).
+
+**Verified**
+- `npm run lint` clean · `npm test` **161 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Permanent join hint (2.14.0)
 
 User: "permanent instructions for joining on screen where there is no other component — big bold

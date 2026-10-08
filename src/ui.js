@@ -88,6 +88,10 @@ export function initControls(game) {
     game.audio.init(); game.audio.unlock();
     game.startRound();
   });
+  document.getElementById('btn-round-reset-players')?.addEventListener('click', () => {
+    game.audio.init(); game.audio.unlock();
+    game.resetPlayers();
+  });
   document.getElementById('btn-round-end').addEventListener('click', () => {
     game.endRound();
   });
