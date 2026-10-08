@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.10.0
+## Status — v2.11.0
 
-Every gate is green: `npm run lint`, `npm test` (134 tests incl. i18n-parity/manifest/power-up
-suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (143 tests incl. onboarding/i18n-parity/manifest/
+power-up suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -48,6 +48,9 @@ suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 - **Auto-zoom** follows each new viewer's *moving* soldier (toggle in debug → Cinematic). A gifter
   who hasn't picked a nation gets a **photo pop-up asking them to pick a side** — the effect is held
   and fires the moment they join; effect soldiers carry the gifter's photo + nickname.
+- **Onboarding:** a big **How to Join** card (50 % of the arena, steps + every nation's chip) shows
+  each round start (auto-hide + ✕), and **rotating gameplay tips** (join/gift/halfway/final 30 s)
+  sit at the top — both always dismissible and switchable in **debug → Advanced → Guide & Tips**.
 - **Team photos:** upload a flag/photo per team in **Debug → Teams**; it appears in the stronghold,
   the leaderboard and the overlay. Uploads apply live and **all team edits auto-save** (~1.5 s
   debounce; the Save button stays as an instant save). A **capital size slider** (0.5x–2.5x) scales

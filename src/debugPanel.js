@@ -118,6 +118,12 @@ const PANEL = `
         <button class="ctrl-btn" id="btn-mock-inject" style="width:100%;margin-top:6px;" data-i18n="debug.inject">Inject</button>
       </div>
       <div class="debug-section">
+        <h5 data-i18n="debug.onboarding">Guide &amp; Tips</h5>
+        <div class="debug-row"><span data-i18n="debug.joinGuide">Join guide</span><input id="guide-enabled" type="checkbox" /></div>
+        <div class="debug-row"><span data-i18n="debug.tips">Gameplay tips</span><input id="tips-enabled" type="checkbox" /></div>
+        <button class="ctrl-btn" id="btn-guide-show" style="width:100%;margin-top:6px;" data-i18n="debug.showNow">Show now</button>
+      </div>
+      <div class="debug-section">
         <h5 data-i18n="debug.viewers">Viewers</h5>
         <div class="debug-row"><span data-i18n="debug.activeViewers">Active</span><span class="val" id="dbg-viewers-active">0</span></div>
         <div class="debug-row"><span data-i18n="debug.queuedViewers">Queued</span><span class="val" id="dbg-viewers-queued">0</span></div>

@@ -6,6 +6,7 @@ import { generateBaseLayout, baseCentroids, baseSpawnTiles } from './zones.js';
 import { ViewerManager } from './viewerManager.js';
 import { JoinCinematic } from './joinCinematic.js';
 import { JoinPrompt } from './joinPrompt.js';
+import { Onboarding } from './onboarding.js';
 import { ScoringEngine } from './scoring.js';
 import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
@@ -42,6 +43,8 @@ export class Game {
     this.camera = new Camera();
     this.cinematic = new JoinCinematic(this.camera);
     this.joinPrompt = new JoinPrompt();
+    this.onboarding = new Onboarding(this);
+    this.lastRoundState = null;
     this.debug = new DebugOverlay();
     this.grid = new Grid();
     this.particles = new ParticleSystem();
@@ -129,8 +132,13 @@ export class Game {
       }
     });
 
-    this.canvas.addEventListener('click', () => {
+    this.canvas.addEventListener('click', (event) => {
       unlockAudio();
+      const rect = this.canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const x = (event.clientX - rect.left) * (this.canvas.width / rect.width);
+      const y = (event.clientY - rect.top) * (this.canvas.height / rect.height);
+      this.onboarding?.handlePointer(x, y);
     });
   }
 
@@ -292,6 +300,7 @@ export class Game {
     const result = this.viewers.handleEvent(event, this.teams);
     if (result && result.viewer) {
       this.scoring.registerUser(event.userId ?? event.username, result.viewer.teamId);
+      this.onboarding?.notify('join');
       const resolved = this.joinPrompt.resolve([event.userId ?? '', event.username ?? '']);
       if (resolved) {
         executeEffect(this, resolved.effect, resolved.params, {
@@ -438,10 +447,18 @@ export class Game {
   update(dt) {
     this.cinematic.update(dt);
     this.joinPrompt.update(dt);
+    this.onboarding.update(dt);
     this.camera.update(dt);
 
     const transition = this.round.update(dt);
     if (transition) this.onRoundTransition(transition);
+
+    const roundState = this.round.state;
+    if (roundState !== this.lastRoundState) {
+      if (roundState === ROUND.COUNTDOWN) this.onboarding.startRound();
+      this.lastRoundState = roundState;
+    }
+    if (roundState === ROUND.PLAYING) this.onboarding.checkPhase(this.round.timeLeft);
 
     if (this.gameOver) {
       this.victoryPaint();
@@ -541,6 +558,7 @@ export class Game {
       this.cinematic.draw(this.ctx);
     }
     this.joinPrompt.draw(this.ctx);
+    this.onboarding.draw(this.ctx);
 
     this.territoryCounts = this.tileCountsByTeam();
     this.overlayTimer += this.lastFrameTime / 1000;

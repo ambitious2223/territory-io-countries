@@ -40,6 +40,8 @@
   key families exist, and `dir` stays `ltr` in both languages (no layout mirroring).
 - `tests/giftEffects.test.js` — effect identity, plus freeze/shield/claim_storm/mega_bomb/
   summon/team_speed behaviour and param clamping.
+- `tests/onboarding.test.js` — join guide show/auto-hide/dismiss/close-hit, tip rotation + phase
+  milestones (once each), persisted switches, draw smoke.
 - `tests/cinematic.test.js` — cinematic tracks a moving soldier and stops when it dies.
 - `tests/durations.test.js` — overcharge lasts 6 s, capture hold 2.5 s, power-ups wait their
   interval (all in seconds, not frames).
@@ -90,6 +92,9 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       when that user comments a nation, the held effect fires on their soldier (with their photo).
 - [ ] With **Skip pick-a-side** (Advanced → Mock Event) checked, the same injection applies
       instantly to a nation and no pop-up appears; uncheck → prompt returns (default).
+- [ ] Round start shows the big **How to Join** card (≈ half the arena, steps + nation chips);
+      it auto-hides after ~10 s, ✕ dismisses it, and **Advanced → Guide & Tips** turns it off/on
+      (persists). Contextual tips appear once each (join/gift/halfway/final 30 s) and are ✕-able.
 - [ ] Restart Tikora → Game Hub lists **all 12 effects**; mapping dropdown in-game shows the same
       list; map each new effect (freeze / shield / team speed / claim storm / mega bomb / summon)
       and inject it: frozen soldiers get the icy ring, a shield shows the **white dashed border**

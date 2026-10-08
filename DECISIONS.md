@@ -4,6 +4,20 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-038 — Half-arena join guide + rotating gameplay tips
+- **Context:** New stream viewers (and testing sessions) don't know how to join; static banners
+  are either too small to notice or hog the arena.
+- **Decision:** A **join guide covering 50 % of the arena** (`JOIN_GUIDE_SHARE: 0.5`, rounded
+  glass card, numbered steps + chips for every nation) shows on **each round start**, auto-hides
+  after 10 s and is always dismissible with ✕. **Rotating top-strip tips** fire once per milestone
+  per round (first join, first gift, halfway, final 30 s), queueing at 6 s each. Both master
+  switches live in **debug → Advanced → Guide & Tips** and persist (`twf.guide`/`twf.tips`);
+  "Show now" re-opens the guide on demand. Rendering + hit-testing live in one module
+  (`src/onboarding.js`), driven by a round-state observer.
+- **Rationale:** Onboarding without obstructing play; everything dismissible and streamer-controlled.
+- **Alternatives:** Permanent help panel (cluttered); DOM overlay (misses canvas scaling);
+  sidebar instructions (invisible on stream layouts).
+
 ## D-037 — "Skip pick-a-side" testing bypass
 - **Context:** The pick-a-side prompt (D-034) is right for real viewers but blocked debugging —
   injected gifts sat held until timeout and the effect dropped.

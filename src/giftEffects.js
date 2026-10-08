@@ -207,6 +207,7 @@ export function executeEffect(game, effectKey, params = {}, target = {}) {
   if (at && game.vfx) {
     game.vfx.addPickupText(at.x, at.y, effectKey)
   }
+  game.onboarding?.notify('gift')
   return effectKey
 }
 

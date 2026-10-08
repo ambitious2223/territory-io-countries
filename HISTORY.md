@@ -4,6 +4,31 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Onboarding: half-arena join guide + rotating tips (2.11.0)
+
+User: "50% of the arena size, a big pop-out notification of how to join, and some instructions
+along the gameplay, always dismissible" (confirmed: pop-out = 50% of arena, shows each round
+start with auto-hide + ✕, rotating contextual tips).
+
+**Done**
+- New `src/onboarding.js`:
+  - **Join guide**: card = `CANVAS_WIDTH × JOIN_GUIDE_SHARE` (0.5) with 3 numbered steps + nation
+    chips (colour, emoji, localized name). Shown on every `COUNTDOWN` transition, auto-hides after
+    `JOIN_GUIDE_TIME` (10 s), ✕ dismisses until the next round.
+  - **Tips**: milestone queue (`join`, `gift`, `mid`, `final`) at a top strip — each shows
+    `TIP_TIME` (6 s), rotates, once per milestone per round; phase checks on round time.
+  - Persisted switches `twf.guide` / `twf.tips` + `handlePointer` canvas hit-testing (✕ rects).
+- Wired into `game.js` (round-state observer, draw after prompts, click hit-test, join/gift
+  milestones via `game.onboarding`), debug **Advanced → Guide & Tips** (two checkboxes +
+  "Show now"), i18n EN/AR for every new string.
+- Tests: guide show/hide/dismiss/close-hit, tip rotation + dedupe + phases, persistence, draw
+  smoke (`tests/onboarding.test.js`, 9 tests).
+
+**Verified**
+- `npm run lint` clean · `npm test` **143 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Pick-a-side bypass for testing (2.10.0)
 
 User likes the pick-a-side flow but it blocked debugging (held effects dropped while waiting for

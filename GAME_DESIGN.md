@@ -155,6 +155,12 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 - **Auto-zoom:** on every new viewer join the camera **follows their moving soldier** during focus
   and hold (photo + nickname card), then returns. Toggle it with **Auto-zoom** in the Cinematic
   section (persisted); with it off, joins still announce (sound) but the camera stays put.
+- **Join guide (50 % of the arena):** every round start shows a big "How to Join" card — three
+  numbered steps plus a chip per nation (flag + name) — auto-hides after 10 s, ✕ dismisses it for
+  the round, and **debug → Advanced → Guide & Tips** has a persisted on/off switch + "Show now".
+- **Gameplay tips:** a top strip rotates short contextual instructions (first join, first gift,
+  halfway, final 30 s) — one per milestone per round, 6 s each, ✕ and the same master switch.
+  All of it is always dismissible.
 - **Pick-a-side prompt:** a gift/effect from someone **without a nation** raises an animated pop-up
   with their **profile photo + nickname** asking them to comment a country; the effect is **held**
   and fires automatically the moment they join (dropped after `JOIN_PROMPT_TIMEOUT`, 20 s).

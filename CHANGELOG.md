@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.11.0] - 2026-10-08
+
+### Added
+- **Big "How to Join" pop-out (50 % of the arena)** — a half-arena card at **every round start**
+  with 3 numbered steps and chips for every nation (flag + localized name). Auto-hides after 10 s,
+  always has a **✕**, and can be re-triggered/disabled from **debug → Advanced → Guide & Tips**
+  (persisted).
+- **Rotating contextual gameplay tips** (top strip, each with ✕): first viewer join, first gift
+  effect, halfway, final 30 s — one per milestone per round, queueing and rotating every 6 s.
+  Master switch persisted next to the join guide.
+
 ## [2.10.0] - 2026-10-08
 
 ### Added

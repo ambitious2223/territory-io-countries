@@ -247,6 +247,18 @@ function initSpeedSlider(game) {
   });
 }
 
+export function initOnboardingPanel(game) {
+  const guide = document.getElementById('guide-enabled');
+  const tips = document.getElementById('tips-enabled');
+  const show = document.getElementById('btn-guide-show');
+  if (!guide || !tips || !game.onboarding) return;
+  guide.checked = game.onboarding.joinEnabled;
+  tips.checked = game.onboarding.tipsEnabled;
+  guide.addEventListener('change', () => game.onboarding.setJoinEnabled(guide.checked));
+  tips.addEventListener('change', () => game.onboarding.setTipsEnabled(tips.checked));
+  show?.addEventListener('click', () => game.onboarding.showGuide());
+}
+
 export function initViewersPanel(game) {
   const cap = document.getElementById('viewer-cap');
   if (cap) {

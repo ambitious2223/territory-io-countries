@@ -95,6 +95,17 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress.
 
 ---
 
+## Phase 21 — Onboarding: join guide + gameplay tips
+- [x] Half-arena (50 %) "How to Join" card each round start: steps + nation chips, 10 s auto-hide,
+      ✕ dismiss, persisted switch + "Show now" in **Advanced → Guide & Tips**
+- [x] Rotating dismissible tips (join / gift / halfway / final 30 s), once per milestone per round
+- [x] `src/onboarding.js` (render + hit-test + persistence); tests (9); released **2.11.0**
+
+**Verify:** each round start shows the big guide; it hides itself / ✕ works; tips pop once per
+milestone and rotate; both switches persist; Arabic renders with no mirroring.
+
+---
+
 ## Phase 20 — Pick-a-side bypass for testing
 - [x] `PROMPT_BYPASS` toggle (debug → Advanced → Mock Event, persisted, default off); unknown
       activators apply instantly to the least-loaded nation + are registered there
