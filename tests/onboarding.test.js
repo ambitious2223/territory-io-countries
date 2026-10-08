@@ -17,6 +17,7 @@ beforeAll(async () => {
 beforeEach(() => {
   delete store['twf.guide']
   delete store['twf.tips']
+  delete store['twf.hint']
 })
 
 const game = {
@@ -39,6 +40,7 @@ function ctxStub() {
     fill: noop,
     stroke: noop,
     fillText: noop,
+    strokeText: noop,
     measureText: () => ({ width: 40 }),
     globalAlpha: 1,
   }
@@ -161,5 +163,30 @@ describe('persisted switches', () => {
     onboarding.notify('gift')
     onboarding.tipAlpha = 1
     expect(() => onboarding.draw(ctxStub())).not.toThrow()
+  })
+
+  it('draws the permanent join hint by default and honors its toggle', () => {
+    const onboarding = new Onboarding(game)
+    expect(onboarding.hintEnabled).toBe(true)
+
+    const calls = { strokes: 0, fills: 0 }
+    const ctx = {
+      save: () => {}, restore: () => {},
+      measureText: () => ({ width: 100 }),
+      strokeText: () => { calls.strokes += 1 },
+      fillText: () => { calls.fills += 1 },
+      fill: () => {}, beginPath: () => {}, moveTo: () => {}, arcTo: () => {}, closePath: () => {},
+      fillStyle: '', strokeStyle: '', lineWidth: 0, font: '', textAlign: '', textBaseline: '', lineJoin: '',
+    }
+    onboarding.drawHint(ctx)
+    expect(calls.fills).toBe(2)
+    expect(calls.strokes).toBe(2)
+
+    onboarding.setHintEnabled(false)
+    expect(store['twf.hint']).toBe('0')
+    const reloaded = new Onboarding(game)
+    expect(reloaded.hintEnabled).toBe(false)
+    reloaded.drawHint(ctx)
+    expect(calls.fills).toBe(2)
   })
 })

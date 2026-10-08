@@ -107,7 +107,17 @@ after a round reset still works without re-commenting.
 
 ---
 
-## Phase 24 — Win celebration (approved, D-041, not started)
+## Phase 24 — Permanent join hint
+- [x] Always-on bottom-left gold hint (black stroke, dark plate, self-fitting) drawn in screen
+      space, clear of tips/cinematic/prompt/guide; EN/AR; persisted **Join hint** toggle
+- [x] Tests (159); released **2.14.0**
+
+**Verify:** the hint is visible in every game state and never overlaps the tips strip, cinematic
+card or pick-a-side prompt; the toggle hides it.
+
+---
+
+## Phase 25 — Win celebration (approved, D-041, not started)
 - [ ] Confetti (pooled, winner colours + flag-clipped pieces), flag medallion, VICTORY + stats
 - [ ] Top-3 nations row + overall top-3 supporters (avatars/nicknames, per-viewer scores in
       `ScoringEngine`)

@@ -251,9 +251,14 @@ export function initOnboardingPanel(game) {
   const guide = document.getElementById('guide-enabled');
   const tips = document.getElementById('tips-enabled');
   const show = document.getElementById('btn-guide-show');
+  const hint = document.getElementById('hint-always');
   if (!guide || !tips || !game.onboarding) return;
   guide.checked = game.onboarding.joinEnabled;
   tips.checked = game.onboarding.tipsEnabled;
+  if (hint) {
+    hint.checked = game.onboarding.hintEnabled;
+    hint.addEventListener('change', () => game.onboarding.setHintEnabled(hint.checked));
+  }
   guide.addEventListener('change', () => game.onboarding.setJoinEnabled(guide.checked));
   tips.addEventListener('change', () => game.onboarding.setTipsEnabled(tips.checked));
   show?.addEventListener('click', () => game.onboarding.showGuide());

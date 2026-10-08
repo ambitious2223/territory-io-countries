@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Permanent join hint (2.14.0)
+
+User: "permanent instructions for joining on screen where there is no other component — big bold
+text yellow with outer stroke black — without downscaling any of the other components."
+
+**Done**
+- `Onboarding.drawHint()`: bottom-left lane (x16, baselines 756/789 — clear of the centred tips,
+  cinematic card and pick-a-side prompt), gold (`#FFD700`) bold text with a 6/4 px black
+  `strokeText` outline over a translucent dark rounded plate; `fitFont` shrinks only the hint if a
+  line is too wide (never other components). Rendered first in `Onboarding.draw()`.
+- `hint.line1`/`hint.line2` EN+AR; **Join hint** toggle (persisted `twf.hint`, default on) in
+  Advanced → Guide & Tips.
+- Tests: hint draws by default (2 stroked lines), toggle persists and silences it (159 total).
+
+**Verified**
+- `npm run lint` clean · `npm test` **159 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Hub effects not activating: root-caused (2.13.0)
 
 User report: "Game is not resetting every time, players stay each new round; some hub effects

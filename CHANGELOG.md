@@ -4,6 +4,16 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.14.0] - 2026-10-08
+
+### Added
+- **Permanent join hint** — always-on instruction text in the bottom-left screen lane (the empty
+  region: top-centre tips, bottom-centre cinematic/prompt and the centre guide never overlap it):
+  big bold **gold text with a black outer stroke** on a subtle dark plate —
+  `COMMENT YOUR COUNTRY TO JOIN!` + the accepted formats line. Auto-fits the width (shrinks only
+  itself if the line is long), never resizes or moves any other component. EN/AR.
+  Toggle: debug → Advanced → Guide & Tips → **Join hint** (persisted, on by default).
+
 ## [2.13.0] - 2026-10-08
 
 ### Fixed — hub effects delivered but not activating (root causes from the hub's own effect log)

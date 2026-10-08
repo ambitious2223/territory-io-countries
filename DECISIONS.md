@@ -4,6 +4,21 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-043 — Permanent gold join hint in the bottom-left lane
+- **Context:** Owner wanted always-visible joining instructions: "where there is no other
+  component, big bold text yellow with outer stroke black, without downscaling any other
+  component."
+- **Decision:** Render a permanent hint **inside `Onboarding`** in the bottom-left screen lane
+  (baselines 756/789 at x16) — deliberately chosen because the rotating tips are top-centre, the
+  cinematic card and pick-a-side prompt are bottom-centre, and the join guide is centred: no
+  overlap in any state. Gold `#FFD700` bold text, black `strokeText` outline (6/4 px), translucent
+  dark plate for contrast over world content. Only the hint itself auto-fits (`fitFont`) if a line
+  would overrun the lane; no other component scales. Screen-space (fixed under camera zoom),
+  EN/AR, persisted toggle (default on).
+- **Alternatives:** Top-left (collides with the rotating tips strip); inside the centre guide
+  (not permanent); outside the canvas (letterbox space is inconsistent at stream resolutions);
+  static DOM bar (would consume layout space = "downscaling" other components).
+
 ## D-042 — Effect identity resolution across layers; prompt aging; effect telemetry
 - **Context:** Live test: the hub logged a `freeze` effect as **delivered** to the game's socket,
   yet nothing happened in-game. Traced to three game-side holes: `scoring.reset()` wiping user→team
@@ -29,7 +44,7 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
   a flag medallion + VICTORY + localized winner name + stats, a **top-3 nations** row, and the
   **overall top-3 supporters** (avatar + nickname + score, ringed in their nation's colour),
   fed by new per-viewer score tracking in `ScoringEngine`. EN/AR strings; hide on round reset.
-- **Not yet implemented** — scheduled as Phase 24, after the 2.13.0 effect fixes.
+- **Not yet implemented** — scheduled as Phase 25, after the 2.13.0 effect fixes.
 
 ## D-040 — Cinematic performance: blur opt-in, cached nation outlines
 - **Context:** Owner: "automatic zoom or cinematic is making the game look so laggy." Two causes:
