@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 const STORAGE_KEY = 'twf.debugFab';
 const DRAG_THRESHOLD = 4;
 
@@ -101,18 +103,69 @@ export function initDebugTabs() {
   });
 }
 
-export function initOverlayLink() {
+export function initOverlayLink(game) {
   const input = document.getElementById('overlay-url');
   const copy = document.getElementById('btn-copy-overlay');
   const open = document.getElementById('btn-open-overlay');
+  const statusEl = document.getElementById('overlay-tunnel-status');
+  const toggle = document.getElementById('btn-tunnel-toggle');
   if (!input) return;
-  const url = `${window.location.origin}/leaderboard.html`;
-  input.value = url;
+
+  const localUrl = `${window.location.origin}/leaderboard.html`;
+  let overlayUrl = localUrl;
+
+  const update = () => {
+    const tunnel = game?.tunnel || { status: 'off' };
+    const live = tunnel.status === 'on' && tunnel.url;
+    overlayUrl = live ? `${tunnel.url}/leaderboard.html` : localUrl;
+    input.value = overlayUrl;
+    if (statusEl) {
+      const labels = {
+        off: t('debug.tunnelOff'),
+        starting: t('debug.tunnelStarting'),
+        on: t('debug.tunnelOn'),
+        error: t('debug.tunnelError'),
+      };
+      statusEl.textContent = labels[tunnel.status] || labels.off;
+      statusEl.classList.remove('ok', 'bad', 'warn');
+      statusEl.classList.add(tunnel.status === 'on' ? 'ok' : tunnel.status === 'error' ? 'bad' : 'warn');
+      statusEl.title = tunnel.error || '';
+    }
+    if (toggle) {
+      const busy = tunnel.status === 'on' || tunnel.status === 'starting';
+      toggle.textContent = busy ? t('debug.tunnelStop') : t('debug.tunnelStart');
+      toggle.dataset.action = busy ? 'stop' : 'start';
+    }
+  };
+
   copy?.addEventListener('click', () => {
     input.select();
-    navigator.clipboard?.writeText(url).catch(() => document.execCommand('copy'));
+    navigator.clipboard?.writeText(overlayUrl).catch(() => document.execCommand('copy'));
   });
-  open?.addEventListener('click', () => window.open(url, '_blank'));
+  open?.addEventListener('click', () => window.open(overlayUrl, '_blank'));
+
+  toggle?.addEventListener('click', async () => {
+    const action = toggle.dataset.action || 'start';
+    try {
+      const response = await fetch(`${game.bridge.url}/api/tunnel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      if (response.ok) game.tunnel = await response.json();
+    } catch {
+      void 0;
+    }
+    update();
+  });
+
+  game?.bridge?.onTunnel?.((status) => {
+    game.tunnel = status;
+    update();
+  });
+
+  update();
+  return update;
 }
 
 export { DRAG_THRESHOLD };

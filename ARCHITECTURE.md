@@ -101,7 +101,8 @@
 | `directBridge.js` | `tiktok-live-connector` connection + raw listeners |
 | `tikfinityBridge.js` | TikFinity WebSocket listener + payload routing |
 | `normalize.js` | Raw payload → unified event schema; like-delta; gift combo/dedupe |
-| `httpRoutes.js` | REST: health, teams, winners, flags, tikora identity, mock |
+| `tunnel.js` | Cloudflare quick tunnel: spawn/parse URL, status + lifecycle |
+| `httpRoutes.js` | REST: health, teams, winners, flags, tikora identity, mock, tunnel |
 | `tikoraIdentity.js` | Resolve hub slug/key/relay from env → launch URL → config → manifest (pure) |
 | `uploads.js` | Flag image validation + write to `public/flags` |
 | `stores/*.js` | Atomic JSON read/write for config, teams, winners |
@@ -174,6 +175,7 @@ union paths.
 | --- | --- |
 | `tiktok-event` | unified event (see BRIDGE.md §4) |
 | `tiktok:status` | `{ username, mode, source, tiktokState, roomId, lastError }` |
+| `tunnel:status` | `{ enabled, status, url, error, target }` (replayed on connect) |
 | `overlay:leaderboard` | `{ type, round, claimable, teams[], updatedAt }` (relayed + cached) |
 
 ### Client → Server

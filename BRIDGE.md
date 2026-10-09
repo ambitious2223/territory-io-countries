@@ -42,11 +42,14 @@ streamer-mapped effects (see §6) and runs alongside whichever chat source is ac
   "tikoraEnabled": false,
   "tikoraSlug": "",
   "tikoraKey": "",
-  "tikoraRelayUrl": "ws://127.0.0.1:27016/"
+  "tikoraRelayUrl": "ws://127.0.0.1:27016/",
+  "tunnelEnabled": true,
+  "tunnelTarget": "http://localhost:1935"
 }
 ```
 
-`.env` overrides (never committed): `PORT=3020`, `TIKTOK_USERNAME`, `BRIDGE_MODE`, `CORS_ORIGINS`.
+`.env` overrides (never committed): `PORT=3020`, `TIKTOK_USERNAME`, `BRIDGE_MODE`, `CORS_ORIGINS`,
+`TWF_TUNNEL=0` (disable the overlay tunnel, e.g. tests).
 
 **Hub-injected identity (preferred):** when launched from the Chic Aura Hub (Tikora), the process
 inherits `TIKORA_GAME_SLUG`, `TIKORA_GAME_KEY`, `TIKORA_RELAY_URL` and `TIKORA_GAME_LAUNCH_URL`
@@ -106,8 +109,16 @@ Status events (`tiktok:status`):
 | POST | `/api/flags` | Upload a flag image (`{ teamId, imageData }`) |
 | POST | `/api/mock-event` | Inject a mock event (`{ type, username, teamIndex, value }`) |
 | GET | `/api/tikora/config` | Resolved hub identity `{ slug, key, relayUrl, enabled }` (read-only) |
+| GET | `/api/tunnel` | Cloudflare tunnel state `{ enabled, status, url, error, target }` |
+| POST | `/api/tunnel` | `{ action: 'start' \| 'stop' }` — start/stop the overlay tunnel |
 
 Socket events are listed in [ARCHITECTURE.md](./ARCHITECTURE.md) §8.
+
+**Overlay tunnel:** unless `TWF_TUNNEL=0`, the bridge spawns a Cloudflare **quick tunnel** to
+`tunnelTarget` (default `http://localhost:1935`) on boot and parses the public URL, surfaced as
+`tunnel:status` / `GET /api/tunnel`. The child is killed on exit or `SIGINT`/`SIGTERM`. Since the
+streaming app runs locally, the overlay page still reaches the bridge at `localhost:3020`, so only
+the game page needs the public URL.
 
 ---
 

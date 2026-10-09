@@ -223,6 +223,19 @@ second confetti burst → VICTORY + reason + counting stats + win badge → rais
 
 ---
 
+## Phase 33 — Built-in Cloudflare overlay tunnel (D-051)
+- [x] `server/tunnel.js`: spawn `cloudflared tunnel --url <target>`, parse the quick-tunnel URL,
+      status lifecycle, kill child on exit/signals
+- [x] `server/index.js` auto-start + `tunnel:status` relay/replay; `GET/POST /api/tunnel`;
+      `tunnelEnabled`/`tunnelTarget` config; smoke forced off (`TWF_TUNNEL=0`)
+- [x] Client: `onTunnel`, Overlay-tab public link + status row + Start/Stop toggle, i18n (EN/AR)
+- [x] Tests (201 total); docs; released **2.22.0**
+
+**Verify:** Launch the app → Overlay tab shows a live `https://…trycloudflare.com/leaderboard.html`
+link ready to Copy; Stop/Start toggles it and persists; no tunnel spawns under tests/smoke.
+
+---
+
 ## Phase 22 — Loose join matching + cinematic performance
 - [x] `matchTeam`: Arabic in fuzzy/prefix, `ال` article optional, any-word/first-word matching,
       length-scaled typo tolerance with lookalike negatives

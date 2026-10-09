@@ -114,6 +114,13 @@ const PANEL = `
           <button class="ctrl-btn" id="btn-copy-overlay" style="flex:1;" data-i18n="debug.copy">Copy</button>
           <button class="ctrl-btn" id="btn-open-overlay" style="flex:1;" data-i18n="debug.open">Open</button>
         </div>
+        <div class="debug-row" style="margin-top:6px;">
+          <span data-i18n="debug.tunnel">Tunnel</span>
+          <span class="val" id="overlay-tunnel-status">off</span>
+        </div>
+        <div class="debug-row" style="gap:6px;margin-top:4px;">
+          <button class="ctrl-btn" id="btn-tunnel-toggle" style="flex:1;" data-i18n="debug.tunnelStart">Start Tunnel</button>
+        </div>
       </div>
     </div>
 

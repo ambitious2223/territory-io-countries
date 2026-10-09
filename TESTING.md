@@ -65,6 +65,8 @@
   without a round object) + clean hide.
 - `tests/anthem.test.js` — per-nation anthem is deterministic, distinct between nations, always a
   positive short phrase, and plays without a live audio context.
+- `tests/tunnel.test.js` — cloudflared URL parsing (boxed output/empty), start → on with URL,
+  spawn-failure → error, stop kills the child, disabled no-op, snapshot shape.
 - `src/scoring.js` — also covers per-viewer `topContributors` (order, cap, reset).
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
 - `server/mock.js` — mock event construction.
@@ -115,6 +117,10 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       podium with top-3 nations and top-3 supporters (photos, scores, medals, crown) + bell chime,
       and a **Next round in Ns** countdown; plays through intermission and clears on the next round;
       different winners play different-sounding anthems.
+- [ ] **Overlay tunnel:** bridge boots → Overlay tab shows a Tunnel status of **live** and the link
+      becomes `https://…trycloudflare.com/leaderboard.html`; Copy/Open use it; **Stop Tunnel** flips
+      it to off and the link returns to localhost; Start brings it back; the toggle survives a
+      restart. (Requires `cloudflared` on PATH; otherwise the status shows **error**.)
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
 - [ ] Loose matching: `Egypt ❤`, `I choose EGYPT`, `united`, `الامارت`, `سعودية` all join the
       right nation; `iran`/`nope` join nothing.

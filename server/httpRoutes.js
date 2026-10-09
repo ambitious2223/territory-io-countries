@@ -1,6 +1,6 @@
 import { getTeamsConfig, saveTeamsConfig, updateTeam } from './stores/teamsStore.js'
 import { getWinners, addWinner, clearWinners } from './stores/winnersStore.js'
-import { getConfig } from './stores/configStore.js'
+import { getConfig, saveConfig } from './stores/configStore.js'
 import { readJson } from './stores/store.js'
 import { TIKORA_MANIFEST_PATH, TIKORA_DEFAULTS } from './constants.js'
 import { resolveTikoraIdentity } from './tikoraIdentity.js'
@@ -13,7 +13,7 @@ function tikoraConfig() {
   return resolveTikoraIdentity({ env: process.env, config, manifest })
 }
 
-export function registerHttpRoutes(app, { manager, getClientCount }) {
+export function registerHttpRoutes(app, { manager, tunnel, getClientCount }) {
   app.get('/health', (_req, res) => {
     res.json({
       ok: true,
@@ -57,6 +57,25 @@ export function registerHttpRoutes(app, { manager, getClientCount }) {
 
   app.get('/api/tikora/config', (_req, res) => {
     res.json(tikoraConfig())
+  })
+
+  app.get('/api/tunnel', (_req, res) => {
+    res.json(tunnel.snapshot())
+  })
+
+  app.post('/api/tunnel', (req, res) => {
+    const action = req.body?.action
+    if (action === 'start') {
+      saveConfig({ tunnelEnabled: true })
+      tunnel.start()
+    } else if (action === 'stop') {
+      saveConfig({ tunnelEnabled: false })
+      tunnel.stop()
+    } else {
+      res.status(400).json({ error: 'action must be start or stop' })
+      return
+    }
+    res.json(tunnel.snapshot())
   })
 
   app.post('/api/flags', (req, res) => {

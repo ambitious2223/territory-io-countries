@@ -21,6 +21,7 @@ describe('debug panel markup', () => {
       'dbg-tikora-status', 'dbg-tikora-slug', 'dbg-tikora-relay', 'dbg-tikora-effects', 'dbg-tikora-last',
       'capital-scale', 'capital-scale-value', 'teams-panel-body', 'btn-teams-add', 'btn-teams-save',
       'language-select', 'overlay-url', 'btn-copy-overlay', 'btn-open-overlay',
+      'overlay-tunnel-status', 'btn-tunnel-toggle',
       'mock-type', 'mock-username', 'mock-value', 'btn-mock-inject', 'bypass-prompt',
       'guide-enabled', 'tips-enabled', 'hint-always', 'btn-guide-show',
       'cam-arena', 'cam-leader', 'cam-nations', 'cam-players',

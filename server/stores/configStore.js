@@ -2,23 +2,36 @@ import { CONFIG_PATH, MODES } from '../constants.js'
 import { readJson, writeJson } from './store.js'
 
 const DEFAULTS = {
-  username: process.env.TIKTOK_USERNAME || '',
-  mode: process.env.BRIDGE_MODE || 'auto',
+  username: '',
+  mode: 'auto',
   autoConnect: true,
   tikfinityHost: '127.0.0.1',
   tikfinityPort: 21213,
   tikoraEnabled: false,
   tikoraSlug: '',
   tikoraKey: '',
-  tikoraRelayUrl: 'ws://127.0.0.1:27016/'
+  tikoraRelayUrl: 'ws://127.0.0.1:27016/',
+  tunnelEnabled: true,
+  tunnelTarget: 'http://localhost:1935'
 }
 
 let cache = null
 
-function resolve() {
+function normalizeMode(mode) {
+  return MODES.includes(mode) ? mode : 'auto'
+}
+
+function raw() {
   const merged = { ...DEFAULTS, ...readJson(CONFIG_PATH, {}) }
-  if (process.env.BRIDGE_MODE) merged.mode = process.env.BRIDGE_MODE
-  if (!MODES.includes(merged.mode)) merged.mode = 'auto'
+  merged.mode = normalizeMode(merged.mode)
+  merged.username = String(merged.username || '').replace(/^@+/, '').trim()
+  return merged
+}
+
+function resolve() {
+  const merged = raw()
+  if (process.env.BRIDGE_MODE) merged.mode = normalizeMode(process.env.BRIDGE_MODE)
+  if (process.env.TIKTOK_USERNAME) merged.username = process.env.TIKTOK_USERNAME
   merged.username = String(merged.username || '').replace(/^@+/, '').trim()
   return merged
 }
@@ -39,8 +52,10 @@ export function saveConfig(partial) {
   if (partial.tikoraSlug !== undefined) clean.tikoraSlug = String(partial.tikoraSlug)
   if (partial.tikoraKey !== undefined) clean.tikoraKey = String(partial.tikoraKey)
   if (partial.tikoraRelayUrl !== undefined) clean.tikoraRelayUrl = String(partial.tikoraRelayUrl)
+  if (partial.tunnelEnabled !== undefined) clean.tunnelEnabled = Boolean(partial.tunnelEnabled)
+  if (partial.tunnelTarget !== undefined) clean.tunnelTarget = String(partial.tunnelTarget)
 
-  cache = { ...getConfig(), ...clean }
-  writeJson(CONFIG_PATH, cache)
+  writeJson(CONFIG_PATH, { ...raw(), ...clean })
+  cache = resolve()
   return cache
 }

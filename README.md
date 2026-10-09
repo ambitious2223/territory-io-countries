@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.21.0
+## Status — v2.22.0
 
-Every gate is green: `npm run lint`, `npm test` (194 tests incl. win-screen/confetti/camera/gift/
-anthem suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (201 tests incl. win-screen/confetti/camera/gift/
+anthem/tunnel suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -62,6 +62,9 @@ anthem suites + a headless game-loop test), `npm run build`, and `npm run smoke`
   their soldier and follows them (buttons clear each round reset).
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
+  The bridge **starts a Cloudflare quick tunnel automatically** and the Overlay tab shows the public
+  `https://…trycloudflare.com/leaderboard.html` link (with a Start/Stop toggle) for services that
+  reject localhost.
 - **Win celebration:** every round ends with confetti (some pieces made of the winner's flag), a
   popping flag medallion with rotating rays, VICTORY + a reason headline + count-up stats, a raised
   centre podium showing the **top-3 nations** and the **top-3 supporters** (photo, name, score,

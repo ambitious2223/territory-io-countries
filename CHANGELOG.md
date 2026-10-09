@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.22.0] - 2026-10-09
+
+### Added — built-in Cloudflare overlay tunnel (D-051)
+- The bridge now **starts a Cloudflare quick tunnel by itself** on launch (`cloudflared tunnel --url
+  http://localhost:1935`) and parses the public `*.trycloudflare.com` URL, so the Overlay tab shows
+  a **ready-to-copy public link** (`https://<id>.trycloudflare.com/leaderboard.html`) instead of a
+  localhost one — no more starting the tunnel and copying by hand.
+- New `server/tunnel.js` (`TunnelManager` + pure `parseTunnelUrl`); status surfaced on the
+  `tunnel:status` socket event and via `GET /api/tunnel`, controlled with `POST /api/tunnel`
+  (`start`/`stop`).
+- Overlay tab gains a **Tunnel status** row and a **Start/Stop Tunnel** button (persisted as
+  `tunnelEnabled`); the link falls back to localhost when the tunnel is off.
+- Config: `tunnelEnabled` (default on) and `tunnelTarget` (default `http://localhost:1935`) in
+  `.tiktok-config.json`. Smoke tests force the tunnel off (`TWF_TUNNEL=0`).
+- Security: the app (game + debug panel) becomes reachable at the random URL while the tunnel runs;
+  Stop closes it.
+
 ## [2.21.0] - 2026-10-09
 
 ### Changed — win celebration glow-up + per-nation anthem (D-050)

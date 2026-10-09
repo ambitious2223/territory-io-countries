@@ -4,6 +4,32 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-09 — Built-in Cloudflare overlay tunnel (2.22.0)
+
+Owner: "can we get a Cloudflare link for the overlay because my streaming service doesn't accept
+localhost links" — they were starting cloudflared and copying the URL by hand. Chose (via Q&A):
+local streaming app · auto-start · random quick URL.
+
+**Done**
+- `server/tunnel.js` (new): `TunnelManager` spawns `cloudflared tunnel --url <target>
+  --no-autoupdate`, parses the `*.trycloudflare.com` URL (pure `parseTunnelUrl`), tracks
+  `off/starting/on/error`, kills the child on exit/SIGINT/SIGTERM, emits `status`.
+- `server/index.js`: manager auto-starts on boot (gated by `TWF_TUNNEL !== '0'` and
+  `config.tunnelEnabled`), relays `tunnel:status`, replays it on connect.
+- `server/httpRoutes.js`: `GET /api/tunnel` + `POST /api/tunnel` (`start`/`stop`).
+- `server/stores/configStore.js`: `tunnelEnabled` (default true), `tunnelTarget`.
+- Client: `bridgeClient.onTunnel`; `main.js` initial fetch + `game.tunnel`; `debugFab.js` builds
+  the public overlay link, status row and Start/Stop toggle; `debugPanel.js` Overlay-tab markup;
+  i18n keys (EN/AR).
+- `tests/smoke.mjs`: `TWF_TUNNEL=0` so smoke never spawns a tunnel.
+- Tests: `tests/tunnel.test.js` (7) + debug-panel ids. 201 total.
+
+**Verified**
+- `npm run lint` clean · `npm test` **201 passed** · build + smoke green · real `cloudflared`
+  spawn produced a working `https://…trycloudflare.com` URL.
+
+---
+
 ## 2026-10-09 — Win screen glow-up + per-nation anthem (2.21.0)
 
 Owner: "tell me the current shape of the winner screen and how we can polish that to be really

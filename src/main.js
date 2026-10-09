@@ -22,6 +22,7 @@ const bridge = new BridgeClient();
 
 game.bridge = bridge;
 game.bridgeState = { bridgeOk: false, source: 'none', tiktokState: 'idle' };
+game.tunnel = { status: 'off', url: null, error: null };
 game.eventCount = 0;
 game.setTeams(getTeams());
 
@@ -70,9 +71,21 @@ async function bootstrapTikora() {
   }
 }
 
+async function bootstrapTunnel() {
+  try {
+    const response = await fetch(`${bridge.url}/api/tunnel`);
+    if (response.ok) {
+      game.tunnel = await response.json();
+      updateOverlay?.();
+    }
+  } catch {
+    void 0;
+  }
+}
+
 initDebugTabs();
 initDebugFab(game);
-initOverlayLink();
+const updateOverlay = initOverlayLink(game);
 initConnectionPanel(game);
 initCameraPanel(game);
 initViewersPanel(game);
@@ -88,4 +101,5 @@ bridge.connect();
 loadFromServer(bridge.url);
 loadWinners();
 bootstrapTikora();
+bootstrapTunnel();
 game.start();

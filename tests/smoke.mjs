@@ -5,7 +5,7 @@ const PORT = 3999
 const URL = `http://localhost:${PORT}`
 
 const child = spawn(process.execPath, ['server/index.js'], {
-  env: { ...process.env, PORT: String(PORT), BRIDGE_MODE: 'mock', CORS_ORIGINS: '*' },
+  env: { ...process.env, PORT: String(PORT), BRIDGE_MODE: 'mock', CORS_ORIGINS: '*', TWF_TUNNEL: '0' },
   stdio: ['ignore', 'inherit', 'inherit']
 })
 

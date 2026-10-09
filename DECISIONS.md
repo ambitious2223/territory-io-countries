@@ -4,6 +4,23 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-051 — Built-in Cloudflare quick tunnel for the overlay link
+- **Context:** Owner: "can we get a Cloudflare link for the overlay because my streaming service
+  doesn't accept localhost links" — they were run-running cloudflared by hand and copying the URL.
+  Answered questions: local streaming app on the PC · auto-start · random URL each session.
+- **Decision:** The bridge spawns `cloudflared tunnel --url http://localhost:1935 --no-autoupdate`
+  on boot (unless `TWF_TUNNEL=0`), parses the `*.trycloudflare.com` URL from its output, and exposes
+  it as `tunnel:status` (socket) + `GET /api/tunnel`. The Overlay tab shows
+  `https://<id>.trycloudflare.com/leaderboard.html`, with a status row and a Start/Stop button that
+  persists `tunnelEnabled`. New `server/tunnel.js` owns the child process (killed on exit/signal).
+- **Rationale:** Because the streaming app runs locally, the overlay page still reaches the bridge
+  at `localhost:3020`, so only the game page needs a public URL — one tunnel, no proxy/CORS changes.
+  Auto-start removes the manual step; the toggle keeps it private when not streaming.
+- **Alternatives:** Named tunnel with a fixed hostname (needs a Cloudflare account/domain — parked);
+  pasting the URL manually (still two steps); tunnelling the bridge + a Vite proxy for same-origin
+  sockets (only needed if the service runs remotely — deferred).
+- **Security note:** the whole app is reachable at the random URL while running.
+
 ## D-050 — Win celebration glow-up + per-nation procedural anthem
 - **Context:** Owner: "tell me the current shape of the winner screen and how we can polish that
   to be really great", plus "would it be a good idea to choose a song for each country and the
