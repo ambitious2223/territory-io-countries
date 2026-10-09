@@ -4,6 +4,30 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Win celebration with sound (2.19.0)
+
+Owner: "Start the win celebration process — detailed and great with sound effects."
+
+**Done**
+- `src/scoring.js`: per-viewer contributor tracking (`contributors` map + `topContributors`).
+- `src/confetti.js`: pooled ConfettiSystem — centre burst + top rain, gravity + sway, flag-clipped
+  pieces (18 % chance when the winner has a flag image), capped at `WIN_CONFETTI_MAX` (240),
+  self-stops after `WIN_CONFETTI_TIME` (10 s).
+- `src/winScreen.js`: full-screen celebration — colour wash + vignette, confetti, medallion
+  (easeOutCubic pop), VICTORY/name/stat line (stroked), podium at 0.9 s: top-3 nation cards +
+  top-3 supporters (avatar circles, nation-colour ring, nickname, score). EN/AR strings.
+- `src/audio.js`: `playConfetti` (band-passed noise burst), `playReveal` (triangle sweep + thump),
+  `playPodium` (three staggered bells). Timed from `WinScreen.update` (`WIN_MEDALLION_REVEAL`,
+  `WIN_PODIUM_DELAY`).
+- `game.js`: `finishRound` → `winScreen.show()` (domination toast + inline playVictory removed —
+  the screen owns them); `resetRound` → hide; update/render wiring.
+- Tests: contributors, confetti lifecycle/cap, winScreen snapshot/schedule/draw (173 total).
+
+**Verified**
+- `npm run lint` clean · `npm test` **173 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Manual camera + nation jumps (2.18.0)
 
 Owner: "a manual zoom for whenever I need to zoom somewhere, and any other stream-management

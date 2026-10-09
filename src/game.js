@@ -8,6 +8,7 @@ import { JoinCinematic } from './joinCinematic.js';
 import { JoinPrompt } from './joinPrompt.js';
 import { Onboarding } from './onboarding.js';
 import { ManualCamera } from './cameraControls.js';
+import { WinScreen } from './winScreen.js';
 import { ScoringEngine } from './scoring.js';
 import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
@@ -43,6 +44,7 @@ export class Game {
     this.joinPrompt = new JoinPrompt();
     this.onboarding = new Onboarding(this);
     this.manualCamera = new ManualCamera(this);
+    this.winScreen = new WinScreen(this);
     this.lastRoundState = null;
     this.grid = new Grid();
     this.particles = new ParticleSystem();
@@ -250,11 +252,10 @@ export class Game {
     if (team) {
       this.winColor = team.color;
       this.winner = { name: teamLabel(team, getLanguage()) || t('misc.winner'), color: team.color, tiles: top.tiles };
-      this.vfx.addDominationText(CONFIG.CANVAS_WIDTH / 2, CONFIG.CANVAS_HEIGHT / 2, teamLabel(team, getLanguage()));
       this.saveWinner(team, top);
     }
     this.analytics.updateDuration();
-    this.audio.playVictory();
+    if (team) this.winScreen.show();
     this.round.beginIntermission();
   }
 
@@ -270,6 +271,7 @@ export class Game {
     this.camera.reset();
     this.cinematic.skip();
     this.joinPrompt.clear();
+    this.winScreen.hide();
     this.victoryFillRow = 0;
     this.victoryFillCol = 0;
     this.powerups.reset();
@@ -478,6 +480,7 @@ export class Game {
     this.joinPrompt.update(dt);
     this.onboarding.update(dt);
     this.manualCamera.update();
+    this.winScreen.update(dt);
     this.camera.update(dt);
 
     const transition = this.round.update(dt);
@@ -588,6 +591,7 @@ export class Game {
     }
     this.joinPrompt.draw(this.ctx);
     this.onboarding.draw(this.ctx);
+    this.winScreen.draw(this.ctx);
 
     this.territoryCounts = this.tileCountsByTeam();
     this.overlayTimer += this.lastFrameTime / 1000;

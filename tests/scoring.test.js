@@ -66,3 +66,33 @@ describe('ScoringEngine settlement', () => {
     expect(scoring.teamOf('u1')).toBeNull()
   })
 })
+
+describe('ScoringEngine contributors', () => {
+  it('tracks per-viewer scores with name, avatar and team', () => {
+    const scoring = engine()
+    scoring.applyEvent({ type: 'gift', userId: 'u1', username: 'u1', name: 'Ahmad', avatar: 'http://a/1.jpg', coins: 100 })
+    scoring.applyEvent({ type: 'gift', userId: 'u1', username: 'u1', name: 'Ahmad', avatar: 'http://a/1.jpg', coins: 50 })
+    scoring.applyEvent({ type: 'gift', userId: 'u2', username: 'u2', name: 'Sara', avatar: '', coins: 20 })
+    scoring.applyEvent({ type: 'gift', userId: 'ghost', coins: 999 })
+
+    const top = scoring.topContributors(3)
+    expect(top).toHaveLength(2)
+    expect(top[0]).toMatchObject({ id: 'u1', score: 150, teamId: 1, name: 'Ahmad', avatar: 'http://a/1.jpg' })
+    expect(top[1].id).toBe('u2')
+  })
+
+  it('caps the list at the requested limit', () => {
+    const scoring = engine()
+    scoring.applyEvent({ type: 'gift', userId: 'u1', coins: 10 })
+    scoring.applyEvent({ type: 'gift', userId: 'u2', coins: 20 })
+    expect(scoring.topContributors(1)).toHaveLength(1)
+    expect(scoring.topContributors(1)[0].id).toBe('u2')
+  })
+
+  it('clears contributors on reset', () => {
+    const scoring = engine()
+    scoring.applyEvent({ type: 'gift', userId: 'u1', coins: 10 })
+    scoring.reset()
+    expect(scoring.topContributors()).toHaveLength(0)
+  })
+})

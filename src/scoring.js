@@ -17,6 +17,7 @@ export class ScoringEngine {
     this.scores = new Map()
     this.territory = new Map()
     this.userTeam = new Map()
+    this.contributors = new Map()
     this.commenters = new Set()
     this.followed = new Set()
     this.shared = new Set()
@@ -85,8 +86,26 @@ export class ScoringEngine {
         break
     }
 
-    if (points > 0) this.add(teamId, points)
+    if (points > 0) {
+      this.add(teamId, points)
+      const name = event.name || event.username || id
+      const avatar = event.avatar || ''
+      const existing = this.contributors.get(id)
+      if (existing) {
+        existing.score += points
+        existing.name = name
+        existing.avatar = avatar
+      } else {
+        this.contributors.set(id, { id, name, avatar, teamId, score: points })
+      }
+    }
     return points
+  }
+
+  topContributors(limit = 3) {
+    return [...this.contributors.values()]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
   }
 
   setTerritory(teamId, tiles) {

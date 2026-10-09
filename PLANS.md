@@ -174,7 +174,16 @@ the camera.
 
 ---
 
-## Phase 30 — Win celebration (approved, D-041, not started)
+## Phase 30 — Win celebration with sound (approved, D-041/D-048)
+- [x] Per-viewer contributor tracking (`topContributors`)
+- [x] Pooled confetti system (burst + rain, flag-clipped pieces, cap, self-stop)
+- [x] `WinScreen`: wash + vignette, medallion pop, VICTORY/name/stat line, top-3 nations + top-3
+      supporters podium; fade in / clear on reset
+- [x] Procedural sounds: confetti burst, reveal pop, podium bells (+ existing victory fanfare)
+- [x] Tests (173); docs; released **2.19.0**
+
+**Verify:** End a round and watch the full sequence with sound; supporters row reflects the round's
+biggest interactors; nothing lingers into the next round.
 - [ ] Confetti (pooled, winner colours + flag-clipped pieces), flag medallion, VICTORY + stats
 - [ ] Top-3 nations row + overall top-3 supporters (avatars/nicknames, per-viewer scores in
       `ScoringEngine`)

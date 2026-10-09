@@ -136,8 +136,14 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 
 - **Auto-loop** on by default; the control bar always allows **manual start/end/next**.
 - At round end the **winner is the nation holding the most tiles** (tie-break: most active
-  balls). The result is celebrated with VFX/audio, saved to the winners store, and the arena resets
-  to neutral + fresh bases.
+  balls). The result plays a full **win celebration** on the canvas over the (kept) colour-sweep
+  backdrop: a **flag medallion** (photo/emoji) pops in with a *reveal* sound; **VICTORY** + the
+  localized winner name + a stat line (tiles · % · duration · reason); a **confetti burst + ~10 s
+  rain** in the winner's colours with some pieces clipped from the flag; then a **podium** —
+  **top-3 nations** (rank · flag · name · %) and the **overall top-3 supporters** (avatar, nickname
+  and score, ringed in their nation's colour) with a bell chime. It fades in over ~0.6 s, stays
+  through intermission and clears on round reset; the sidebar panel keeps Play Again. Winners are
+  also saved to the winners store, and the arena resets to neutral + fresh bases.
 - A nation that reaches **65%** of the arena triggers an immediate **domination** win.
 
 ---

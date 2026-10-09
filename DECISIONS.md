@@ -4,6 +4,22 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-048 — Win celebration: canvas screen, procedural sound, contributors podium
+- **Context:** D-041 approved confetti + flag + top-3; the owner added "detailed and great with
+  sound effects". The old end-of-round feedback was a colour sweep + a `DOMINATION!` toast.
+- **Decision:** `WinScreen` (canvas, top-most) plays: colour wash + vignette → **ConfettiSystem**
+  (pooled 240 pieces, burst + 10 s rain, some pieces clipped from the winner's flag) → flag
+  **medallion** pop (`WIN_MEDALLION_REVEAL`) → VICTORY + winner name + stat line → **podium** at
+  0.9 s (top-3 nations + overall top-3 supporters from new per-viewer scoring). Sound: layered
+  `playVictory` + `playConfetti` at reveal, `playReveal` on the medallion, `playPodium` (bells) on
+  the podium — all procedural/panned/voice-capped `AudioEngine` methods. The arena colour sweep is
+  kept as the backdrop; the sidebar panel keeps Play Again; hide on `resetRound`.
+- **Rationale:** One owned sequence with staged timing feels like a real stream moment; pooled
+  confetti and existing audio architecture keep it cheap; contributors give the audience the
+  "who made this happen" moment the owner asked for.
+- **Alternatives:** DOM/HTML overlay (breaks canvas capture layering); asset-based sound files
+  (none in repo — everything is procedural); auto-looping celebration (clutters intermission).
+
 ## D-047 — Streamer manual camera: hybrid input, stays until reset
 - **Context:** Owner: "a manual zoom for whenever I need to zoom somewhere" + stream-management
   tools. `Camera` already had smooth `focusOn`/`resetFocus`; only the input layer was missing.

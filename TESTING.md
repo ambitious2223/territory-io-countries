@@ -53,6 +53,10 @@
 - `tests/debugPanel.test.js` — panel markup pins every wired id and the four tabs.
 - `tests/cameraControls.test.js` — zoom-toward-cursor math + clamps, focus/follow/death-reset,
   pan/zoom/reset, Arena/Leader/nation presets, canvas-handler attach.
+- `tests/confetti.test.js` — burst + rain, piece cap, self-stop, clear-on-stop, draw smoke.
+- `tests/winScreen.test.js` — snapshot (winner/top-3 nations/supporters), scheduled reveal/podium
+  sounds fire once, fade-in + draw smoke + clean hide.
+- `src/scoring.js` — also covers per-viewer `topContributors` (order, cap, reset).
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
 - `server/mock.js` — mock event construction.
 - `server/uploads.js` — flag image validation.
@@ -89,6 +93,11 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       cinematic is cancelled; **nothing moves on its own afterwards**.
 - [ ] **Camera presets** (Connection tab): Arena resets, Leader jumps to the leading nation's
       capital, nation chips jump to each capital at 1.6×; chips update when teams are edited.
+- [ ] **Win celebration:** end a round → colour wash + confetti (flag pieces if the winner has a
+      photo) + medallion pop with sound → **VICTORY** + name + tiles/%/duration → podium with
+      top-3 nations and top-3 supporters (photos, scores) + bell chime; plays through
+      intermission and clears on the next round; gifts earlier in the round determine the
+      supporters row.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
 - [ ] Loose matching: `Egypt ❤`, `I choose EGYPT`, `united`, `الامارت`, `سعودية` all join the
       right nation; `iran`/`nope` join nothing.

@@ -4,6 +4,21 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.19.0] - 2026-10-08
+
+### Added — win celebration (D-041)
+- Replaces the flat DOMATION toast with a full-screen **canvas celebration** over the kept colour
+  sweep: **pooled confetti** (winner colours + gold/white + pieces clipped from the winner's flag)
+  bursting from the centre then raining ~10 s; a **flag medallion** popping in (photo/emoji);
+  **VICTORY** + localized winner name + stat line (tiles · % · duration · reason); and a staggered
+  **podium** — top-3 nations (rank · flag · name · %) plus the **overall top-3 supporters** with
+  avatar, nickname, score and a nation-colour ring. Fades in, lives through intermission, clears
+  on round reset.
+- **Sound design**: layered victory fanfare + **confetti burst** (band-passed noise), a **reveal
+  pop** when the medallion lands, and a three-bell **podium chime** — all procedural, panned,
+  voice-capped.
+- `ScoringEngine` now tracks **per-viewer contributors** (`topContributors()`).
+
 ## [2.18.0] - 2026-10-08
 
 ### Added — streamer manual camera + nation jumps
