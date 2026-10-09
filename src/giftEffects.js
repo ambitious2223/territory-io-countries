@@ -243,13 +243,3 @@ export function executeEffect(game, effectKey, params = {}, target = {}) {
   setStats(game, { outcome: 'applied' })
   return effectKey
 }
-
-export function executeGiftEffect(game, mapping, event) {
-  if (!mapping || !event) return null
-  return executeEffect(game, mapping.effect, mapping.params || {}, {
-    userId: event.userId ?? event.username,
-    username: event.username,
-    name: event.name || event.username,
-    avatar: event.avatar || ''
-  })
-}

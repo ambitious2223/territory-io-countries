@@ -12,9 +12,7 @@ import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
 import { buildOverlayPayload } from './overlaySnapshot.js';
 import { addWinner } from './winnersStore.js';
-import { matchMapping } from './mappings.js';
-import { getMappings } from './mappingsStore.js';
-import { executeGiftEffect, executeEffect } from './giftEffects.js';
+import { executeEffect } from './giftEffects.js';
 import { TikoraHub } from './tikora.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
@@ -347,10 +345,7 @@ export class Game {
 
     this.scoring.applyEvent(event);
     if (event && event.type === 'gift') {
-      const mapping = matchMapping(getMappings(), event);
-      if (mapping && executeGiftEffect(this, mapping, event)) {
-        this.audio.playGift(CONFIG.CANVAS_WIDTH / 2);
-      }
+      this.audio.playGift(CONFIG.CANVAS_WIDTH / 2);
     }
   }
 

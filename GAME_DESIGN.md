@@ -107,9 +107,10 @@ Every team accumulates a live **score** from interaction (displayed in the debug
 reconstruction, gift `msgId` dedupe, gift-streak combo rule.
 
 ### Gifts → power-ups
-A **mappings UI** maps each gift (by id, name, or min coins) to a power-up with tunable params —
-and the same list is declared in `tikora.manifest.json`, so the **hub** maps gifts *and free
-triggers* (chat, like, follow, share, member) onto them:
+Gift → power-up wiring lives **only in the hub** (Tikora → Game Hub → Trigger → Effect): map any
+gift (by id, name, or min coins) — or a **free trigger** (chat, like, follow, share, member) — to
+one of the effects this game **declares** in `tikora.manifest.json`. The web app contains **no**
+mapping UI and no hardcoded gift rules; it only executes what the hub sends:
 - **Overcharge / Speed Boost** — one soldier moves faster for N seconds.
 - **Team Speed** — every soldier of the nation gets that burst.
 - **Freeze** — enemy soldiers stop for N seconds (icy ring; movement only — no damage).
@@ -122,8 +123,8 @@ triggers* (chat, like, follow, share, member) onto them:
   photo + nickname.
 - **Instant Claim** — temporary overcharge, for "instant" style gifts.
 
-All params are clamped to safe config limits. These are the **12 effects** in the manifest; the
-mappings UI dropdown is generated from it, and a test keeps the two in sync.
+All params are clamped to safe config limits. These are the **12 effects** in the manifest —
+the single source of truth the hub reads, and a test keeps it in sync with the executor.
 
 ---
 

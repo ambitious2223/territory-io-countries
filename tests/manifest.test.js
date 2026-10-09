@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import manifest from '../tikora.manifest.json'
 import { EFFECT_KEYS } from '../src/giftEffects.js'
-import { EFFECT_OPTIONS } from '../src/mappings.js'
 
 describe('tikora manifest', () => {
   it('matches the effects the game can execute', () => {
@@ -17,9 +16,5 @@ describe('tikora manifest', () => {
       expect(seen.has(effect.key)).toBe(false)
       seen.add(effect.key)
     }
-  })
-
-  it('drives the in-game mappings dropdown options', () => {
-    expect(EFFECT_OPTIONS.map((option) => option.key)).toEqual(manifest.effects.map((effect) => effect.key))
   })
 })

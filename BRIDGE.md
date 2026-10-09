@@ -103,7 +103,6 @@ Status events (`tiktok:status`):
 | GET | `/health` | Connection state, source, username, mode, clients |
 | GET/PUT | `/api/teams` | Read / write the team roster |
 | GET/POST/DELETE | `/api/winners` | Read / append / clear persisted winners |
-| GET/PUT | `/api/mappings` | Read / write gift→effect mappings |
 | POST | `/api/flags` | Upload a flag image (`{ teamId, imageData }`) |
 | POST | `/api/mock-event` | Inject a mock event (`{ type, username, teamIndex, value }`) |
 | GET | `/api/tikora/config` | Resolved hub identity `{ slug, key, relayUrl, enabled }` (read-only) |
@@ -128,8 +127,9 @@ Socket events are listed in [ARCHITECTURE.md](./ARCHITECTURE.md) §8.
   `userId` in addition to gift metadata), so effect soldiers can show who triggered them. If the
   activator has no nation, the game queues a "pick a side" prompt and applies the effect when they
   join.
-- Use **either** Tikora effect routing **or** the game's own gift mappings for a given gift —
-  not both.
+- Gift → power-up mapping happens **only in the hub** (its Trigger → Effect mapper); the game
+  declares effects in `tikora.manifest.json` and executes what the hub sends — there is no
+  in-app mapping anymore.
 
 ---
 

@@ -31,7 +31,6 @@
 - `src/round.js` — countdown → playing → intermission transitions.
 - `src/viewerManager.js` — viewer cap + reinforcement-queue ordering.
 - `src/joinCinematic.js` — cinematic queue sequencing.
-- `src/mappings.js` — gift-rule matching (first match wins).
 - `src/tikoraClient.js` — relay → `hub-client.js` URL derivation + manifest shape.
 - `server/tikoraIdentity.js` — hub identity precedence (env → launch URL → config → manifest).
 - `src/teamRegistry.js` — flag upload notifies, capital scale clamps/notifies the game only,
@@ -41,7 +40,7 @@
   (known roster), username-only lookups find the team, telemetry counters, IDLE+Auto recovery.
 - `tests/joinPrompt.test.js` — prompt queue, resolve-by-username, timeout, clear, **age-from-
   creation with drop counting**.
-- `tests/manifest.test.js` — manifest ↔ `EFFECT_KEYS` ↔ mappings dropdown stay in sync (12 effects).
+- `tests/manifest.test.js` — manifest ↔ `EFFECT_KEYS` stay in sync (12 effects).
 - `tests/i18n.test.js` — EN↔AR key parity, every `data-i18n` key in markup is covered, dynamic
   key families exist, and `dir` stays `ltr` in both languages (no layout mirroring).
 - `tests/giftEffects.test.js` — effect identity, plus freeze/shield/claim_storm/mega_bomb/

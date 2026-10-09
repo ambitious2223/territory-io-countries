@@ -47,7 +47,7 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Win | **Most territory** at time-up (or 65% domination) |
 | Persistence | Server JSON stores (atomic) **+ localStorage fallback** |
 | i18n | English default, **complete Arabic** for all UI; the language switch changes **text only** — the layout stays LTR and never mirrors |
-| Gifts | Mapped to power-ups via a **mappings UI** |
+| Gifts | Gift → power-up mapping lives **only in the hub**; the game just declares (manifest) and executes |
 
 If a change conflicts with the table above, stop and raise it — do not just implement it.
 

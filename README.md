@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.15.2
+## Status — v2.16.0
 
-Every gate is green: `npm run lint`, `npm test` (161 tests incl. reset-players/onboarding/
-effect-routing suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (152 tests incl. effect-routing/onboarding/
+hub-identity suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -63,9 +63,9 @@ effect-routing suites + a headless game-loop test), `npm run build`, and `npm ru
   intro card, a cheap darkened backdrop (blur off by default, slider re-enables it) and an
   auto-zoom on/off switch.
 - **12 power-ups declared for the hub** (overcharge, speed boost, freeze, shield, team speed,
-  color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim) with an in-app
-  mappings editor; the hub maps gifts/**free triggers** to them; auto-looping timed rounds and
-  persisted all-time winners.
+  color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim). All gift/trigger
+  mapping happens **in the hub** — the web app holds no mapping UI and no hardcoded rules; it just
+  declares (manifest) and executes. Auto-looping timed rounds and persisted all-time winners.
 - Complete English + Arabic UI — switching language translates every string (test-enforced) and
   never changes layout positions.
 
@@ -164,7 +164,7 @@ TERRITORY WITH SWORDS/
 │   ├── debugPanel.js     # Tabbed debug panel markup
 │   ├── debugFab.js       # Draggable debug button + tabs
 │   └── overlay/          # Standalone leaderboard subscriber + styles
-├── config/               # teams.json, mappings.json (+ winners.json at runtime)
+├── config/               # teams.json (+ winners.json at runtime)
 ├── tikora.manifest.json  # Effects Tikora reads
 ├── .tiktok-config.json   # Auto-connect configuration
 └── docs: README, AGENTS, GUARDRAILS, ARCHITECTURE, GAME_DESIGN,

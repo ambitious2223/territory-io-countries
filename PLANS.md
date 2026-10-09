@@ -138,7 +138,27 @@ fresh comments; AI soldiers keep playing meanwhile.
 
 ---
 
-## Phase 27 — Win celebration (approved, D-041, not started)
+## Phase 27 — Hub-only effect mapping
+- [x] In-app gift-mappings feature removed end-to-end (editor, matcher, `/api/mappings`,
+      `config/mappings.json`, runtime gift branch); gift events still score + play a sound
+- [x] `tikora.manifest.json` is the sole declaration; the hub is the sole mapper
+- [x] Docs (D-045) + tests (152); released **2.16.0**
+
+**Verify:** the debug panel has no Gift Mappings section; `/api/mappings` 404s; a hub-mapped gift
+still fires its effect; Mock gift injects only score (no effect) without the hub.
+
+---
+
+## Phase 28 — Modern glass debug menu (approved: glass card + cyan accent)
+- [ ] Extract debug CSS from `index.html` into `src/debugPanel.css`; glass panel (380 px, blur,
+      radius 16, cyan hairline); keep drag/collapse/FAB persistence
+- [ ] Status pills, toggle switches, segmented connection mode (hidden `#conn-mode`), viewer
+      meters, blur value chip; collapsible section cards; glass FAB
+- [ ] Markup-guard test (`debugPanel` ids); docs; released **2.17.0**
+
+---
+
+## Phase 29 — Win celebration (approved, D-041, not started)
 - [ ] Confetti (pooled, winner colours + flag-clipped pieces), flag medallion, VICTORY + stats
 - [ ] Top-3 nations row + overall top-3 supporters (avatars/nicknames, per-viewer scores in
       `ScoringEngine`)

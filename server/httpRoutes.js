@@ -1,6 +1,5 @@
 import { getTeamsConfig, saveTeamsConfig, updateTeam } from './stores/teamsStore.js'
 import { getWinners, addWinner, clearWinners } from './stores/winnersStore.js'
-import { getMappingsConfig, saveMappingsConfig } from './stores/mappingsStore.js'
 import { getConfig } from './stores/configStore.js'
 import { readJson } from './stores/store.js'
 import { TIKORA_MANIFEST_PATH, TIKORA_DEFAULTS } from './constants.js'
@@ -58,19 +57,6 @@ export function registerHttpRoutes(app, { manager, getClientCount }) {
 
   app.get('/api/tikora/config', (_req, res) => {
     res.json(tikoraConfig())
-  })
-
-  app.get('/api/mappings', (_req, res) => {
-    res.json(getMappingsConfig())
-  })
-
-  app.put('/api/mappings', (req, res) => {
-    const body = req.body || {}
-    if (!Array.isArray(body.mappings)) {
-      res.status(400).json({ error: 'Invalid mappings payload' })
-      return
-    }
-    res.json(saveMappingsConfig(body))
   })
 
   app.post('/api/flags', (req, res) => {

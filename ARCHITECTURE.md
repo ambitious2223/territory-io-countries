@@ -15,7 +15,7 @@
 │   connectionManager  (auto | direct | tikfinity | mock)          │
 │   directBridge · tikfinityBridge · httpRoutes · uploads          │
 │   normalize (one event schema)                                   │
-│   stores/ (config, teams, mappings, winners)                     │
+│   stores/ (config, teams, winners)                                │
 └──────────────────────────────────────────────────────────────────┘
         ▲ ws 127.0.0.1:21213 (TikFinity)
 
@@ -74,9 +74,6 @@
 | `overlaySnapshot.js` | Builds the serialisable leaderboard payload for the overlay |
 | `overlay/leaderboard.js` | Standalone OBS leaderboard page (bridge subscriber, no engine) |
 | `winnersStore.js` | Winners persistence + sync |
-| `mappings.js` | Gift-mapping matcher (pure) |
-| `mappingsStore.js` | Mapping persistence + sync |
-| `mappingsPanel.js` | Gift-mapping editor UI |
 | `joinCinematic.js` | Camera intro queue for new joiners (tracks the moving soldier) |
 | `joinPrompt.js` | "Pick a side" pop-up + held-effect queue for non-member gifters |
 | `giftEffects.js` | Gift → power-up effect executor (runs as the activator's identity) |
@@ -98,10 +95,10 @@
 | `directBridge.js` | `tiktok-live-connector` connection + raw listeners |
 | `tikfinityBridge.js` | TikFinity WebSocket listener + payload routing |
 | `normalize.js` | Raw payload → unified event schema; like-delta; gift combo/dedupe |
-| `httpRoutes.js` | REST: health, teams, winners, mappings, flags, tikora identity, mock |
+| `httpRoutes.js` | REST: health, teams, winners, flags, tikora identity, mock |
 | `tikoraIdentity.js` | Resolve hub slug/key/relay from env → launch URL → config → manifest (pure) |
 | `uploads.js` | Flag image validation + write to `public/flags` |
-| `stores/*.js` | Atomic JSON read/write for config, teams, mappings, winners |
+| `stores/*.js` | Atomic JSON read/write for config, teams, winners |
 | `mock.js` | Server-side mock event injection |
 | `constants.js` | Paths, ports, modes, retry/dedupe constants |
 
@@ -190,8 +187,10 @@ union paths.
 | --- | --- | --- |
 | Config | `.tiktok-config.json` | username, mode, host/port, Tikora settings |
 | Teams | `config/teams.json` | roster, flags, colours, aliases |
-| Mappings | `config/mappings.json` | gift → power-up rules |
 | Winners | `config/winners.json` | all-time team + viewer winners (created at runtime) |
+
+Gift → power-up mappings live **only in the hub** (its own SQLite store) — the game has no mapping
+storage.
 
 All stores use **atomic write** (write temp → rename). The client mirrors to localStorage and
 re-syncs when the server is reachable.

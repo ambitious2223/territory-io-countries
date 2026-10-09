@@ -4,6 +4,25 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Hub-only effect mapping (2.16.0)
+
+Owner: "We don't have to have any of the declared effects in the controls hard-coded into the web
+app. It should always rely on the hub." (A similar message earlier was meant for another program.)
+
+**Done**
+- Deleted the in-app gift-mappings feature end-to-end: `src/mappings.js`, `mappingsPanel.js`,
+  `mappingsStore.js`, `config/mappings.json`, `server/stores/mappingsStore.js`,
+  `GET/PUT /api/mappings`, the Advanced-tab editor, `executeGiftEffect`, the runtime gift branch,
+  related i18n keys, `tests/mappings.test.js`, the smoke mappings check.
+- Gift events still score + play the gift sound. Manifest ↔ executor sync test retained.
+- Docs: D-045, AGENTS gifts row, BRIDGE API/routing notes, GAME_DESIGN §5, ARCHITECTURE
+  (module/persistence rows), README, TESTING; phases renumbered (menu = 28, win = 29).
+
+**Verified**
+- `npm run lint` clean · `npm test` **152 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Hint copy: names only (2.15.2)
 
 User: "The top part of the description instruction is already enough … the ID / number / flag are

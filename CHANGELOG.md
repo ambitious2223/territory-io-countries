@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.16.0] - 2026-10-08
+
+### Removed — gift mapping is hub-only
+- The in-app **Gift Mappings** feature is gone end-to-end: the editor UI (Advanced tab), the
+  matcher (`src/mappings.js`), the store + `config/mappings.json`, `GET/PUT /api/mappings`, and the
+  runtime gift branch in `handleBridgeEvent`. **The web app no longer declares or controls any
+  gift→effect wiring** — `tikora.manifest.json` stays as the single declaration the hub reads, and
+  the hub's Trigger→Effect mapper is the single place to wire gifts and free triggers (D-045).
+- Gift events still play their sound and feed interaction scores; effects arrive **only via the
+  hub**. (Accepted consequence: Mock/offline gift injects no longer fire effects.)
+
 ## [2.15.2] - 2026-10-08
 
 ### Changed — join messaging: names only

@@ -8,8 +8,6 @@ import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
 import { getTeams, loadFromServer, subscribeGame, setBaseUrl as setTeamBaseUrl } from './teamRegistry.js';
 import { setBaseUrl, loadWinners } from './winnersStore.js';
-import { initMappingsPanel, renderMappingsPanel } from './mappingsPanel.js';
-import { setBaseUrl as setMappingsBaseUrl, loadFromServer as loadMappings } from './mappingsStore.js';
 
 createDebugPanel();
 initSpeedControl();
@@ -46,7 +44,6 @@ function initLanguageSelector() {
   select.addEventListener('change', () => {
     setLanguage(select.value);
     renderTeamsPanel();
-    renderMappingsPanel();
     initScoringPanel(game);
   });
 }
@@ -81,15 +78,12 @@ initCinematicPanel(game);
 initOnboardingPanel(game);
 initScoringPanel(game);
 initTeamsPanel(game);
-initMappingsPanel();
 initLanguageSelector();
 
 setBaseUrl(bridge.url);
-setMappingsBaseUrl(bridge.url);
 setTeamBaseUrl(bridge.url);
 bridge.connect();
 loadFromServer(bridge.url);
 loadWinners();
-loadMappings();
 bootstrapTikora();
 game.start();

@@ -4,6 +4,21 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-045 — Gift→effect mapping is hub-only; the app never hardcodes effect controls
+- **Context:** Owner: "We don't have to have any of the declared effects in the controls
+  hard-coded into the web app. It should always rely on the hub." The app carried a second,
+  parallel mapping system (in-app Gift Mappings editor, `matchMapping`, `/api/mappings`,
+  `config/mappings.json`) duplicating the hub's Trigger→Effect mapper.
+- **Decision:** Delete the in-app mapping feature entirely — editor UI, matcher, store, endpoint,
+  config file and the runtime gift branch in `handleBridgeEvent`. The game keeps only:
+  **declaration** (`tikora.manifest.json`, which the hub reads) and **execution** (`giftEffects`
+  via `tikora.js`). Gift events still play their sound and feed interaction scores.
+- **Consequence (accepted):** effects are 100 % hub-driven — Mock/offline gift injects no longer
+  fire effects; wire gifts in Tikora → Game Hub.
+- **Alternatives:** Keep the editor as an offline fallback (rejected — two sources of truth);
+  sync the two systems (rejected — needless complexity). *(D-035's "mappings UI consumer" of the
+  manifest is removed by this decision.)*
+
 ## D-044 — Join hint lives between controls and arena (DOM strip); canvas debug overlay removed
 - **Context:** The permanent hint covered bottom-left map tiles, and opening the debug panel painted
   an FPS graph, stats boxes, velocity arrows and hitbox circles over the arena (duplicating the
@@ -48,7 +63,7 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 - **Alternatives:** Patch the hub to always send `userId` (helps but doesn't cover resets);
   drop the prompt (kills the join driver); only fix registration (leaves key mismatch).
 
-## D-041 — Win celebration: confetti + flag + podium (approved, Phase 24)
+## D-041 — Win celebration: confetti + flag + podium (approved, Phase 29)
 - **Context:** The win screen was an arena colour sweep plus a small sidebar panel; owner wants
   "a much better win screen… confetti with the flag of the winner… name and most contributors
   profile pictures and their nicknames. Top three."
@@ -57,7 +72,7 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
   a flag medallion + VICTORY + localized winner name + stats, a **top-3 nations** row, and the
   **overall top-3 supporters** (avatar + nickname + score, ringed in their nation's colour),
   fed by new per-viewer score tracking in `ScoringEngine`. EN/AR strings; hide on round reset.
-- **Not yet implemented** — scheduled as Phase 27, after the 2.13.0 effect fixes.
+- **Not yet implemented** — scheduled as Phase 29, after the hub-only mapping (27) and menu redesign (28).
 
 ## D-040 — Cinematic performance: blur opt-in, cached nation outlines
 - **Context:** Owner: "automatic zoom or cinematic is making the game look so laggy." Two causes:

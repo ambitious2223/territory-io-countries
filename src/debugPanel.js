@@ -150,14 +150,6 @@ const PANEL = `
         <div id="winners-panel-body"></div>
       </div>
       <div class="debug-section">
-        <h5 data-i18n="debug.content">Content — Gift Mappings</h5>
-        <div id="mappings-panel-body"></div>
-        <div class="debug-row" style="gap:6px;margin-top:6px;">
-          <button class="ctrl-btn" id="btn-mappings-add" style="flex:1;" data-i18n="debug.addMapping">Add</button>
-          <button class="ctrl-btn" id="btn-mappings-save" style="flex:1;" data-i18n="debug.save">Save</button>
-        </div>
-      </div>
-      <div class="debug-section">
         <h5 data-i18n="debug.performance">Performance</h5>
         <div class="debug-row"><span>FPS</span><span class="val" id="dbg-fps">--</span></div>
         <div class="debug-row"><span data-i18n="debug.frameTime">Frame Time</span><span class="val" id="dbg-frametime">--</span></div>
