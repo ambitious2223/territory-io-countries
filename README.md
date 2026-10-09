@@ -14,7 +14,7 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.15.0
+## Status — v2.15.1
 
 Every gate is green: `npm run lint`, `npm test` (161 tests incl. reset-players/onboarding/
 effect-routing suites + a headless game-loop test), `npm run build`, and `npm run smoke`.

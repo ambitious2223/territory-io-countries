@@ -127,7 +127,18 @@ fresh comments; AI soldiers keep playing meanwhile.
 
 ---
 
-## Phase 26 — Win celebration (approved, D-041, not started)
+## Phase 26 — Hint relocation + arena debug overlay removal
+- [x] Permanent join hint moved off the canvas into a centered DOM strip in the band between the
+      controls and the arena (CSS stroke text, EN/AR, persisted switch intact)
+- [x] Canvas debug overlay deleted (`src/debug.js`, `debug.draw`/`pushFrame`, dead FPS constants);
+      the panel's Performance section is the only stats surface
+- [x] Tests (161); released **2.15.1**
+
+**Verify:** the hint never covers map tiles; opening the debug panel draws nothing on the arena.
+
+---
+
+## Phase 27 — Win celebration (approved, D-041, not started)
 - [ ] Confetti (pooled, winner colours + flag-clipped pieces), flag medallion, VICTORY + stats
 - [ ] Top-3 nations row + overall top-3 supporters (avatars/nicknames, per-viewer scores in
       `ScoringEngine`)

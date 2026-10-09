@@ -170,11 +170,11 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 - **Gameplay tips:** a top strip rotates short contextual instructions (first join, first gift,
   halfway, final 30 s) — one per milestone per round, 6 s each, ✕ and the same master switch.
   All of it is always dismissible.
-- **Permanent join hint:** always-on instructions in the **bottom-left lane** (empty of every other
-  overlay) — big bold **gold text with a black outer stroke** on a dark plate: *"COMMENT YOUR
-  COUNTRY TO JOIN!"* plus the accepted formats. Screen-space (fixed under camera zoom), EN/AR,
-  never displaces or resizes anything else; persisted **Join hint** switch in Advanced →
-  Guide & Tips (on by default).
+- **Permanent join hint:** always-on instructions in the **empty band between the control bar and
+  the arena** (centered DOM strip over the letterbox area) — big bold **gold text with a black
+  outer stroke**: *"COMMENT YOUR COUNTRY TO JOIN!"* plus the accepted formats. It never touches
+  the canvas or resizes anything; EN/AR; the persisted **Join hint** switch in Advanced → Guide &
+  Tips (on by default) shows/hides it. It is deliberately **not** drawn on the map.
 - **Pick-a-side prompt:** a gift/effect from someone **without a nation** raises an animated pop-up
   with their **profile photo + nickname** asking them to comment a country; the effect is **held**
   and fires automatically the moment they join (dropped after `JOIN_PROMPT_TIMEOUT`, 20 s).

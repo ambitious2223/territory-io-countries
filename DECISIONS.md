@@ -4,7 +4,20 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
-## D-043 — Permanent gold join hint in the bottom-left lane
+## D-044 — Join hint lives between controls and arena (DOM strip); canvas debug overlay removed
+- **Context:** The permanent hint covered bottom-left map tiles, and opening the debug panel painted
+  an FPS graph, stats boxes, velocity arrows and hitbox circles over the arena (duplicating the
+  panel's Performance text).
+- **Decision:** The hint is a **centered DOM strip** in the letterbox band between the control bar
+  and the canvas (`pointer-events: none`, CSS `-webkit-text-stroke` for the black outline), toggled
+  by the existing persisted switch. The canvas debug overlay (`src/debug.js`) is **deleted** along
+  with its `DEBUG_FPS_*` constants; `debugMode` now only controls the DOM panel.
+- **Rationale:** Map stays clean for the stream; stats live in one place (the panel); a DOM strip
+  can't consume canvas space or resize any component.
+- **Alternatives:** Keep hint on canvas with a plate (covered tiles); reserve layout space for the
+  hint (shrinks the arena); keep overlay behind a checkbox (rejected — panel already has the stats).
+
+## D-043 — Permanent gold join hint in the bottom-left lane *(superseded by D-044 — moved out of the map)*
 - **Context:** Owner wanted always-visible joining instructions: "where there is no other
   component, big bold text yellow with outer stroke black, without downscaling any other
   component."
@@ -44,7 +57,7 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
   a flag medallion + VICTORY + localized winner name + stats, a **top-3 nations** row, and the
   **overall top-3 supporters** (avatar + nickname + score, ringed in their nation's colour),
   fed by new per-viewer score tracking in `ScoringEngine`. EN/AR strings; hide on round reset.
-- **Not yet implemented** — scheduled as Phase 26, after the 2.13.0 effect fixes.
+- **Not yet implemented** — scheduled as Phase 27, after the 2.13.0 effect fixes.
 
 ## D-040 — Cinematic performance: blur opt-in, cached nation outlines
 - **Context:** Owner: "automatic zoom or cinematic is making the game look so laggy." Two causes:

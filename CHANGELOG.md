@@ -4,6 +4,20 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.15.1] - 2026-10-08
+
+### Changed
+- **Join hint relocated off the map.** The permanent instruction is now a centered DOM strip in
+  the empty band **between the control bar and the arena** (CSS gold text with a black outer
+  stroke) instead of covering bottom-left map tiles. The canvas-drawn version (and its fit-to-width
+  code) is gone; the persisted **Join hint** switch and EN/AR strings are unchanged.
+
+### Removed
+- **Canvas debug overlay** (`src/debug.js`): the FPS/frame-time graph, particle & tile-ownership
+  boxes, velocity arrows, hitbox circles and grid overlay that painted over the arena whenever the
+  debug panel opened. The panel's **Performance** section already shows these stats as text —
+  opening the debug menu now draws nothing on the map. Dead `DEBUG_FPS_*` constants dropped.
+
 ## [2.15.0] - 2026-10-08
 
 ### Added

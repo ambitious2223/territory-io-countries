@@ -4,6 +4,27 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Hint off the map + debug overlay removed (2.15.1)
+
+User: the permanent hint "taking place in the bottom left corner of the map … make it fit in the
+empty area between the controls and the arena", and the stats/frame overlay drawn over the arena
+when the debug menu opens should go.
+
+**Done**
+- Hint is now a centered DOM strip (`#join-hint`) inside `.canvas-wrap` — CSS `-webkit-text-stroke`
+  black outline over gold, `paint-order: stroke fill`, responsive clamp sizing, `pointer-events:
+  none`; it occupies only the letterbox band and never touches the canvas. `onboarding` lost
+  `drawHint`/`fitFont`; `ui.js initOnboardingPanel` applies the persisted flag to the element.
+- Deleted the canvas debug overlay entirely: `src/debug.js` gone, `game.js` no longer constructs,
+  feeds or draws it, `DEBUG_FPS_GRAPH_*`/`DEBUG_FPS_HISTORY` removed. DOM Performance panel
+  unchanged.
+- Hint test rewritten to persistence-only; 161 tests green.
+
+**Verified**
+- `npm run lint` clean · `npm test` **161 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Reset Players button (2.15.0)
 
 User: "old players keep joining next matches — how can I have a reset player to 0 button beside

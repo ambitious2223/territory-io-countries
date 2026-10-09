@@ -183,61 +183,8 @@ export class Onboarding {
   }
 
   draw(ctx) {
-    this.drawHint(ctx);
     this.drawGuide(ctx);
     this.drawTip(ctx);
-  }
-
-  fitFont(ctx, text, maxWidth, baseSize, minSize) {
-    let size = baseSize;
-    ctx.font = `bold ${size}px sans-serif`;
-    while (size > minSize && ctx.measureText(text).width > maxWidth) {
-      size -= 1;
-      ctx.font = `bold ${size}px sans-serif`;
-    }
-    return size;
-  }
-
-  drawHint(ctx) {
-    if (!this.hintEnabled) return;
-    const line1 = t('hint.line1');
-    const line2 = t('hint.line2');
-    const edge = 16;
-    const base1 = 756;
-    const base2 = 789;
-
-    ctx.save();
-    ctx.lineJoin = 'round';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-
-    const size1 = this.fitFont(ctx, line1, 444, 26, 17);
-    const w1 = ctx.measureText(line1).width;
-    const size2 = this.fitFont(ctx, line2, CONFIG.CANVAS_WIDTH - edge * 2, 15, 11);
-    const w2 = ctx.measureText(line2).width;
-
-    const plateX = 8;
-    const plateY = base1 - size1 - 8;
-    const plateW = Math.max(w1, w2) + edge + 8;
-    const plateH = base2 + 8 - plateY;
-    ctx.fillStyle = 'rgba(6, 7, 9, 0.62)';
-    roundRect(ctx, plateX, plateY, plateW, plateH, 10);
-    ctx.fill();
-
-    ctx.font = `bold ${size1}px sans-serif`;
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = '#000000';
-    ctx.strokeText(line1, edge, base1);
-    ctx.fillStyle = '#FFD700';
-    ctx.fillText(line1, edge, base1);
-
-    ctx.font = `bold ${size2}px sans-serif`;
-    ctx.lineWidth = 4;
-    ctx.strokeText(line2, edge, base2);
-    ctx.fillStyle = '#FFD700';
-    ctx.fillText(line2, edge, base2);
-
-    ctx.restore();
   }
 
   drawGuide(ctx) {

@@ -165,28 +165,17 @@ describe('persisted switches', () => {
     expect(() => onboarding.draw(ctxStub())).not.toThrow()
   })
 
-  it('draws the permanent join hint by default and honors its toggle', () => {
+  it('persists the join-hint switch (rendered in the DOM band, not on the canvas)', () => {
     const onboarding = new Onboarding(game)
     expect(onboarding.hintEnabled).toBe(true)
-
-    const calls = { strokes: 0, fills: 0 }
-    const ctx = {
-      save: () => {}, restore: () => {},
-      measureText: () => ({ width: 100 }),
-      strokeText: () => { calls.strokes += 1 },
-      fillText: () => { calls.fills += 1 },
-      fill: () => {}, beginPath: () => {}, moveTo: () => {}, arcTo: () => {}, closePath: () => {},
-      fillStyle: '', strokeStyle: '', lineWidth: 0, font: '', textAlign: '', textBaseline: '', lineJoin: '',
-    }
-    onboarding.drawHint(ctx)
-    expect(calls.fills).toBe(2)
-    expect(calls.strokes).toBe(2)
 
     onboarding.setHintEnabled(false)
     expect(store['twf.hint']).toBe('0')
     const reloaded = new Onboarding(game)
     expect(reloaded.hintEnabled).toBe(false)
-    reloaded.drawHint(ctx)
-    expect(calls.fills).toBe(2)
+
+    reloaded.setHintEnabled(true)
+    expect(store['twf.hint']).toBe('1')
+    expect(new Onboarding(game).hintEnabled).toBe(true)
   })
 })

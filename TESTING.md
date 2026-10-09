@@ -109,9 +109,11 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] Round start shows the big **How to Join** card (≈ half the arena, steps + nation chips);
       it auto-hides after ~10 s, ✕ dismisses it, and **Advanced → Guide & Tips** turns it off/on
       (persists). Contextual tips appear once each (join/gift/halfway/final 30 s) and are ✕-able.
-- [ ] The **permanent gold join hint** is visible bottom-left in every state (bold gold, black
-      outline) and never overlaps the tips strip, cinematic card or pick-a-side prompt; the
-      **Join hint** switch (persisted) hides/shows it without touching other components.
+- [ ] The **permanent gold join hint** sits **centered in the band between the controls and the
+      arena** (not on the map), bold gold with black outline in every state; the **Join hint**
+      switch (persisted) hides/shows it without touching other components.
+- [ ] Opening the debug panel draws **nothing over the arena** (no FPS graph, vectors or hitboxes);
+      FPS/frame/particle stats read from the panel's Performance section instead.
 - [ ] Restart Tikora → Game Hub lists **all 12 effects**; mapping dropdown in-game shows the same
       list; map each new effect (freeze / shield / team speed / claim storm / mega bomb / summon)
       and inject it: frozen soldiers get the icy ring, a shield shows the **white dashed border**

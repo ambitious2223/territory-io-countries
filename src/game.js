@@ -23,7 +23,6 @@ import { PowerUpManager } from './powerups.js';
 import { AudioEngine } from './audio.js';
 import { Analytics } from './analytics.js';
 import { Camera } from './renderer.js';
-import { DebugOverlay } from './debug.js';
 import { VFXSystem } from './vfx.js';
 import { generateMap } from './map.js';
 import { drawBases } from './bases.js';
@@ -45,7 +44,6 @@ export class Game {
     this.joinPrompt = new JoinPrompt();
     this.onboarding = new Onboarding(this);
     this.lastRoundState = null;
-    this.debug = new DebugOverlay();
     this.grid = new Grid();
     this.particles = new ParticleSystem();
     this.vfx = new VFXSystem();
@@ -467,7 +465,6 @@ export class Game {
       this.fpsFrames = 0;
       this.fpsTime = 0;
     }
-    this.debug.pushFrame(this.fps, this.lastFrameTime);
 
     if (!this.paused) {
       const dt = Math.min(rawDt, 3) * this.speed;
@@ -585,10 +582,6 @@ export class Game {
     drawBases(this.ctx, this);
 
     this.vfx.draw(this.ctx);
-
-    if (this.debugMode) {
-      this.debug.draw(this.ctx, this.marbles, this.grid, this.particles, this.fps, this.lastFrameTime);
-    }
 
     this.ctx.restore();
 

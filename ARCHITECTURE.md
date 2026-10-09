@@ -65,7 +65,6 @@
 | `ui.js` | DOM HUD, control bar, debug panels, game-over, i18n wiring |
 | `debugPanel.js` | Builds the floating tabbed debug panel (Connection/Teams/Overlay/Advanced) |
 | `debugFab.js` | Draggable debug FAB, tab switching, overlay-link copy |
-| `debug.js` | Canvas debug overlay (vectors, hitboxes, FPS) |
 | `teams.js` | Team model + join-keyword matcher (pure) |
 | `teamRegistry.js` | Team sync via `/api/teams`, localStorage, flag images, capitalScale, debounced auto-save |
 | `teamsPanel.js` | Teams editor UI |
@@ -142,7 +141,6 @@ render()
     balls.draw (avatar + team ring/glow/tint + nameplate)
     drawBases               # capital medallion (capitalScale) + photo + name pill — above balls
     vfx.draw
-    debug.draw (if enabled)
   camera.restore()
   HUD (DOM): nation leaderboard, timer, control bar, pause overlay
 ```

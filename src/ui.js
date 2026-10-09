@@ -260,8 +260,15 @@ export function initOnboardingPanel(game) {
   guide.checked = game.onboarding.joinEnabled;
   tips.checked = game.onboarding.tipsEnabled;
   if (hint) {
+    const applyHint = () => {
+      document.getElementById('join-hint')?.classList.toggle('hidden', !game.onboarding.hintEnabled);
+    };
     hint.checked = game.onboarding.hintEnabled;
-    hint.addEventListener('change', () => game.onboarding.setHintEnabled(hint.checked));
+    applyHint();
+    hint.addEventListener('change', () => {
+      game.onboarding.setHintEnabled(hint.checked);
+      applyHint();
+    });
   }
   guide.addEventListener('change', () => game.onboarding.setJoinEnabled(guide.checked));
   tips.addEventListener('change', () => game.onboarding.setTipsEnabled(tips.checked));
