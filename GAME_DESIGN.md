@@ -164,17 +164,19 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 - **Auto-zoom:** on every new viewer join the camera **follows their moving soldier** during focus
   and hold (photo + nickname card), then returns. Toggle it with **Auto-zoom** in the Cinematic
   section (persisted); with it off, joins still announce (sound) but the camera stays put.
-- **Join guide (50 % of the arena):** every round start shows a big "How to Join" card — three
-  numbered steps plus a chip per nation (flag + name) — auto-hides after 10 s, ✕ dismisses it for
+- **Join guide (50 % of the arena):** every round start shows a big "How to Join" card — two
+  numbered steps (comment your country **name**; most territory wins) plus a chip per nation
+  (flag + name) — auto-hides after 10 s, ✕ dismisses it for
   the round, and **debug → Advanced → Guide & Tips** has a persisted on/off switch + "Show now".
 - **Gameplay tips:** a top strip rotates short contextual instructions (first join, first gift,
   halfway, final 30 s) — one per milestone per round, 6 s each, ✕ and the same master switch.
   All of it is always dismissible.
 - **Permanent join hint:** always-on instructions in the **empty band between the control bar and
-  the arena** (centered DOM strip over the letterbox area) — big bold **gold text with a black
-  outer stroke**: *"COMMENT YOUR COUNTRY TO JOIN!"* plus the accepted formats. It never touches
-  the canvas or resizes anything; EN/AR; the persisted **Join hint** switch in Advanced → Guide &
-  Tips (on by default) shows/hides it. It is deliberately **not** drawn on the map.
+  the arena** (centered DOM strip over the letterbox area) — one line, big bold **gold text with a
+  black outer stroke**: *"COMMENT YOUR COUNTRY NAME TO JOIN!"* — names only, no vague parameters.
+  It never touches the canvas or resizes anything; EN/AR; the persisted **Join hint** switch in
+  Advanced → Guide & Tips (on by default) shows/hides it. It is deliberately **not** drawn on the
+  map.
 - **Pick-a-side prompt:** a gift/effect from someone **without a nation** raises an animated pop-up
   with their **profile photo + nickname** asking them to comment a country; the effect is **held**
   and fires automatically the moment they join (dropped after `JOIN_PROMPT_TIMEOUT`, 20 s).

@@ -135,7 +135,7 @@ export class Onboarding {
     const width = Math.round(CONFIG.CANVAS_WIDTH * CONFIG.JOIN_GUIDE_SHARE);
     const teams = (this.game && this.game.teams) || [];
     const rows = Math.max(1, Math.ceil(teams.length / CHIPS_PER_ROW));
-    const height = PAD + 30 + 3 * 22 + 10 + rows * 28 + PAD;
+    const height = PAD + 30 + 2 * 22 + 10 + rows * 28 + PAD;
     return {
       x: Math.round((CONFIG.CANVAS_WIDTH - width) / 2),
       y: Math.round((CONFIG.CANVAS_HEIGHT - height) / 2) - 16,
@@ -213,7 +213,7 @@ export class Onboarding {
     this.drawClose(ctx, rect);
 
     cursorY += 30;
-    const steps = [t('guide.step1'), t('guide.step2'), t('guide.step3')];
+    const steps = [t('guide.step1'), t('guide.step2')];
     steps.forEach((step, index) => {
       ctx.fillStyle = ACCENT;
       ctx.font = 'bold 14px monospace';

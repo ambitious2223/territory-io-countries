@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.15.2] - 2026-10-08
+
+### Changed — join messaging: names only
+- The permanent hint is now a **single clean line**: `COMMENT YOUR COUNTRY NAME TO JOIN!` /
+  `علّق اسم دولتك للانضمام!` — the vague formats line (code · number · flag emoji) is removed.
+- The round-start **How to Join** card drops its code/number/flag step as well (two steps now):
+  comment your country name → most territory wins. The matcher still *accepts* codes/numbers/flags
+  — only the messaging is simplified. EN/AR parity kept (key-parity test).
+
 ## [2.15.1] - 2026-10-08
 
 ### Changed

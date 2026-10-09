@@ -4,6 +4,24 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Hint copy: names only (2.15.2)
+
+User: "The top part of the description instruction is already enough … the ID / number / flag are
+pretty vague parameters. Let's keep it clean with names only."
+
+**Done**
+- Permanent hint reduced to one line: `COMMENT YOUR COUNTRY NAME TO JOIN!` (EN) /
+  `علّق اسم دولتك للانضمام!` (AR) — `hint.line2` removed from markup + dictionaries.
+- Round-start guide card loses its code/number/flag step → two steps (name → most territory wins);
+  card height recalculated. Matching behaviour untouched (codes/numbers still work for those who
+  type them).
+- Tests 161 green (key parity auto-verifies EN↔AR).
+
+**Verified**
+- `npm run lint` clean · `npm test` **161 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Hint off the map + debug overlay removed (2.15.1)
 
 User: the permanent hint "taking place in the bottom left corner of the map … make it fit in the
