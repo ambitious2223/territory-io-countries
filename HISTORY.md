@@ -4,6 +4,38 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-09 — Auto gift speed + Camera tab (2.20.0)
+
+Owner asked (1): "check the system if it's working … anybody is having automated coin value based
+speed because once they donate I need to have an effect even if I don't have a mapping in the
+hub", and (2) "add lively controls … put the camera tab by its own tab … a button of each viewer
+… Clicking on the button of the player name leads the camera to them and follows around."
+Chose (via Q&A): always-on speed burst · donor's own ball · human-viewer buttons only.
+
+**Done**
+- `src/config.js`: `GIFT_SPEED_PER_COIN` (0.05), `GIFT_SPEED_MIN` (2 s), `GIFT_SPEED_MAX` (10 s).
+- `src/giftEffects.js`: `giftSpeedDuration(coins)` (linear, clamped) + `autoGiftSpeed(game, event)`
+  → routes a `boost` through `executeEffect` with the donor's identity, so team resolution,
+  pick-a-side holding, VFX and telemetry all come free. `game.handleBridgeEvent` calls it on every
+  gift next to `playGift` — works with the hub closed (also restores Mock gift effects).
+- `src/debugPanel.js`: fifth tab **Camera**; Arena/Leader/nation chips moved out of Connection;
+  new **Players** section (`#cam-players`).
+- `src/cameraPanel.js` (new): `initCameraPanel` (moved from `ui.js`) + `cameraPlayerList`
+  (living human viewers) + `updateCameraPanel` — signature-diffed rebuild of `.cam-player-btn`
+  (team dot + name), click → `followBall` on the viewer's *current* marble, `.active` pulse on
+  the followed player. Buttons clear when the match's marbles are gone.
+- `game.js`: `resetRound` clears `manualCamera.follow` (no ghost-ball chasing); render calls
+  `updateCameraPanel`. `ui.js` slims down (init moved out, dead import dropped).
+- `src/debugPanel.css`: `.cam-player-btn` styles + follow pulse keyframes.
+- i18n: `debug.tab.camera`, `camera.players` (EN/AR).
+- Tests: `giftAutoSpeed.test.js` (6), `cameraPanel.test.js` (8), debug-panel markup updated to
+  five tabs + camera panel containment.
+
+**Verified**
+- `npm run lint` clean · `npm test` **188 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Win celebration with sound (2.19.0)
 
 Owner: "Start the win celebration process — detailed and great with sound effects."

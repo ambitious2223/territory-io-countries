@@ -1,6 +1,5 @@
 import { t, getLanguage } from './i18n.js';
 import { teamLabel } from './teams.js';
-import { subscribe as subscribeTeams } from './teamRegistry.js';
 import { CONFIG } from './config.js';
 import { getSoldierSpeed, setSoldierSpeed } from './speedControl.js';
 import { getWinners } from './winnersStore.js';
@@ -289,31 +288,6 @@ export function initOnboardingPanel(game) {
   guide.addEventListener('change', () => game.onboarding.setJoinEnabled(guide.checked));
   tips.addEventListener('change', () => game.onboarding.setTipsEnabled(tips.checked));
   show?.addEventListener('click', () => game.onboarding.showGuide());
-}
-
-export function initCameraPanel(game) {
-  const arenaBtn = document.getElementById('cam-arena');
-  const leaderBtn = document.getElementById('cam-leader');
-  const container = document.getElementById('cam-nations');
-  if (!arenaBtn || !game.manualCamera) return;
-  arenaBtn.addEventListener('click', () => game.manualCamera.reset());
-  leaderBtn?.addEventListener('click', () => game.manualCamera.focusLeader());
-  const renderChips = () => {
-    if (!container) return;
-    container.innerHTML = '';
-    for (const team of game.teams) {
-      const chip = document.createElement('button');
-      chip.className = 'ctrl-btn';
-      chip.style.flex = '1';
-      chip.style.minWidth = '78px';
-      const label = teamLabel(team, getLanguage());
-      chip.textContent = team.emoji ? `${team.emoji} ${label}` : label;
-      chip.addEventListener('click', () => game.manualCamera.focusTeam(team.id));
-      container.appendChild(chip);
-    }
-  };
-  renderChips();
-  subscribeTeams(renderChips);
 }
 
 export function initViewersPanel(game) {

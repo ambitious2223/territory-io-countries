@@ -63,7 +63,8 @@
 | `renderer.js` | Camera (pan/zoom/shake) + shared draw helpers |
 | `viewerManager.js` | Viewer/bot roster, active cap + reinforcement queue |
 | `ui.js` | DOM HUD, control bar, debug panels, game-over, i18n wiring |
-| `debugPanel.js` | Builds the floating tabbed debug panel (Connection/Teams/Overlay/Advanced) |
+| `debugPanel.js` | Builds the floating tabbed debug panel (Connection/Camera/Teams/Overlay/Advanced) |
+| `cameraPanel.js` | Camera tab: Arena/Leader/nation presets + live per-viewer follow buttons |
 | `debugFab.js` | Draggable debug FAB, tab switching, overlay-link copy |
 | `teams.js` | Team model + join-keyword matcher (pure) |
 | `teamRegistry.js` | Team sync via `/api/teams`, localStorage, flag images, capitalScale, debounced auto-save |
@@ -76,7 +77,7 @@
 | `winnersStore.js` | Winners persistence + sync |
 | `joinCinematic.js` | Camera intro queue for new joiners (tracks the moving soldier) |
 | `joinPrompt.js` | "Pick a side" pop-up + held-effect queue for non-member gifters |
-| `giftEffects.js` | Gift → power-up effect executor (runs as the activator's identity) |
+| `giftEffects.js` | Gift → power-up effect executor (runs as the activator's identity) + built-in coin-scaled gift speed burst |
 | `tikora.js` | Tikora effect hub (manifest + served `hub-client.js`); auto-connects, hub-driven |
 | `tikoraClient.js` | Loads Tikora's `hub-client.js` over the relay |
 | `imageUtils.js` | Image load + 3:2 cover-crop |

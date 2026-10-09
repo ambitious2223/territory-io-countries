@@ -107,10 +107,12 @@ Every team accumulates a live **score** from interaction (displayed in the debug
 reconstruction, gift `msgId` dedupe, gift-streak combo rule.
 
 ### Gifts → power-ups
-Gift → power-up wiring lives **only in the hub** (Tikora → Game Hub → Trigger → Effect): map any
+Gift → power-up **wiring** lives **only in the hub** (Tikora → Game Hub → Trigger → Effect): map any
 gift (by id, name, or min coins) — or a **free trigger** (chat, like, follow, share, member) — to
 one of the effects this game **declares** in `tikora.manifest.json`. The web app contains **no**
-mapping UI and no hardcoded gift rules; it only executes what the hub sends:
+mapping UI; it only executes what the hub sends. On top of that, one **built-in default** always
+runs (D-049): **every gift** bursts the **donor's own ball** with overcharge for a coin-scaled
+duration (`coins × GIFT_SPEED_PER_COIN`, clamped to 2–10 s), hub mapping or not. The hub catalog:
 - **Overcharge / Speed Boost** — one soldier moves faster for N seconds.
 - **Team Speed** — every soldier of the nation gets that burst.
 - **Freeze** — enemy soldiers stop for N seconds (icy ring; movement only — no damage).
@@ -164,13 +166,13 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   **Reset Players** wipes the human roster, queued slots, their soldiers and their
   registrations/prompts in one click (AI + summoned soldiers stay, so the arena is never empty).
 - Debug panel: a floating gear opens a **glass card** (380 px, translucent blur, cyan accent) with
-  pill tabs — **Connection · Teams · Overlay · Advanced** — and collapsible section cards.
+  pill tabs — **Connection · Camera · Teams · Overlay · Advanced** — and collapsible section cards.
   Controls are modern: status **pills** with coloured dots, **toggle switches**, a **segmented**
-  Auto/Direct/TikFinity/Mock control, and meters. Connection holds the **Camera presets**
-  (Arena/Leader/nation jumps) and a **Soldiers speed slider** (live, persisted) beside the bridge
-  controls. Teams holds the capital-size slider, the editor + photo upload (all team edits
-  **auto-save** after ~1.5 s); Advanced holds the dev tools. The Tikora section is **read-only** —
-  the hub owns activating/deactivating effects.
+  Auto/Direct/TikFinity/Mock control, and meters. Connection holds the bridge controls and the
+  **Soldiers speed slider** (live, persisted). **Camera** holds the presets (Arena/Leader/nation
+  jumps) and a live **Players** list. Teams holds the capital-size slider, the editor + photo
+  upload (all team edits **auto-save** after ~1.5 s); Advanced holds the dev tools. The Tikora
+  section is **read-only** — the hub owns activating/deactivating effects.
 - **Auto-zoom:** on every new viewer join the camera **follows their moving soldier** during focus
   and hold (photo + nickname card), then returns. Toggle it with **Auto-zoom** in the Cinematic
   section (persisted); with it off, joins still announce (sound) but the camera stays put.
@@ -178,8 +180,10 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   them (auto-reset if it dies), **mouse wheel** zooms toward the cursor (1×–3×), **drag** pans;
   keyboard backup: arrows pan, `+`/`-` zoom, `0`/`Esc` reset. Manual input cancels a running
   auto-zoom (auto-zoom re-arms on the next join) and the view **stays until reset** — with a toast
-  confirming manual mode. Presets in debug → Connection → **Camera**: Arena, Leader, and one chip
-  per nation (jumps to its capital).
+  confirming manual mode. Presets in debug → **Camera tab** (D-049): Arena, Leader, one chip per
+  nation (jumps to its capital), and a **Players** list — one button per living human viewer;
+  clicking a name flies the camera to their soldier and follows them (the followed button pulses);
+  buttons clear on round reset and rebuild for the new match.
 - **Join guide (50 % of the arena):** every round start shows a big "How to Join" card — two
   numbered steps (comment your country **name**; most territory wins) plus a chip per nation
   (flag + name) — auto-hides after 10 s, ✕ dismisses it for

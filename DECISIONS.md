@@ -4,6 +4,35 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-049 — Automatic coin-scaled gift speed burst; Camera gets its own tab with player follow buttons
+- **Context:** Owner (2 requests): "if anybody is having [an] automated coin value based speed …
+  once they donate I need to have an effect even if I don't have a mapping in the hub" and "add
+  lively controls … put the camera tab by its own tab … a button of each viewer … Clicking on the
+  button of the player name leads the camera to them and follows around." D-045 made effects
+  100 % hub-driven, so gifts with no mapping only scored + chimed.
+- **Decision (A) — always-on speed burst:** every `gift` bridge event also runs
+  `autoGiftSpeed(game, event)` → `executeEffect(game, 'boost', { duration })` on the **donor's own
+  ball**, duration = `coins × GIFT_SPEED_PER_COIN` clamped to `GIFT_SPEED_MIN`(2 s)–`GIFT_SPEED_MAX`
+  (10 s). It reuses the full effect pipeline (layered team resolution, pick-a-side holding,
+  identity spawn, VFX, telemetry) and fires **in addition to** any hub mapping, hub or no hub.
+- **Decision (B) — Camera tab:** the panel gains a fifth tab `camera` holding the existing
+  presets (moved from Connection) plus a **Players** section. `src/cameraPanel.js` owns init and a
+  signature-diffed per-frame rebuild of one `.cam-player-btn` per **living human viewer**
+  (`cameraPlayerList`); click resolves the viewer's current marble and `followBall`s it; the
+  followed ball's button gets `.active` (pulse). Buttons clear when the match's marbles are gone
+  and rebuild for the new match. `resetRound` now also clears `manualCamera.follow` so the camera
+  never chases a discarded ghost ball.
+- **Rationale:** The owner wants donations to always *feel* like something happened without
+  configuring the hub — a single fixed default is not a second mapping system (D-045 removed
+  configurability, not sensible defaults). Follow-by-name is the practical streamer tool: you
+  can't reliably click a moving ball mid-stream.
+- **Alternatives:** Fallback only when the hub is silent (flaky — hub effects arrive on a
+  separate channel with no correlation id); put the default in the hub (useless offline and
+  outside the game's control); buttons for bots too (duplicates the nation chips); auto-follow on
+  join (steals the camera — manual only, per D-047).
+- **Amends:** D-045 (gifts now have one built-in game-side default; mapping configurability
+  stays hub-only) and D-047's note that presets live in the Connection tab.
+
 ## D-048 — Win celebration: canvas screen, procedural sound, contributors podium
 - **Context:** D-041 approved confetti + flag + top-3; the owner added "detailed and great with
   sound effects". The old end-of-round feedback was a colour sweep + a `DOMINATION!` toast.

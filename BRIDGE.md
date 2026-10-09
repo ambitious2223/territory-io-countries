@@ -127,9 +127,10 @@ Socket events are listed in [ARCHITECTURE.md](./ARCHITECTURE.md) §8.
   `userId` in addition to gift metadata), so effect soldiers can show who triggered them. If the
   activator has no nation, the game queues a "pick a side" prompt and applies the effect when they
   join.
-- Gift → power-up mapping happens **only in the hub** (its Trigger → Effect mapper); the game
+- Gift → power-up **mapping** happens **only in the hub** (its Trigger → Effect mapper); the game
   declares effects in `tikora.manifest.json` and executes what the hub sends — there is no
-  in-app mapping anymore.
+  in-app mapping. One built-in default still runs game-side on **every** gift bridge event
+  (D-049): a coin-scaled speed `boost` on the donor's own ball, in addition to any hub effect.
 
 ---
 

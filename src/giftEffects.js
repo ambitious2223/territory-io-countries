@@ -152,6 +152,11 @@ const EFFECTS = {
 
 export const EFFECT_KEYS = Object.keys(EFFECTS)
 
+export function giftSpeedDuration(coins) {
+  const raw = toNumber(coins, 0) * CONFIG.GIFT_SPEED_PER_COIN
+  return Math.min(CONFIG.GIFT_SPEED_MAX, Math.max(CONFIG.GIFT_SPEED_MIN, raw))
+}
+
 function setStats(game, patch) {
   if (game.effectStats) Object.assign(game.effectStats, patch)
 }
@@ -242,4 +247,14 @@ export function executeEffect(game, effectKey, params = {}, target = {}) {
   game.onboarding?.notify('gift')
   setStats(game, { outcome: 'applied' })
   return effectKey
+}
+
+export function autoGiftSpeed(game, event) {
+  if (!game || !event) return null
+  return executeEffect(game, 'boost', { duration: giftSpeedDuration(event.coins) }, {
+    userId: event.userId ?? event.username,
+    username: event.username,
+    name: event.name || event.username,
+    avatar: event.avatar || ''
+  })
 }

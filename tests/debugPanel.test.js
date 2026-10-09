@@ -23,6 +23,7 @@ describe('debug panel markup', () => {
       'language-select', 'overlay-url', 'btn-copy-overlay', 'btn-open-overlay',
       'mock-type', 'mock-username', 'mock-value', 'btn-mock-inject', 'bypass-prompt',
       'guide-enabled', 'tips-enabled', 'hint-always', 'btn-guide-show',
+      'cam-arena', 'cam-leader', 'cam-nations', 'cam-players',
       'viewer-cap', 'viewer-aifill', 'dbg-viewers-bar',
       'dbg-cine-queue', 'cine-blur', 'cine-blur-value', 'cine-autozoom', 'btn-cine-skip',
       'scoring-panel-body', 'winners-panel-body',
@@ -38,9 +39,25 @@ describe('debug panel markup', () => {
     expect(html).not.toContain('btn-mappings-')
   })
 
-  it('keeps the four tabs', () => {
-    for (const tab of ['connection', 'teams', 'overlay', 'advanced']) {
+  it('keeps the five tabs with the camera on its own', () => {
+    for (const tab of ['connection', 'camera', 'teams', 'overlay', 'advanced']) {
       expect(html).toContain(`data-tab="${tab}"`)
     }
+    expect(html).toContain('data-tab-panel="camera"')
+  })
+
+  it('houses the player buttons inside the camera panel', () => {
+    const cameraPanel = html.slice(
+      html.indexOf('data-tab-panel="camera"'),
+      html.indexOf('data-tab-panel="teams"')
+    )
+    expect(cameraPanel).toContain('id="cam-players"')
+    expect(cameraPanel).toContain('id="cam-arena"')
+    expect(cameraPanel).toContain('id="cam-nations"')
+    const connectionPanel = html.slice(
+      html.indexOf('data-tab-panel="connection"'),
+      html.indexOf('data-tab-panel="camera"')
+    )
+    expect(connectionPanel).not.toContain('id="cam-arena"')
   })
 })

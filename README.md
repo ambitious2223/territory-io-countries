@@ -14,9 +14,9 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.19.0
+## Status — v2.20.0
 
-Every gate is green: `npm run lint`, `npm test` (173 tests incl. win-screen/confetti/camera
+Every gate is green: `npm run lint`, `npm test` (188 tests incl. win-screen/confetti/camera/gift
 suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
@@ -56,8 +56,10 @@ suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
   debounce; the Save button stays as an instant save). A **capital size slider** (0.5x–2.5x) scales
   every stronghold.
 - **Modern debug menu:** a draggable **glass panel** (cyan accent, pill tabs, toggle switches,
-  status pills) opened by a floating gear — Connection · Teams · Overlay · Advanced; position and
-  state persist.
+  status pills) opened by a floating gear — Connection · Camera · Teams · Overlay · Advanced;
+  position and state persist. The **Camera tab** has the Arena/Leader/nation presets plus a live
+  **Players** list: one button per living human viewer — click a name and the camera flies to
+  their soldier and follows them (buttons clear each round reset).
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - **Win celebration:** every round ends with confetti (some pieces made of the winner's flag), a
@@ -70,9 +72,11 @@ suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
   follow, wheel to zoom (1–3×), drag to pan, arrows/`+`/`-`/`0` reset, with Arena/Leader/nation
   presets in the debug panel.
 - **12 power-ups declared for the hub** (overcharge, speed boost, freeze, shield, team speed,
-  color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim). All gift/trigger
-  mapping happens **in the hub** — the web app holds no mapping UI and no hardcoded rules; it just
-  declares (manifest) and executes. Auto-looping timed rounds and persisted all-time winners.
+  color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim). Gift/trigger
+  **mapping** happens **in the hub** — the web app holds no mapping UI; it just declares
+  (manifest) and executes. One built-in default runs regardless: **every gift bursts the donor's
+  own ball with a coin-scaled speed boost** (2–10 s), hub or no hub. Auto-looping timed rounds
+  and persisted all-time winners.
 - Complete English + Arabic UI — switching language translates every string (test-enforced) and
   never changes layout positions.
 

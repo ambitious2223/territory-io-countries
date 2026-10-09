@@ -50,9 +50,15 @@
 - `tests/cinematic.test.js` — cinematic tracks a moving soldier and stops when it dies.
 - `tests/durations.test.js` — overcharge lasts 6 s, capture hold 2.5 s, power-ups wait their
   interval (all in seconds, not frames).
-- `tests/debugPanel.test.js` — panel markup pins every wired id and the four tabs.
+- `tests/debugPanel.test.js` — panel markup pins every wired id and the five tabs; camera panel
+  owns the presets + `#cam-players` (Connection no longer holds them).
 - `tests/cameraControls.test.js` — zoom-toward-cursor math + clamps, focus/follow/death-reset,
   pan/zoom/reset, Arena/Leader/nation presets, canvas-handler attach.
+- `tests/giftAutoSpeed.test.js` — coin→duration scaling + floor/cap clamps, the burst lands on
+  the donor's ball, holds via the pick-a-side prompt for nation-less donors, needs no hub.
+- `tests/cameraPanel.test.js` — player list = living humans only (bots/dead/queued excluded),
+  clears when the match is gone, button rebuild on roster/marble change, click-follow resolves
+  the current marble, followed button highlights, presets still wired.
 - `tests/confetti.test.js` — burst + rain, piece cap, self-stop, clear-on-stop, draw smoke.
 - `tests/winScreen.test.js` — snapshot (winner/top-3 nations/supporters), scheduled reveal/podium
   sounds fire once, fade-in + draw smoke + clean hide.
@@ -91,8 +97,15 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       (resets when it dies); wheel zooms toward the cursor and never passes 3× or below 1×; drag
       pans; arrows pan, `+`/`-` zoom, `0`/`Esc` resets; a yellow toast appears; a running join
       cinematic is cancelled; **nothing moves on its own afterwards**.
-- [ ] **Camera presets** (Connection tab): Arena resets, Leader jumps to the leading nation's
+- [ ] **Camera tab:** Arena resets, Leader jumps to the leading nation's
       capital, nation chips jump to each capital at 1.6×; chips update when teams are edited.
+- [ ] **Players list (Camera tab):** one button per living human viewer (team dot + name); a new
+      viewer's button appears on join, disappears on death and on round reset, returns next match;
+      clicking a name flies the camera there and follows; the followed button pulses; bots absent.
+- [ ] **Auto gift speed:** inject a Mock gift (any coins) with **no hub running** → the donor's
+      ball overcharges for a coin-scaled 2–10 s (bigger value = longer, capped); a donor with no
+      nation gets the pick-a-side prompt with the burst held; a hub-mapped gift still fires its
+      mapped effect too.
 - [ ] **Win celebration:** end a round → colour wash + confetti (flag pieces if the winner has a
       photo) + medallion pop with sound → **VICTORY** + name + tiles/%/duration → podium with
       top-3 nations and top-3 supporters (photos, scores) + bell chime; plays through

@@ -191,6 +191,21 @@ biggest interactors; nothing lingers into the next round.
 
 ---
 
+## Phase 31 — Auto gift speed burst + Camera tab (D-049)
+- [x] Built-in default: every gift → coin-scaled `boost` on the donor's own ball
+      (`GIFT_SPEED_PER_COIN` / `_MIN` / `_MAX`), routed through `executeEffect` (prompt-holding,
+      identity, telemetry for free); fires with or without the hub
+- [x] Camera tab (5th pill): presets moved out of Connection + **Players** list
+      (`src/cameraPanel.js`) — one button per living human viewer, click → follow, `.active`
+      pulse, signature-diffed rebuild; cleared on round reset; `manualCamera.follow` cleared too
+- [x] Tests (188 total); docs (D-049, AGENTS/BRIDGE/GAME_DESIGN amended); released **2.20.0**
+
+**Verify:** Mock-inject a gift with the hub closed → donor's ball bursts (bigger coins = longer,
+2–10 s cap); a nation-less donor gets the pick-a-side prompt. Camera tab: buttons track joins and
+deaths, clear on round reset, clicking a name follows that player; Arena/Leader/chips unchanged.
+
+---
+
 ## Phase 22 — Loose join matching + cinematic performance
 - [x] `matchTeam`: Arabic in fuzzy/prefix, `ال` article optional, any-word/first-word matching,
       length-scaled typo tolerance with lookalike negatives

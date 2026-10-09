@@ -4,6 +4,21 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.20.0] - 2026-10-09
+
+### Added — automatic gift speed burst + dedicated Camera tab (D-049)
+- **Every donation now boosts speed** even with no hub mapping: gifts route through the effect
+  executor as a `boost` on the **donor's own ball**, with duration scaled by coin value
+  (`GIFT_SPEED_PER_COIN`, clamped to 2–10 s). Donors without a nation still get the pick-a-side
+  prompt, with the burst held until they join. Runs alongside any hub-mapped effect; no hub
+  required (Mock/offline gifts burst too).
+- **Camera is its own debug tab** (second pill): the Arena / Leader / per-nation presets moved out
+  of Connection, joined by a **Players** list — one button per living human viewer (team-colour
+  dot + name). Buttons appear as viewers join, disappear on death / round reset and repopulate
+  for the next match; clicking one **flies the camera to that player and follows them**; the
+  followed player's button pulses. AI bots excluded.
+- Camera wiring moved to `src/cameraPanel.js` (init + per-frame update); `ui.js` slimmed.
+
 ## [2.19.0] - 2026-10-08
 
 ### Added — win celebration (D-041)

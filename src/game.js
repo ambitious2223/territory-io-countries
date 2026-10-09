@@ -8,13 +8,14 @@ import { JoinCinematic } from './joinCinematic.js';
 import { JoinPrompt } from './joinPrompt.js';
 import { Onboarding } from './onboarding.js';
 import { ManualCamera } from './cameraControls.js';
+import { updateCameraPanel } from './cameraPanel.js';
 import { WinScreen } from './winScreen.js';
 import { ScoringEngine } from './scoring.js';
 import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
 import { buildOverlayPayload } from './overlaySnapshot.js';
 import { addWinner } from './winnersStore.js';
-import { executeEffect } from './giftEffects.js';
+import { executeEffect, autoGiftSpeed } from './giftEffects.js';
 import { TikoraHub } from './tikora.js';
 import { Grid } from './grid.js';
 import { Marble } from './marble.js';
@@ -269,6 +270,7 @@ export class Game {
     this.winColor = null;
     this.winReason = null;
     this.camera.reset();
+    this.manualCamera.follow = null;
     this.cinematic.skip();
     this.joinPrompt.clear();
     this.winScreen.hide();
@@ -350,6 +352,7 @@ export class Game {
     this.scoring.applyEvent(event);
     if (event && event.type === 'gift') {
       this.audio.playGift(CONFIG.CANVAS_WIDTH / 2);
+      autoGiftSpeed(this, event);
     }
   }
 
@@ -606,6 +609,7 @@ export class Game {
     updateDebugPanel(this, this.particles, this.grid);
     updateConnectionPanel(this);
     updateViewersPanel(this);
+    updateCameraPanel(this);
     updateCinematicPanel(this);
     updateTikoraPanel(this);
     updateWinnersPanel(this);
