@@ -4,6 +4,27 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Modern glass debug menu (2.17.0)
+
+Owner: "a rework of the D-Bug menu for a more modern look" (after choosing: glass floating card
++ cyan accent, built after the brainstorm).
+
+**Done**
+- `src/debugPanel.css` (new module stylesheet, imported by `debugPanel.js`): glass panel
+  (380 px, blur, radius 18), section cards with collapsible headers, pill tabs, status pills,
+  toggle switches, segmented mode control, viewer meter, custom scrollbars, glass FAB.
+- Markup: `#conn-mode` is now a hidden input driven by the segmented buttons (`.value` API kept
+  for `initConnectionPanel`); checkboxes got the `toggle` class; viewers meter + blur value chip
+  added. `ui.js` wires segments, pill states (bridge/tikora), meter width, blur %, and section
+  collapse via delegation.
+- Removed ~280 lines of dead CSS from `index.html` (old panel, legacy `.lb-*`, `.mapping-*`).
+- `tests/debugPanel.test.js` pins every wired id + tab list (155 tests total).
+
+**Verified**
+- `npm run lint` clean · `npm test` **155 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Hub-only effect mapping (2.16.0)
 
 Owner: "We don't have to have any of the declared effects in the controls hard-coded into the web

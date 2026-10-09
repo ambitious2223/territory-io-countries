@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.16.0
+## Status — v2.17.0
 
-Every gate is green: `npm run lint`, `npm test` (152 tests incl. effect-routing/onboarding/
-hub-identity suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (155 tests incl. debug-panel-markup/effect-routing/
+onboarding suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -55,8 +55,9 @@ hub-identity suites + a headless game-loop test), `npm run build`, and `npm run 
   the leaderboard and the overlay. Uploads apply live and **all team edits auto-save** (~1.5 s
   debounce; the Save button stays as an instant save). A **capital size slider** (0.5x–2.5x) scales
   every stronghold.
-- **Lean debug menu:** Connection · Teams · Overlay · Advanced (secondary tools collapsed). A
-  floating draggable button opens it (position + state persist).
+- **Modern debug menu:** a draggable **glass panel** (cyan accent, pill tabs, toggle switches,
+  status pills) opened by a floating gear — Connection · Teams · Overlay · Advanced; position and
+  state persist.
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - Camera pan/zoom **join cinematic** that tracks the new viewer's soldier, with a profile-photo

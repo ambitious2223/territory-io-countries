@@ -4,6 +4,20 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.17.0] - 2026-10-08
+
+### Changed — modern glass debug menu
+- The debug panel is now a **glass card**: 380 px, translucent blur (`backdrop-filter`), 18 px
+  radius, cyan hairline border, section **cards** with collapsible headers (click a heading),
+  pill tabs with a glow, glassmorphic gear FAB. Drag / collapse / position persistence unchanged.
+- **Modern controls** (all IDs unchanged): status **pills** with coloured dots (bridge/tikora
+  online/error), **toggle switches** (AI Fill, guide/tips/hint, skip pick-a-side), a **segmented
+  control** for Auto/Direct/TikFinity/Mock, a **meter bar** for viewers vs cap, and a value chip on
+  the blur slider.
+- Debug CSS moved out of `index.html` into **`src/debugPanel.css`**; ~280 lines of dead CSS
+  (legacy `.lb-*`, `.mapping-*`, old panel styles) removed.
+- New markup-guard test (`tests/debugPanel.test.js`) pins every wired id so markup/JS can't drift.
+
 ## [2.16.0] - 2026-10-08
 
 ### Removed — gift mapping is hub-only

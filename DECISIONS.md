@@ -4,6 +4,20 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-046 — Debug menu: modern glass card, real controls, no dead CSS
+- **Context:** Owner wanted "a more modern look" after approving a glass floating card + cyan
+  accent; the panel was a dense 260 px flat list with raw checkboxes/selects and ~280 lines of
+  styling parked in `index.html`.
+- **Decision:** Debug styling moved to `src/debugPanel.css`; panel restyled (380 px, blur, cards,
+  collapsible sections, pill tabs, status pills with dots, toggle switches, segmented
+  Auto/Direct/TikFinity/Mock control behind a hidden `#conn-mode` input so the `.value` contract
+  holds, viewer meter, blur value chip, glass FAB). Drag/collapse/FAB persistence and every
+  element id kept; dead `.lb-*`/`.mapping-*` CSS deleted; markup-guard test added.
+- **Rationale:** Modern look with zero behavioural risk — ids and wiring untouched; test prevents
+  markup/JS drift.
+- **Alternatives:** Docked drawer/bottom sheet (rejected by owner); full React port (forbidden by
+  guardrails).
+
 ## D-045 — Gift→effect mapping is hub-only; the app never hardcodes effect controls
 - **Context:** Owner: "We don't have to have any of the declared effects in the controls
   hard-coded into the web app. It should always rely on the hub." The app carried a second,

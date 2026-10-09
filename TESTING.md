@@ -76,6 +76,10 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] `/health` reports the expected `source` and `tiktokState`.
 - [ ] Debug → Connect shows the right status badge for the chosen source (opened via the FAB).
 - [ ] The floating debug button drags, toggles the tabbed panel, and remembers its spot.
+- [ ] Debug menu checks: glass panel with pill tabs; **segmented** mode switch still connects;
+      toggles (AI Fill / guide / hints) switch and persist; Bridge/Tikora pills show green online /
+      red offline; viewer meter tracks the cap; section headings collapse their card; language
+      switch relabels everything (EN/AR) without moving the layout.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
 - [ ] Loose matching: `Egypt ❤`, `I choose EGYPT`, `united`, `الامارت`, `سعودية` all join the
       right nation; `iran`/`nope` join nothing.

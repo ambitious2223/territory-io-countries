@@ -157,11 +157,13 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   **Start · Reset Players · End · Auto**; the debug panel opens from the floating gear button.
   **Reset Players** wipes the human roster, queued slots, their soldiers and their
   registrations/prompts in one click (AI + summoned soldiers stay, so the arena is never empty).
-- Debug panel: a floating gear opens a tabbed workspace — **Connection · Teams · Overlay ·
-  Advanced**. Connection holds a **Soldiers speed slider** (live, persisted) beside the bridge
-  controls. Teams holds the capital-size slider, the editor + photo upload (all team edits
-  **auto-save** after ~1.5 s); Advanced (collapsed) holds the dev tools. The Tikora section is
-  **read-only** — the hub owns activating/deactivating effects.
+- Debug panel: a floating gear opens a **glass card** (380 px, translucent blur, cyan accent) with
+  pill tabs — **Connection · Teams · Overlay · Advanced** — and collapsible section cards.
+  Controls are modern: status **pills** with coloured dots, **toggle switches**, a **segmented**
+  Auto/Direct/TikFinity/Mock control, and meters. Connection holds a **Soldiers speed slider**
+  (live, persisted) beside the bridge controls. Teams holds the capital-size slider, the editor +
+  photo upload (all team edits **auto-save** after ~1.5 s); Advanced holds the dev tools. The
+  Tikora section is **read-only** — the hub owns activating/deactivating effects.
 - **Auto-zoom:** on every new viewer join the camera **follows their moving soldier** during focus
   and hold (photo + nickname card), then returns. Toggle it with **Auto-zoom** in the Cinematic
   section (persisted); with it off, joins still announce (sound) but the camera stays put.

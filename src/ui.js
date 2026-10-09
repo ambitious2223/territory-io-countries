@@ -157,6 +157,11 @@ export function initDebugPanel() {
     panel.classList.toggle('collapsed');
     collapseBtn.innerHTML = panel.classList.contains('collapsed') ? '&#9650;' : '&#9660;';
   });
+
+  panel.addEventListener('click', (event) => {
+    const heading = event.target.closest('.debug-section h5');
+    if (heading) heading.closest('.debug-section').classList.toggle('collapsed');
+  });
 }
 
 export function updateDebugPanel(game, particles, grid) {
@@ -184,6 +189,16 @@ export function updateDebugPanel(game, particles, grid) {
 
 export function initConnectionPanel(game) {
   initSpeedSlider(game);
+  const modeInput = document.getElementById('conn-mode');
+  const segmented = document.getElementById('conn-mode-segmented');
+  if (modeInput && segmented) {
+    segmented.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-value]');
+      if (!button) return;
+      modeInput.value = button.dataset.value;
+      segmented.querySelectorAll('button').forEach((entry) => entry.classList.toggle('active', entry === button));
+    });
+  }
   const connectBtn = document.getElementById('btn-conn-connect');
   if (!connectBtn) return;
 
@@ -297,14 +312,22 @@ export function updateViewersPanel(game) {
   set('dbg-viewers-active', game.viewers.activeCount);
   set('dbg-viewers-queued', game.viewers.queuedCount);
   set('dbg-viewers-total', game.viewers.totalCount);
+  const bar = document.getElementById('dbg-viewers-bar');
+  if (bar) bar.style.width = `${Math.min(100, (game.viewers.activeCount / Math.max(1, game.viewers.cap)) * 100)}%`;
 }
 
 export function initCinematicPanel(game) {
   const blur = document.getElementById('cine-blur');
+  const blurValue = document.getElementById('cine-blur-value');
   if (blur) {
-    blur.value = String(Math.round(game.camera.blurScale * 100));
+    const syncBlur = () => {
+      blur.value = String(Math.round(game.camera.blurScale * 100));
+      if (blurValue) blurValue.textContent = `${blur.value}%`;
+    };
+    syncBlur();
     blur.addEventListener('input', () => {
       game.camera.blurScale = Number(blur.value) / 100;
+      if (blurValue) blurValue.textContent = `${blur.value}%`;
     });
   }
   const skip = document.getElementById('btn-cine-skip');
@@ -362,13 +385,23 @@ export function updateWinnersPanel(game) {
   }).join('');
 }
 
+function pillClass(status, okValues, badValues) {
+  if (okValues.includes(status)) return 'ok';
+  if (badValues.includes(status)) return 'bad';
+  return '';
+}
+
 export function updateTikoraPanel(game) {
   if (!game.debugMode || !game.tikora) return;
-  const set = (id, value) => {
+  const set = (id, value, pill = '') => {
     const el = document.getElementById(id);
-    if (el) el.textContent = value;
+    if (!el) return;
+    el.textContent = value;
+    el.classList.remove('ok', 'bad', 'warn');
+    if (pill) el.classList.add(pill);
   };
-  set('dbg-tikora-status', game.tikora.status);
+  const status = game.tikora.status;
+  set('dbg-tikora-status', status, pillClass(status, ['connected'], ['error', 'disconnected']));
   set('dbg-tikora-slug', game.hubIdentity?.slug || '--');
   set('dbg-tikora-relay', game.hubIdentity?.relayUrl || '--');
   const stats = game.effectStats || { received: 0, lastKey: '', outcome: '-' };
@@ -389,12 +422,15 @@ export function updateCinematicPanel(game) {
 export function updateConnectionPanel(game) {
   if (!game.debugMode) return;
   const state = game.bridgeState || {};
-  const set = (id, value) => {
+  const set = (id, value, pill = '') => {
     const el = document.getElementById(id);
-    if (el) el.textContent = value;
+    if (!el) return;
+    el.textContent = value;
+    el.classList.remove('ok', 'bad', 'warn');
+    if (pill) el.classList.add(pill);
   };
-  set('dbg-conn-bridge', state.bridgeOk ? 'online' : 'offline');
-  set('dbg-conn-state', state.tiktokState || 'idle');
+  set('dbg-conn-bridge', state.bridgeOk ? 'online' : 'offline', state.bridgeOk ? 'ok' : 'bad');
+  set('dbg-conn-state', state.tiktokState || 'idle', pillClass(state.tiktokState || 'idle', ['live'], ['error', 'offline']));
   set('dbg-conn-source', state.source || 'none');
   set('dbg-conn-events', game.eventCount ?? 0);
   set('dbg-conn-error', state.lastError || '-');

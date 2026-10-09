@@ -150,11 +150,14 @@ still fires its effect; Mock gift injects only score (no effect) without the hub
 ---
 
 ## Phase 28 — Modern glass debug menu (approved: glass card + cyan accent)
-- [ ] Extract debug CSS from `index.html` into `src/debugPanel.css`; glass panel (380 px, blur,
-      radius 16, cyan hairline); keep drag/collapse/FAB persistence
-- [ ] Status pills, toggle switches, segmented connection mode (hidden `#conn-mode`), viewer
-      meters, blur value chip; collapsible section cards; glass FAB
-- [ ] Markup-guard test (`debugPanel` ids); docs; released **2.17.0**
+- [x] Debug CSS extracted to `src/debugPanel.css`; glass panel (380 px, blur, radius 18, cyan
+      hairline); drag/collapse/FAB persistence kept
+- [x] Status pills, toggle switches, segmented mode control (hidden `#conn-mode`), viewer meter,
+      blur value chip, collapsible section cards, glass FAB
+- [x] Markup-guard test (`tests/debugPanel.test.js`); docs (D-046); released **2.17.0**
+
+**Verify:** the panel looks like a modern glass card; every control still works (connect, toggles,
+sliders, teams, language); sections collapse; ~280 lines of dead CSS gone from `index.html`.
 
 ---
 

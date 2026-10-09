@@ -1,3 +1,5 @@
+import './debugPanel.css';
+
 const FAB = '<button class="debug-fab" id="debug-fab" title="Debug" aria-label="Debug" data-i18n-title="debug.header">&#9881;</button>';
 
 const PANEL = `
@@ -23,13 +25,14 @@ const PANEL = `
         <div class="debug-row"><span data-i18n="debug.events">Events</span><span class="val" id="dbg-conn-events">0</span></div>
         <div class="debug-row"><span data-i18n="debug.error">Error</span><span class="val" id="dbg-conn-error">-</span></div>
         <div class="debug-row" style="gap:6px;margin-top:6px;">
-          <input id="conn-username" placeholder="tiktok username" data-i18n-placeholder="debug.username" style="flex:1;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
-          <select id="conn-mode" style="background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px;font-family:inherit;">
-            <option value="auto" data-i18n="mode.auto">Auto</option>
-            <option value="direct" data-i18n="mode.direct">Direct</option>
-            <option value="tikfinity" data-i18n="mode.tikfinity">TikFinity</option>
-            <option value="mock" data-i18n="mode.mock">Mock</option>
-          </select>
+          <input id="conn-username" placeholder="tiktok username" data-i18n-placeholder="debug.username" style="flex:1;min-width:0;" />
+          <input type="hidden" id="conn-mode" value="auto" />
+          <div class="debug-segmented" id="conn-mode-segmented" style="flex:1.2;">
+            <button type="button" data-value="auto" class="active" data-i18n="mode.auto">Auto</button>
+            <button type="button" data-value="direct" data-i18n="mode.direct">Direct</button>
+            <button type="button" data-value="tikfinity" data-i18n="mode.tikfinity">TikFinity</button>
+            <button type="button" data-value="mock" data-i18n="mode.mock">Mock</button>
+          </div>
         </div>
         <div class="debug-row" style="gap:6px;margin-top:4px;">
           <input id="conn-tikfinity-host" placeholder="127.0.0.1" style="flex:2;min-width:0;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:3px 5px;font-family:inherit;" />
@@ -115,15 +118,15 @@ const PANEL = `
         </div>
         <div class="debug-row" style="gap:6px;">
           <span data-i18n="debug.bypassPrompt" style="flex:1;">Skip pick-a-side</span>
-          <input id="bypass-prompt" type="checkbox" />
+          <input id="bypass-prompt" type="checkbox" class="toggle" />
         </div>
         <button class="ctrl-btn" id="btn-mock-inject" style="width:100%;margin-top:6px;" data-i18n="debug.inject">Inject</button>
       </div>
       <div class="debug-section">
         <h5 data-i18n="debug.onboarding">Guide &amp; Tips</h5>
-        <div class="debug-row"><span data-i18n="debug.joinGuide">Join guide</span><input id="guide-enabled" type="checkbox" /></div>
-        <div class="debug-row"><span data-i18n="debug.tips">Gameplay tips</span><input id="tips-enabled" type="checkbox" /></div>
-        <div class="debug-row"><span data-i18n="debug.hint">Join hint</span><input id="hint-always" type="checkbox" /></div>
+        <div class="debug-row"><span data-i18n="debug.joinGuide">Join guide</span><input id="guide-enabled" type="checkbox" class="toggle" /></div>
+        <div class="debug-row"><span data-i18n="debug.tips">Gameplay tips</span><input id="tips-enabled" type="checkbox" class="toggle" /></div>
+        <div class="debug-row"><span data-i18n="debug.hint">Join hint</span><input id="hint-always" type="checkbox" class="toggle" /></div>
         <button class="ctrl-btn" id="btn-guide-show" style="width:100%;margin-top:6px;" data-i18n="debug.showNow">Show now</button>
       </div>
       <div class="debug-section">
@@ -132,13 +135,14 @@ const PANEL = `
         <div class="debug-row"><span data-i18n="debug.queuedViewers">Queued</span><span class="val" id="dbg-viewers-queued">0</span></div>
         <div class="debug-row"><span data-i18n="debug.totalViewers">Total</span><span class="val" id="dbg-viewers-total">0</span></div>
         <div class="debug-row"><span data-i18n="debug.cap">Cap</span><input id="viewer-cap" type="number" min="1" max="60" value="24" style="width:50px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
-        <div class="debug-row"><span data-i18n="debug.aiFill">AI Fill</span><input id="viewer-aifill" type="checkbox" /></div>
+        <div class="debug-row"><span data-i18n="debug.aiFill">AI Fill</span><input id="viewer-aifill" type="checkbox" class="toggle" /></div>
+        <div class="meter"><i id="dbg-viewers-bar" style="width:0%"></i></div>
       </div>
       <div class="debug-section">
         <h5 data-i18n="debug.cinematic">Cinematic</h5>
         <div class="debug-row"><span data-i18n="debug.queue">Queue</span><span class="val" id="dbg-cine-queue">0</span></div>
-        <div class="debug-row"><span data-i18n="debug.blur">Blur</span><input id="cine-blur" type="range" min="0" max="100" value="100" style="width:80px;" /></div>
-        <div class="debug-row"><span data-i18n="debug.autozoom">Auto-zoom</span><input id="cine-autozoom" type="checkbox" /></div>
+        <div class="debug-row"><span data-i18n="debug.blur">Blur</span><input id="cine-blur" type="range" min="0" max="100" value="100" style="width:80px;" /><span class="val" id="cine-blur-value">0%</span></div>
+        <div class="debug-row"><span data-i18n="debug.autozoom">Auto-zoom</span><input id="cine-autozoom" type="checkbox" class="toggle" /></div>
         <button class="ctrl-btn" id="btn-cine-skip" style="width:100%;margin-top:6px;" data-i18n="debug.skip">Skip Intro</button>
       </div>
       <div class="debug-section">
