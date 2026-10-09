@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process'
 import { EventEmitter } from 'node:events'
 
 const URL_PATTERN = /https:\/\/[a-z0-9-]+\.trycloudflare\.com/i
-const DEFAULT_TARGET = 'http://localhost:1935'
+const DEFAULT_TARGET = 'http://localhost:3020'
 const CLOUDFLARED = 'cloudflared'
 
 const activeTunnels = new Set()

@@ -6,6 +6,14 @@ echo Starting Territory With Flags...
 echo   Bridge  : http://localhost:3020
 echo   Game    : http://localhost:1935
 echo.
+echo Building the overlay (served by the bridge for a stable, flicker-free stream)...
+call npm run build
+if errorlevel 1 (
+  echo.
+  echo Build failed - check the messages above.
+  pause
+  exit /b 1
+)
 if defined TIKORA_GAME_LAUNCH_URL (
   set "GAME_URL=%TIKORA_GAME_LAUNCH_URL%"
 ) else (

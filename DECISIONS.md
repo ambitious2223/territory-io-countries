@@ -4,6 +4,24 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-052 — Overlay renders in place; streamed from the built page (no HMR)
+- **Context:** Owner: overlay "is like refreshing a lot and flashing a lot" on the streaming app.
+  Two causes: the overlay replaced `root.innerHTML` on every ~4 Hz broadcast while rows carried a
+  0.3 s entry animation (so the animation restarted nonstop), and the tunnelled overlay was served
+  by the Vite dev server, whose HMR client can force-reload the page when its socket drops.
+- **Decision (A):** `src/overlay/leaderboard.js` builds its skeleton once and reconciles rows in
+  place (keyed by team id; only changed text/flags updated; identical payloads skipped); the entry
+  animation moved to a one-shot `.ov-new` class. A pure `overlayModel.js` supplies the rows +
+  change signature (unit-tested).
+- **Decision (B):** the overlay is streamed from the **built** page served by the bridge
+  (`tunnelTarget` → `http://localhost:3020`), so no Vite client/HMR is involved; `countriesio.bat`
+  builds first. The game page (`:1935`) keeps HMR for development. Trade-off (accepted): overlay
+  code changes need a rebuild to appear in the stream.
+- **Rationale:** In-place updates remove the visible flashing; serving a built page removes the
+  reload loop while leaving the dev workflow intact for the game.
+- **Alternatives:** remove the animation only (still rebuilds 4×/s; flags reload); disable Vite HMR
+  globally (kills the streamer's dev hot-reload); throttle broadcasts (still animates each tick).
+
 ## D-051 — Built-in Cloudflare quick tunnel for the overlay link
 - **Context:** Owner: "can we get a Cloudflare link for the overlay because my streaming service
   doesn't accept localhost links" — they were run-running cloudflared by hand and copying the URL.

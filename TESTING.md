@@ -65,6 +65,8 @@
   without a round object) + clean hide.
 - `tests/anthem.test.js` — per-nation anthem is deterministic, distinct between nations, always a
   positive short phrase, and plays without a live audio context.
+- `tests/overlayModel.test.js` — overlay row model: rank/crown/flag/eliminated mapping, Arabic name
+  selection, row limit, and a stable/varying change signature.
 - `tests/tunnel.test.js` — cloudflared URL parsing (boxed output/empty), start → on with URL,
   spawn-failure → error, stop kills the child, disabled no-op, snapshot shape.
 - `src/scoring.js` — also covers per-viewer `topContributors` (order, cap, reset).
@@ -121,6 +123,9 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       becomes `https://…trycloudflare.com/leaderboard.html`; Copy/Open use it; **Stop Tunnel** flips
       it to off and the link returns to localhost; Start brings it back; the toggle survives a
       restart. (Requires `cloudflared` on PATH; otherwise the status shows **error**.)
+- [ ] **Overlay stability:** with a round running, the `/leaderboard.html` overlay **does not flash
+      or refresh** — rows stay put and only the numbers/timer change; opening it via the tunnel is
+      as steady as localhost.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
 - [ ] Loose matching: `Egypt ❤`, `I choose EGYPT`, `united`, `الامارت`, `سعودية` all join the
       right nation; `iran`/`nope` join nothing.

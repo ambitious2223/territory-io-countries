@@ -12,7 +12,7 @@ const DEFAULTS = {
   tikoraKey: '',
   tikoraRelayUrl: 'ws://127.0.0.1:27016/',
   tunnelEnabled: true,
-  tunnelTarget: 'http://localhost:1935'
+  tunnelTarget: 'http://localhost:3020'
 }
 
 let cache = null

@@ -4,6 +4,19 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.23.0] - 2026-10-09
+
+### Fixed — overlay flicker / constant refresh on stream (D-052)
+- The overlay rebuilt its whole DOM **~4×/second** and every row re-ran a 0.3 s entry animation,
+  so rows flashed continuously. The overlay now renders **in place**: the skeleton is built once,
+  rows are keyed by team id, and only changed text/flags are touched; a payload identical to the
+  last one is skipped. The entry animation now runs **once per new row** (`.ov-new`), not on every
+  update.
+- The streamed overlay is now served as the **built page by the bridge** (`tunnelTarget` →
+  `http://localhost:3020`) so it no longer carries Vite's dev HMR client — which could force-reload
+  the page through the tunnel. The game page on `:1935` keeps hot-reload.
+- `countriesio.bat` builds before launching; `overlayModel.js` (pure row model) added.
+
 ## [2.22.0] - 2026-10-09
 
 ### Added — built-in Cloudflare overlay tunnel (D-051)

@@ -4,6 +4,28 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-09 — Overlay flicker fix + built-overlay streaming (2.23.0)
+
+Owner: overlay "is like refreshing a lot and flashing a lot" on the streaming app. Diagnosed two
+causes: full `innerHTML` rebuild ~4×/s restarting a 0.3 s row animation, and Vite's HMR client
+force-reloading the tunnelled page when its socket drops. Proceeded with the default
+recommendation (fix render always; stream the built page to drop HMR).
+
+**Done**
+- `src/overlay/overlayModel.js` (new): pure `overlayRows` / `overlaySignature`.
+- `src/overlay/leaderboard.js`: skeleton built once, rows reconciled in place by team id, only
+  changed text/flags touched, identical payloads skipped.
+- `src/overlay/overlay.css`: entry animation moved to one-shot `.ov-new`.
+- `tunnelTarget` default → `http://localhost:3020` (built overlay served by the bridge, no HMR);
+  `countriesio.bat` runs `npm run build` before `npm run dev`; local config updated.
+- Tests: `tests/overlayModel.test.js` (4). 205 total.
+
+**Verified**
+- `npm run lint` clean · `npm test` **205 passed** · build + smoke green · bridge serves the built
+  `/leaderboard.html` (200) and `/api/tunnel` reports target `:3020`.
+
+---
+
 ## 2026-10-09 — Built-in Cloudflare overlay tunnel (2.22.0)
 
 Owner: "can we get a Cloudflare link for the overlay because my streaming service doesn't accept

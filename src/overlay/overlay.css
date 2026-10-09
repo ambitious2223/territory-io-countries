@@ -97,6 +97,9 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--stroke);
+}
+
+.ov-row.ov-new {
   animation: ov-in 0.3s ease;
 }
 

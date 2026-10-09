@@ -236,6 +236,19 @@ link ready to Copy; Stop/Start toggles it and persists; no tunnel spawns under t
 
 ---
 
+## Phase 34 — Overlay flicker fix + built-overlay streaming (D-052)
+- [x] `overlayModel.js` (pure rows + signature) + `tests/overlayModel.test.js`
+- [x] `leaderboard.js` renders in place (skeleton once, keyed rows, changed-only updates,
+      identical-payload skip); `overlay.css` one-shot `.ov-new` entry animation
+- [x] Streamed overlay served from the **built** page via the bridge (`tunnelTarget` → `:3020`);
+      `countriesio.bat` builds first; game page keeps HMR
+- [x] Tests (205 total); docs; released **2.23.0**
+
+**Verify:** Run a round and watch the tunnelled overlay — no flashing/refreshing; only the numbers
+and timer change. Edit overlay code → rebuild to see it on stream.
+
+---
+
 ## Phase 22 — Loose join matching + cinematic performance
 - [x] `matchTeam`: Arabic in fuzzy/prefix, `ال` article optional, any-word/first-word matching,
       length-scaled typo tolerance with lookalike negatives

@@ -78,7 +78,8 @@
 | `round.js` | Round lifecycle state machine |
 | `scoreboard.js` | `buildStandings()` + team scoreboard rendering |
 | `overlaySnapshot.js` | Builds the serialisable leaderboard payload for the overlay |
-| `overlay/leaderboard.js` | Standalone OBS leaderboard page (bridge subscriber, no engine) |
+| `overlay/overlayModel.js` | Pure overlay row model + change signature (rank/crown/flag/percent) |
+| `overlay/leaderboard.js` | Standalone OBS leaderboard page (bridge subscriber; in-place DOM updates, no engine) |
 | `winnersStore.js` | Winners persistence + sync |
 | `joinCinematic.js` | Camera intro queue for new joiners (tracks the moving soldier) |
 | `joinPrompt.js` | "Pick a side" pop-up + held-effect queue for non-member gifters |

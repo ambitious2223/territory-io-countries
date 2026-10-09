@@ -44,7 +44,7 @@ streamer-mapped effects (see §6) and runs alongside whichever chat source is ac
   "tikoraKey": "",
   "tikoraRelayUrl": "ws://127.0.0.1:27016/",
   "tunnelEnabled": true,
-  "tunnelTarget": "http://localhost:1935"
+  "tunnelTarget": "http://localhost:3020"
 }
 ```
 
@@ -115,10 +115,11 @@ Status events (`tiktok:status`):
 Socket events are listed in [ARCHITECTURE.md](./ARCHITECTURE.md) §8.
 
 **Overlay tunnel:** unless `TWF_TUNNEL=0`, the bridge spawns a Cloudflare **quick tunnel** to
-`tunnelTarget` (default `http://localhost:1935`) on boot and parses the public URL, surfaced as
-`tunnel:status` / `GET /api/tunnel`. The child is killed on exit or `SIGINT`/`SIGTERM`. Since the
-streaming app runs locally, the overlay page still reaches the bridge at `localhost:3020`, so only
-the game page needs the public URL.
+`tunnelTarget` (default `http://localhost:3020`, i.e. the bridge's own built overlay — no Vite HMR
+in the streamed page) on boot and parses the public URL, surfaced as `tunnel:status` /
+`GET /api/tunnel`. The child is killed on exit or `SIGINT`/`SIGTERM`. Since the streaming app runs
+locally, the overlay page still reaches the bridge at `localhost:3020`, so only the page needs the
+public URL. Run `npm run build` first (the boot bat does) so `dist/` exists.
 
 ---
 
