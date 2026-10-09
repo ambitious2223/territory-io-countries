@@ -4,6 +4,21 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-047 — Streamer manual camera: hybrid input, stays until reset
+- **Context:** Owner: "a manual zoom for whenever I need to zoom somewhere" + stream-management
+  tools. `Camera` already had smooth `focusOn`/`resetFocus`; only the input layer was missing.
+- **Decision:** `ManualCamera` (`src/cameraControls.js`) — click focuses (1.8×), clicking a soldier
+  follows it (dead → reset), wheel zooms toward the cursor (1–3×), drag pans, arrows/`+`/`-`/`0`/
+  `Esc` as keyboard backup. Manual input **cancels the running cinematic** (streamer always wins;
+  auto-zoom re-arms on the next join) and the view **stays until reset** — no surprise snap-back.
+  Camera presets (Arena/Leader/nation chips) live in the glass panel's Connection tab. WASD was
+  dropped because `D` is bound to the debug panel; arrows own panning. (+30s, clean-view and
+  follow-leader were offered and not selected — parked for later.)
+- **Rationale:** Mouse-first matches how the game window is driven (browser or OBS Interact);
+  "stay until reset" fits deliberate showcase framing.
+- **Alternatives:** Keyboard-only (rejected); panel-only sliders (rejected); auto-return timer
+  (rejected — fights deliberate framing).
+
 ## D-046 — Debug menu: modern glass card, real controls, no dead CSS
 - **Context:** Owner wanted "a more modern look" after approving a glass floating card + cyan
   accent; the panel was a dense 260 px flat list with raw checkboxes/selects and ~280 lines of
@@ -86,7 +101,7 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
   a flag medallion + VICTORY + localized winner name + stats, a **top-3 nations** row, and the
   **overall top-3 supporters** (avatar + nickname + score, ringed in their nation's colour),
   fed by new per-viewer score tracking in `ScoringEngine`. EN/AR strings; hide on round reset.
-- **Not yet implemented** — scheduled as Phase 29, after the hub-only mapping (27) and menu redesign (28).
+- **Not yet implemented** — scheduled as Phase 30.
 
 ## D-040 — Cinematic performance: blur opt-in, cached nation outlines
 - **Context:** Owner: "automatic zoom or cinematic is making the game look so laggy." Two causes:

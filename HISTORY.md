@@ -4,6 +4,28 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-08 — Manual camera + nation jumps (2.18.0)
+
+Owner: "a manual zoom for whenever I need to zoom somewhere, and any other stream-management
+tools." Chose: hybrid mouse+keyboard, stays until reset, and nation jump presets (the +30s /
+clean-view / follow-leader options were left out for now).
+
+**Done**
+- `src/cameraControls.js`: `ManualCamera` class — click-to-focus (1.8×), click-a-ball follow
+  (re-uses cinematic tracking; dead ball auto-resets), wheel zoom toward cursor (1–3×),
+  4 px-threshold drag pan, arrow-key pan, `+`/`-` zoom, `0`/`Esc` reset. Manual input cancels any
+  running cinematic (`cinematic.skip()`), yellow toasts on focus/follow/reset (EN/AR). Keyboard
+  input ignored while typing in panel fields.
+- Camera section in the glass panel (Connection tab): Arena / Leader buttons + per-nation chips,
+  rebuilt live when teams change.
+- Wired into `Game` (constructor + per-frame `update`). Tests: zoom-toward-cursor math, clamps,
+  focus/follow/death-reset, pan/zoom/reset, presets, attach smoke (7 tests, 162 total).
+
+**Verified**
+- `npm run lint` clean · `npm test` **162 passed** · build + smoke green.
+
+---
+
 ## 2026-10-08 — Modern glass debug menu (2.17.0)
 
 Owner: "a rework of the D-Bug menu for a more modern look" (after choosing: glass floating card

@@ -50,6 +50,9 @@
 - `tests/cinematic.test.js` — cinematic tracks a moving soldier and stops when it dies.
 - `tests/durations.test.js` — overcharge lasts 6 s, capture hold 2.5 s, power-ups wait their
   interval (all in seconds, not frames).
+- `tests/debugPanel.test.js` — panel markup pins every wired id and the four tabs.
+- `tests/cameraControls.test.js` — zoom-toward-cursor math + clamps, focus/follow/death-reset,
+  pan/zoom/reset, Arena/Leader/nation presets, canvas-handler attach.
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
 - `server/mock.js` — mock event construction.
 - `server/uploads.js` — flag image validation.
@@ -80,6 +83,12 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       toggles (AI Fill / guide / hints) switch and persist; Bridge/Tikora pills show green online /
       red offline; viewer meter tracks the cap; section headings collapse their card; language
       switch relabels everything (EN/AR) without moving the layout.
+- [ ] **Manual camera:** click a map spot → smooth focus; click a soldier → camera follows it
+      (resets when it dies); wheel zooms toward the cursor and never passes 3× or below 1×; drag
+      pans; arrows pan, `+`/`-` zoom, `0`/`Esc` resets; a yellow toast appears; a running join
+      cinematic is cancelled; **nothing moves on its own afterwards**.
+- [ ] **Camera presets** (Connection tab): Arena resets, Leader jumps to the leading nation's
+      capital, nation chips jump to each capital at 1.6×; chips update when teams are edited.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
 - [ ] Loose matching: `Egypt ❤`, `I choose EGYPT`, `united`, `الامارت`, `سعودية` all join the
       right nation; `iran`/`nope` join nothing.

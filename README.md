@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.17.0
+## Status — v2.18.0
 
-Every gate is green: `npm run lint`, `npm test` (155 tests incl. debug-panel-markup/effect-routing/
-onboarding suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (162 tests incl. camera-controls/debug-panel/
+effect-routing suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -62,7 +62,9 @@ onboarding suites + a headless game-loop test), `npm run build`, and `npm run sm
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - Camera pan/zoom **join cinematic** that tracks the new viewer's soldier, with a profile-photo
   intro card, a cheap darkened backdrop (blur off by default, slider re-enables it) and an
-  auto-zoom on/off switch.
+  auto-zoom on/off switch — plus a **streamer manual camera**: click to focus, click a soldier to
+  follow, wheel to zoom (1–3×), drag to pan, arrows/`+`/`-`/`0` reset, with Arena/Leader/nation
+  presets in the debug panel.
 - **12 power-ups declared for the hub** (overcharge, speed boost, freeze, shield, team speed,
   color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim). All gift/trigger
   mapping happens **in the hub** — the web app holds no mapping UI and no hardcoded rules; it just

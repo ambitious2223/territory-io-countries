@@ -160,13 +160,20 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 - Debug panel: a floating gear opens a **glass card** (380 px, translucent blur, cyan accent) with
   pill tabs — **Connection · Teams · Overlay · Advanced** — and collapsible section cards.
   Controls are modern: status **pills** with coloured dots, **toggle switches**, a **segmented**
-  Auto/Direct/TikFinity/Mock control, and meters. Connection holds a **Soldiers speed slider**
-  (live, persisted) beside the bridge controls. Teams holds the capital-size slider, the editor +
-  photo upload (all team edits **auto-save** after ~1.5 s); Advanced holds the dev tools. The
-  Tikora section is **read-only** — the hub owns activating/deactivating effects.
+  Auto/Direct/TikFinity/Mock control, and meters. Connection holds the **Camera presets**
+  (Arena/Leader/nation jumps) and a **Soldiers speed slider** (live, persisted) beside the bridge
+  controls. Teams holds the capital-size slider, the editor + photo upload (all team edits
+  **auto-save** after ~1.5 s); Advanced holds the dev tools. The Tikora section is **read-only** —
+  the hub owns activating/deactivating effects.
 - **Auto-zoom:** on every new viewer join the camera **follows their moving soldier** during focus
   and hold (photo + nickname card), then returns. Toggle it with **Auto-zoom** in the Cinematic
   section (persisted); with it off, joins still announce (sound) but the camera stays put.
+- **Manual camera (streamer):** **click** a map spot to focus (1.8×), **click a soldier** to follow
+  them (auto-reset if it dies), **mouse wheel** zooms toward the cursor (1×–3×), **drag** pans;
+  keyboard backup: arrows pan, `+`/`-` zoom, `0`/`Esc` reset. Manual input cancels a running
+  auto-zoom (auto-zoom re-arms on the next join) and the view **stays until reset** — with a toast
+  confirming manual mode. Presets in debug → Connection → **Camera**: Arena, Leader, and one chip
+  per nation (jumps to its capital).
 - **Join guide (50 % of the arena):** every round start shows a big "How to Join" card — two
   numbered steps (comment your country **name**; most territory wins) plus a chip per nation
   (flag + name) — auto-hides after 10 s, ✕ dismisses it for

@@ -7,6 +7,7 @@ import { ViewerManager } from './viewerManager.js';
 import { JoinCinematic } from './joinCinematic.js';
 import { JoinPrompt } from './joinPrompt.js';
 import { Onboarding } from './onboarding.js';
+import { ManualCamera } from './cameraControls.js';
 import { ScoringEngine } from './scoring.js';
 import { RoundManager, ROUND } from './round.js';
 import { renderScoreboard } from './scoreboard.js';
@@ -41,6 +42,7 @@ export class Game {
     this.cinematic = new JoinCinematic(this.camera);
     this.joinPrompt = new JoinPrompt();
     this.onboarding = new Onboarding(this);
+    this.manualCamera = new ManualCamera(this);
     this.lastRoundState = null;
     this.grid = new Grid();
     this.particles = new ParticleSystem();
@@ -475,6 +477,7 @@ export class Game {
     this.cinematic.update(dt);
     this.joinPrompt.update(dt);
     this.onboarding.update(dt);
+    this.manualCamera.update();
     this.camera.update(dt);
 
     const transition = this.round.update(dt);

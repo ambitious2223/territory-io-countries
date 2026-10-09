@@ -52,6 +52,14 @@ const PANEL = `
         </div>
       </div>
       <div class="debug-section">
+        <h5 data-i18n="debug.camera">Camera</h5>
+        <div class="debug-row" style="gap:6px;">
+          <button class="ctrl-btn" id="cam-arena" style="flex:1;" data-i18n="camera.arena">Arena</button>
+          <button class="ctrl-btn" id="cam-leader" style="flex:1;" data-i18n="camera.leader">Leader</button>
+        </div>
+        <div class="debug-row" style="gap:4px;flex-wrap:wrap;" id="cam-nations"></div>
+      </div>
+      <div class="debug-section">
         <h5 data-i18n="debug.tikora">Tikora Hub</h5>
         <div class="debug-row"><span data-i18n="debug.status">Status</span><span class="val" id="dbg-tikora-status">off</span></div>
         <div class="debug-row"><span data-i18n="debug.slug">Game</span><span class="val" id="dbg-tikora-slug">--</span></div>

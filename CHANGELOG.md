@@ -4,6 +4,19 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.18.0] - 2026-10-08
+
+### Added — streamer manual camera + nation jumps
+- **Manual camera** (`src/cameraControls.js`): **click** a map spot to focus (1.8×), **click a
+  soldier** to follow them, **mouse wheel** zooms toward the cursor (1×–3×, clamped), **drag** pans.
+  Keyboard: **arrows** pan, **+/-** zoom, **0**/**Esc** reset. Any manual input cancels the running
+  auto-zoom cinematic (auto-zoom re-arms on the next join); a yellow toast confirms the mode.
+  The camera **stays where you put it until you reset** — nothing snaps back on its own.
+  A dead followed soldier auto-resets the view.
+- **Camera section** (debug → Connection): **Arena** (reset), **Leader** (jump to the leading
+  nation's capital) and one **chip per nation** to jump to its capital at 1.6×.
+- Note: WASD was deliberately skipped — `D` is already bound to the debug panel; arrows own panning.
+
 ## [2.17.0] - 2026-10-08
 
 ### Changed — modern glass debug menu

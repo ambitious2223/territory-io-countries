@@ -161,7 +161,20 @@ sliders, teams, language); sections collapse; ~280 lines of dead CSS gone from `
 
 ---
 
-## Phase 29 — Win celebration (approved, D-041, not started)
+## Phase 29 — Manual camera + nation jump presets
+- [x] `ManualCamera`: click-to-focus / click-ball follow / wheel zoom toward cursor / drag pan /
+      arrows + `+`/`-`/`0`/`Esc`; cancels auto-zoom; stays until reset; toasts (EN/AR)
+- [x] Camera section (Connection tab): Arena · Leader · per-nation chips (1.6× capitals)
+- [x] Tests (7, 162 total); docs (D-047); released **2.18.0**
+- Deferred (offered, not selected): +30s extend, clean-view toggle, follow-leader auto mode
+
+**Verify:** click a border → focus; click a ball → follows until it dies; wheel zooms toward the
+cursor; 0 returns to the arena; Camera chips jump to capitals; typing in the panel doesn't move
+the camera.
+
+---
+
+## Phase 30 — Win celebration (approved, D-041, not started)
 - [ ] Confetti (pooled, winner colours + flag-clipped pieces), flag medallion, VICTORY + stats
 - [ ] Top-3 nations row + overall top-3 supporters (avatars/nicknames, per-viewer scores in
       `ScoringEngine`)
