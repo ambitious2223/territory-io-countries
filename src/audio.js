@@ -1,4 +1,15 @@
 import { CONFIG } from './config.js';
+import {
+  anthemFrequencies as anthemFrequenciesFx,
+  playConfetti as playConfettiFx,
+  playReveal as playRevealFx,
+  playPodium as playPodiumFx,
+  playAnthem as playAnthemFx,
+  playDrumroll as playDrumrollFx,
+  playCrowd as playCrowdFx,
+} from './celebrationAudio.js';
+
+export const anthemFrequencies = anthemFrequenciesFx;
 
 const MAX_VOICES = 12;
 
@@ -238,160 +249,28 @@ export class AudioEngine {
     v.addNode(pan);
   }
 
-  playVictory() {
-    if (!this._canPlay()) return;
-    const t = this.ctx.currentTime;
-    const notes = [523, 659, 784, 1047];
-
-    for (let i = 0; i < notes.length; i++) {
-      const v = this._acquireVoice(0.4);
-      if (!v) return;
-      const noteT = t + i * 0.15;
-
-      const osc = this.ctx.createOscillator();
-      const osc2 = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
-
-      osc.type = 'sawtooth';
-      osc.frequency.value = notes[i];
-
-      osc2.type = 'sine';
-      osc2.frequency.value = notes[i] * 2;
-
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(3000, noteT);
-      filter.frequency.exponentialRampToValueAtTime(800, noteT + 0.3);
-
-      gain.gain.setValueAtTime(0, noteT);
-      gain.gain.linearRampToValueAtTime(0.12, noteT + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, noteT + 0.35);
-
-      osc.connect(filter);
-      osc2.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.masterGain);
-
-      v.addNode(osc);
-      v.addNode(osc2);
-      v.addNode(filter);
-      v.addNode(gain);
-
-      osc.start(noteT);
-      osc2.start(noteT);
-      osc.stop(noteT + 0.35);
-      osc2.stop(noteT + 0.35);
-    }
-  }
-
   playConfetti(x = CONFIG.CANVAS_WIDTH / 2) {
-    if (!this._canPlay()) return;
-    const v = this._acquireVoice(0.55);
-    if (!v) return;
-    const t = this.ctx.currentTime;
-    const pan = this._createPan(x);
-
-    const bufferSize = Math.floor(this.ctx.sampleRate * 0.45);
-    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-    }
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = noiseBuffer;
-    const noiseGain = this.ctx.createGain();
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(2400, t);
-    filter.frequency.exponentialRampToValueAtTime(500, t + 0.4);
-    filter.Q.value = 0.8;
-    noiseGain.gain.setValueAtTime(0.16, t);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-    noise.connect(filter);
-    filter.connect(noiseGain);
-    noiseGain.connect(pan);
-    v.addNode(noise);
-    v.addNode(filter);
-    v.addNode(noiseGain);
-    v.addNode(pan);
-    noise.start(t);
-    noise.stop(t + 0.45);
+    playConfettiFx(this, x);
   }
 
   playReveal(x = CONFIG.CANVAS_WIDTH / 2) {
-    if (!this._canPlay()) return;
-    const v = this._acquireVoice(0.35);
-    if (!v) return;
-    const t = this.ctx.currentTime;
-    const pan = this._createPan(x);
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(240, t);
-    osc.frequency.exponentialRampToValueAtTime(920, t + 0.14);
-    gain.gain.setValueAtTime(0.001, t);
-    gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-    osc.connect(gain);
-    gain.connect(pan);
-    v.addNode(osc);
-    v.addNode(gain);
-    v.addNode(pan);
-    osc.start(t);
-    osc.stop(t + 0.3);
-
-    const thump = this.ctx.createOscillator();
-    const thumpGain = this.ctx.createGain();
-    thump.type = 'sine';
-    thump.frequency.setValueAtTime(120, t + 0.1);
-    thump.frequency.exponentialRampToValueAtTime(60, t + 0.28);
-    thumpGain.gain.setValueAtTime(0.2, t + 0.1);
-    thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
-    thump.connect(thumpGain);
-    thumpGain.connect(pan);
-    v.addNode(thump);
-    v.addNode(thumpGain);
-    thump.start(t + 0.1);
-    thump.stop(t + 0.28);
+    playRevealFx(this, x);
   }
 
   playPodium(x = CONFIG.CANVAS_WIDTH / 2) {
-    if (!this._canPlay()) return;
-    const t = this.ctx.currentTime;
-    const pan = this._createPan(x);
-    const bells = [
-      { note: 659, at: 0 },
-      { note: 830, at: 0.12 },
-      { note: 988, at: 0.24 },
-    ];
+    playPodiumFx(this, x);
+  }
 
-    for (const bell of bells) {
-      const v = this._acquireVoice(0.8);
-      if (!v) break;
-      const noteT = t + bell.at;
-      const osc = this.ctx.createOscillator();
-      const osc2 = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = bell.note;
-      osc2.type = 'sine';
-      osc2.frequency.value = bell.note * 2.01;
-      gain.gain.setValueAtTime(0, noteT);
-      gain.gain.linearRampToValueAtTime(0.09, noteT + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, noteT + 0.65);
-      osc.connect(gain);
-      osc2.connect(gain);
-      gain.connect(pan);
-      v.addNode(osc);
-      v.addNode(osc2);
-      v.addNode(gain);
-      v.addNode(pan);
-      osc.start(noteT);
-      osc2.start(noteT);
-      osc.stop(noteT + 0.65);
-      osc2.stop(noteT + 0.65);
-    }
+  playAnthem(team) {
+    playAnthemFx(this, team);
+  }
+
+  playDrumroll(x = CONFIG.CANVAS_WIDTH / 2) {
+    playDrumrollFx(this, x);
+  }
+
+  playCrowd(x = CONFIG.CANVAS_WIDTH / 2) {
+    playCrowdFx(this, x);
   }
 
   playJoin(x = CONFIG.CANVAS_WIDTH / 2) {

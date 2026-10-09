@@ -20,6 +20,7 @@ function ctxStub() {
     rect: noop,
     clip: noop,
     translate: noop,
+    scale: noop,
     rotate: noop,
     ellipse: noop,
     arc: noop,
@@ -58,6 +59,7 @@ function fakeGame() {
     territoryCounts: new Map([[1, 50], [2, 30], [3, 20]]),
     countTeamMarbles: () => 1,
     grid: { claimableTiles: 100 },
+    round: { state: 'intermission', timeLeft: 12 },
     scoring: {
       topContributors: () => ([
         { id: 'u1', name: 'Ahmad', avatar: '', teamId: 2, score: 120 },
@@ -67,7 +69,10 @@ function fakeGame() {
     winColor: '#FF2222',
     winner: { name: 'Alpha', color: '#FF2222', tiles: 50 },
     winReason: 'timeout',
-    audio: { playVictory: vi.fn(), playConfetti: vi.fn(), playReveal: vi.fn(), playPodium: vi.fn() },
+    audio: {
+      playAnthem: vi.fn(), playConfetti: vi.fn(), playReveal: vi.fn(),
+      playPodium: vi.fn(), playDrumroll: vi.fn(), playCrowd: vi.fn(),
+    },
   }
 }
 
@@ -80,19 +85,24 @@ describe('WinScreen', () => {
     expect(screen.visible).toBe(true)
     expect(screen.snapshot.winnerName).toBe('Alpha')
     expect(screen.snapshot.percent).toBe(50)
+    expect(screen.snapshot.reason).toBe('timeout')
+    expect(screen.snapshot.wins).toBe(1)
     expect(screen.snapshot.nations.map((row) => row.rank)).toEqual([1, 2, 3])
     expect(screen.snapshot.supporters[0]).toMatchObject({ name: 'Ahmad', teamId: 2, color: '#1E90FF' })
-    expect(game.audio.playVictory).toHaveBeenCalledTimes(1)
+    expect(game.audio.playAnthem).toHaveBeenCalledTimes(1)
+    expect(game.audio.playAnthem).toHaveBeenCalledWith(game.teams[0])
     expect(game.audio.playConfetti).toHaveBeenCalledTimes(1)
   })
 
-  it('plays reveal and podium sounds once, on schedule', () => {
+  it('plays the drumroll, reveal, crowd and podium sounds once, on schedule', () => {
     const game = fakeGame()
     const screen = new WinScreen(game)
     screen.show()
 
     screen.update(CONFIG.WIN_MEDALLION_REVEAL * 60 + 1)
+    expect(game.audio.playDrumroll).toHaveBeenCalledTimes(1)
     expect(game.audio.playReveal).toHaveBeenCalledTimes(1)
+    expect(game.audio.playCrowd).toHaveBeenCalledTimes(1)
 
     screen.update((CONFIG.WIN_PODIUM_DELAY - CONFIG.WIN_MEDALLION_REVEAL) * 60 + 1)
     expect(game.audio.playPodium).toHaveBeenCalledTimes(1)
@@ -102,18 +112,37 @@ describe('WinScreen', () => {
     expect(game.audio.playPodium).toHaveBeenCalledTimes(1)
   })
 
+  it('counts the stats up over the entrance window', () => {
+    const game = fakeGame()
+    const screen = new WinScreen(game)
+    screen.show()
+    expect(screen.timer).toBe(0)
+    screen.update(16)
+    expect(screen.timer).toBeGreaterThan(0)
+    expect(screen.alpha).toBeGreaterThan(0)
+  })
+
   it('fades in, draws without crashing and hides cleanly', () => {
     const game = fakeGame()
     const screen = new WinScreen(game)
     screen.show()
     screen.update(16)
 
-    expect(screen.alpha).toBeGreaterThan(0)
     expect(() => screen.draw(ctxStub())).not.toThrow()
 
     screen.hide()
     expect(screen.visible).toBe(false)
     expect(screen.snapshot).toBeNull()
+    expect(() => screen.draw(ctxStub())).not.toThrow()
+  })
+
+  it('draws the full sequence (podium + countdown) without a round object', () => {
+    const game = fakeGame()
+    delete game.round
+    const screen = new WinScreen(game)
+    screen.show()
+    screen.update((CONFIG.WIN_PODIUM_DELAY + 1) * 60)
+    expect(screen.podiumShown).toBe(true)
     expect(() => screen.draw(ctxStub())).not.toThrow()
   })
 })

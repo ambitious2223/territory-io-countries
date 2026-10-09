@@ -60,8 +60,11 @@
   clears when the match is gone, button rebuild on roster/marble change, click-follow resolves
   the current marble, followed button highlights, presets still wired.
 - `tests/confetti.test.js` — burst + rain, piece cap, self-stop, clear-on-stop, draw smoke.
-- `tests/winScreen.test.js` — snapshot (winner/top-3 nations/supporters), scheduled reveal/podium
-  sounds fire once, fade-in + draw smoke + clean hide.
+- `tests/winScreen.test.js` — snapshot (winner/top-3 nations/supporters/win count), scheduled
+  anthem + drumroll + reveal + crowd + podium sounds fire once, count-up, draw smoke (with and
+  without a round object) + clean hide.
+- `tests/anthem.test.js` — per-nation anthem is deterministic, distinct between nations, always a
+  positive short phrase, and plays without a live audio context.
 - `src/scoring.js` — also covers per-viewer `topContributors` (order, cap, reset).
 - `server/normalize.js` — gift combo skip, msgId dedupe, like-delta + re-baseline, user shapes.
 - `server/mock.js` — mock event construction.
@@ -107,10 +110,11 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
       nation gets the pick-a-side prompt with the burst held; a hub-mapped gift still fires its
       mapped effect too.
 - [ ] **Win celebration:** end a round → colour wash + confetti (flag pieces if the winner has a
-      photo) + medallion pop with sound → **VICTORY** + name + tiles/%/duration → podium with
-      top-3 nations and top-3 supporters (photos, scores) + bell chime; plays through
-      intermission and clears on the next round; gifts earlier in the round determine the
-      supporters row.
+      photo) + medallion pop with rays and a drumroll + **the winner's own anthem** + crowd swell →
+      **VICTORY** + reason headline + count-up tiles/%/duration + win-count badge → raised centre
+      podium with top-3 nations and top-3 supporters (photos, scores, medals, crown) + bell chime,
+      and a **Next round in Ns** countdown; plays through intermission and clears on the next round;
+      different winners play different-sounding anthems.
 - [ ] Joining by number, ISO2, EN, AR, and emoji all assign the correct team.
 - [ ] Loose matching: `Egypt ❤`, `I choose EGYPT`, `united`, `الامارت`, `سعودية` all join the
       right nation; `iran`/`nope` join nothing.

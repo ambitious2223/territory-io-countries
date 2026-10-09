@@ -4,6 +4,22 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.21.0] - 2026-10-09
+
+### Changed — win celebration glow-up + per-nation anthem (D-050)
+- **Animated entrance:** the medallion pops with an overshoot and rotating light rays; VICTORY!
+  scales in; the stat line **counts up**; a second confetti burst fires as the medallion lands.
+- **Depth & clarity:** a faint winner **flag watermark** behind the podium, a large **reason
+  headline** (DOMINATION! / MOST TERRITORY WINS / ROUND ENDED), and a **win-count badge** from the
+  all-time winners board.
+- **Real podium:** cards **stagger in**, 1st place is **raised in the centre** with gold/silver/
+  bronze accents; supporter avatars get matching **medal rings** + a crown on #1.
+- **`Next round in Ns`** countdown during the 20 s intermission.
+- **Sound:** each nation gets its own deterministic **procedural anthem** (seeded by nation id) in
+  place of the generic fanfare, plus a **drumroll** into the reveal and a **crowd swell**.
+- Refactor: win-screen drawing helpers → `src/winArt.js`; celebration sounds → `src/celebrationAudio.js`
+  (keeps every file under the 400-line guardrail).
+
 ## [2.20.0] - 2026-10-09
 
 ### Added — automatic gift speed burst + dedicated Camera tab (D-049)

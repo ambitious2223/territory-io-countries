@@ -206,6 +206,23 @@ deaths, clear on round reset, clicking a name follows that player; Arena/Leader/
 
 ---
 
+## Phase 32 — Win celebration glow-up + per-nation anthem (D-050)
+- [x] Animated entrance: overshoot medallion + rotating rays, VICTORY scale-in, count-up stats,
+      reveal confetti burst + crowd swell
+- [x] Depth/clarity: faint winner flag watermark, reason headline, win-count badge
+- [x] Real podium: staggered cards, raised centre 1st place, gold/silver/bronze medals + supporter
+      rings/crown; `Next round in Ns` intermission countdown
+- [x] Per-nation **procedural anthem** (`anthemFrequencies` seeded by nation id) replacing the
+      generic fanfare; procedural drumroll + crowd
+- [x] Refactors: `src/winArt.js` (drawing) + `src/celebrationAudio.js` (sounds) keep files < 400 lines
+- [x] Tests (194 total); docs (D-050); released **2.21.0**
+
+**Verify:** End a round → drumroll → medallion pop with rays + the winner's anthem + crowd + a
+second confetti burst → VICTORY + reason + counting stats + win badge → raised podium with medals
+→ "Next round in Ns". Different winners sound different; nothing lingers into the next round.
+
+---
+
 ## Phase 22 — Loose join matching + cinematic performance
 - [x] `matchTeam`: Arabic in fuzzy/prefix, `ال` article optional, any-word/first-word matching,
       length-scaled typo tolerance with lookalike negatives

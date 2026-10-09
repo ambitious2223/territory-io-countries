@@ -58,7 +58,12 @@
 | `powerups.js` | Power-up entities and pickup logic |
 | `particles.js` | Pooled spark/trail particles |
 | `vfx.js` | Floating event text |
-| `audio.js` | Procedural panned SFX (join, gift, claim, elimination, victory) |
+| `audio.js` | Procedural panned SFX (join, gift, claim, elimination) + delegating win-audio methods |
+| `celebrationAudio.js` | Procedural win sounds: confetti, reveal, podium bells, drumroll, crowd + per-nation anthems |
+| `winScreen.js` | Full-screen win celebration: animated entrance, reason/stats, podium, intermission countdown |
+| `winArt.js` | Win-screen canvas drawing helpers (medallion, rays, flag backdrop, supporter) |
+| `confetti.js` | Pooled confetti (burst + rain, flag-clipped pieces, gravity/sway) |
+| `cameraControls.js` | Streamer `ManualCamera` (click/follow/wheel/drag/arrows, presets) |
 | `analytics.js` | Round duration tracking |
 | `renderer.js` | Camera (pan/zoom/shake) + shared draw helpers |
 | `viewerManager.js` | Viewer/bot roster, active cap + reinforcement queue |

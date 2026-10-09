@@ -14,10 +14,10 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.20.0
+## Status — v2.21.0
 
-Every gate is green: `npm run lint`, `npm test` (188 tests incl. win-screen/confetti/camera/gift
-suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
+Every gate is green: `npm run lint`, `npm test` (194 tests incl. win-screen/confetti/camera/gift/
+anthem suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
 
@@ -63,9 +63,10 @@ suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 - **Overlay URL:** a standalone `/leaderboard.html` page (same minimal leaderboard + round timer)
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
 - **Win celebration:** every round ends with confetti (some pieces made of the winner's flag), a
-  popping flag medallion, VICTORY + winner stats, and a podium showing the **top-3 nations** and
-  the **top-3 supporters** (their photo, name and score) — with layered procedural sound (fanfare,
-  confetti burst, reveal pop, podium bells).
+  popping flag medallion with rotating rays, VICTORY + a reason headline + count-up stats, a raised
+  centre podium showing the **top-3 nations** and the **top-3 supporters** (photo, name, score,
+  medals), and a **next-round countdown** — with a **per-nation procedural anthem**, drumroll and
+  crowd swell (all synthesized, no audio files).
 - Camera pan/zoom **join cinematic** that tracks the new viewer's soldier, with a profile-photo
   intro card, a cheap darkened backdrop (blur off by default, slider re-enables it) and an
   auto-zoom on/off switch — plus a **streamer manual camera**: click to focus, click a soldier to

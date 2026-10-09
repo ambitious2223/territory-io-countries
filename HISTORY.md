@@ -4,6 +4,37 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-09 — Win screen glow-up + per-nation anthem (2.21.0)
+
+Owner: "tell me the current shape of the winner screen and how we can polish that to be really
+great", and asked whether a per-country song that plays for whoever leads (changing frequently)
+would be good. Advised against the looping leader-song (chaotic + TikTok copyright risk); owner
+chose **winner anthem only**, **procedural per nation**.
+
+**Done**
+- `src/config.js`: `WIN_ENTRANCE_TIME`, `WIN_STATS_COUNT_TIME`, `WIN_PODIUM_STAGGER`,
+  `WIN_BACKDROP_ALPHA`, `WIN_RAY_COUNT`, `WIN_RAY_RADIUS`, `WIN_DRUMROLL_LEAD`,
+  `WIN_CONFETTI_REVEAL_BURST`, `WIN_MEDAL_COLORS`, `WIN_RAISED_OFFSET`.
+- `src/winArt.js` (new): drawing helpers split out of `winScreen.js` (duration format, easeOutBack,
+  rays, flag backdrop, medallion, supporter) so both files stay under 400 lines.
+- `src/celebrationAudio.js` (new): `anthemFrequencies(teamId)` (deterministic per-nation motif) +
+  `playConfetti` / `playReveal` / `playPodium` / `playAnthem` / `playDrumroll` / `playCrowd` as
+  functions taking the engine. `audio.js` slimmed (348 lines) with delegating methods; dead
+  `playVictory` removed.
+- `src/winScreen.js`: animated entrance (overshoot medallion + light rays, VICTORY scale-in,
+  count-up stats, confetti burst at reveal), flag watermark, reason headline, win-count badge,
+  staggered podium with raised centre 1st + medals, supporter medal rings + crown, next-round
+  countdown; plays the winner's anthem + drumroll + crowd.
+- i18n: `win.reasonDomination` / `win.reasonTimeout` / `win.reasonManual` / `win.wins` /
+  `win.nextRound` (EN/AR).
+- Tests: `winScreen.test.js` updated (anthem/drumroll/crowd scheduling, count-up, draw without
+  round) + `anthem.test.js` (deterministic, distinct, no-throw). 194 total.
+
+**Verified**
+- `npm run lint` clean · `npm test` **194 passed** · build + smoke green.
+
+---
+
 ## 2026-10-09 — Auto gift speed + Camera tab (2.20.0)
 
 Owner asked (1): "check the system if it's working … anybody is having automated coin value based

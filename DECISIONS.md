@@ -4,6 +4,30 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-050 — Win celebration glow-up + per-nation procedural anthem
+- **Context:** Owner: "tell me the current shape of the winner screen and how we can polish that
+  to be really great", plus "would it be a good idea to choose a song for each country and the
+  leader's song plays immediately when they take the lead… songs will change frequently." The
+  looping leader-song was judged chaotic and copyright-risky on TikTok; the owner chose a
+  **winner anthem only**, sourced **procedurally per nation**.
+- **Decision (A) — glow-up:** `WinScreen` gains an animated entrance (overshoot medallion + rotating
+  light rays, VICTORY scale-in, count-up stats, second confetti burst at reveal), a faint winner
+  **flag watermark**, a **reason headline**, a **win-count badge**, a **raised centre 1st place**
+  with staggered cards and gold/silver/bronze medals, supporter **medal rings + crown**, and a
+  **next-round countdown** from the intermission timer. Drawing helpers moved to `src/winArt.js`.
+- **Decision (B) — anthem:** `anthemFrequencies(teamId)` returns a deterministic short motif
+  (root + mode seeded from the nation id); `playAnthem` renders it with two oscillators + a
+  lowpass sweep. Played once by `show()` in place of the old generic `playVictory`. A procedural
+  **drumroll** leads into the reveal and a **crowd swell** lands with it. Sounds moved to
+  `src/celebrationAudio.js`.
+- **Rationale:** "Great" = motion, depth and payoff at the one moment viewers are watching;
+  a per-nation motif gives identity at zero licensing/asset cost and fits the existing procedural
+  audio architecture. A one-shot winner anthem avoids mid-round thrash entirely.
+- **Alternatives:** Looping leader song with hysteresis/crossfade/ducking (rejected by owner —
+  frequent cuts + copyright risk); bundled/uploaded anthem files (licensing + large assets);
+  a short lead-change sting (deferred, not selected).
+- **Amends:** D-048 (generic `playVictory` replaced by the winner's procedural anthem).
+
 ## D-049 — Automatic coin-scaled gift speed burst; Camera gets its own tab with player follow buttons
 - **Context:** Owner (2 requests): "if anybody is having [an] automated coin value based speed …
   once they donate I need to have an effect even if I don't have a mapping in the hub" and "add
