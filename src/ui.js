@@ -355,7 +355,6 @@ export function initCinematicPanel(game) {
 }
 
 const SCORING_FIELDS = ['giftPerCoin', 'like', 'comment', 'follow', 'share', 'tile'];
-
 export function initScoringPanel(game) {
   const container = document.getElementById('scoring-panel-body');
   if (!container) return;

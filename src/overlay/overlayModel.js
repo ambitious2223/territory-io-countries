@@ -17,6 +17,7 @@ export function overlayRows(payload, options = {}) {
 export function overlaySignature(payload, options = {}) {
   const rows = overlayRows(payload, options);
   return JSON.stringify({
+    lang: options.lang || 'en',
     state: (payload && payload.round && payload.round.state) || 'idle',
     timeLeft: (payload && payload.round && payload.round.timeLeft) || 0,
     rows: rows.map((row) => [row.id, row.label, row.percent, row.eliminated, row.flagImage, row.emoji, row.crown]),

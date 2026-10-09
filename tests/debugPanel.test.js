@@ -27,7 +27,7 @@ describe('debug panel markup', () => {
       'cam-arena', 'cam-leader', 'cam-nations', 'cam-players',
       'viewer-cap', 'viewer-aifill', 'dbg-viewers-bar',
       'dbg-cine-queue', 'cine-blur', 'cine-blur-value', 'cine-autozoom', 'btn-cine-skip',
-      'scoring-panel-body', 'winners-panel-body',
+      'scoring-panel-body', 'winners-panel-body', 'btn-gift-reset',
       'dbg-fps', 'dbg-frametime', 'dbg-map', 'dbg-walls', 'dbg-particles', 'dbg-pool-free', 'dbg-tiles',
     ]
     for (const id of ids) {

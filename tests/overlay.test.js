@@ -30,6 +30,7 @@ describe('buildOverlayPayload', () => {
     const payload = buildOverlayPayload(fakeGame())
     expect(payload.round).toEqual({ state: 'playing', timeLeft: 43, autoLoop: true })
     expect(payload.feed).toBeUndefined()
+    expect(typeof payload.lang).toBe('string')
   })
 
   it('keeps flag images and falls back safely', () => {

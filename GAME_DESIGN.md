@@ -111,8 +111,10 @@ Gift → power-up **wiring** lives **only in the hub** (Tikora → Game Hub → 
 gift (by id, name, or min coins) — or a **free trigger** (chat, like, follow, share, member) — to
 one of the effects this game **declares** in `tikora.manifest.json`. The web app contains **no**
 mapping UI; it only executes what the hub sends. On top of that, one **built-in default** always
-runs (D-049): **every gift** bursts the **donor's own ball** with overcharge for a coin-scaled
-duration (`coins × GIFT_SPEED_PER_COIN`, clamped to 2–10 s), hub mapping or not. The hub catalog:
+runs (D-049, tuned in D-053): **every gift** bursts the **donor's own ball** with a coin-scaled
+speed and duration — speed ramps **2.2× → 6×** (6× at ~200 coins) and time is `coins × 1 s` up to a
+**60 s** ceiling (all editable in debug → Advanced → **Gift Speed**) — hub mapping or not, and never
+the whole team. The hub catalog:
 - **Overcharge / Speed Boost** — one soldier moves faster for N seconds.
 - **Team Speed** — every soldier of the nation gets that burst.
 - **Freeze** — enemy soldiers stop for N seconds (icy ring; movement only — no damage).
@@ -176,7 +178,8 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
   Auto/Direct/TikFinity/Mock control, and meters. Connection holds the bridge controls and the
   **Soldiers speed slider** (live, persisted). **Camera** holds the presets (Arena/Leader/nation
   jumps) and a live **Players** list. Teams holds the capital-size slider, the editor + photo
-  upload (all team edits **auto-save** after ~1.5 s); Advanced holds the dev tools. The Tikora
+  upload (all team edits **auto-save** after ~1.5 s); Advanced holds the dev tools — including the
+  **Gift Speed** tuning (seconds per coin, max seconds, max multiplier, coins to max, reset). The Tikora
   section is **read-only** — the hub owns activating/deactivating effects.
 - **Auto-zoom:** on every new viewer join the camera **follows their moving soldier** during focus
   and hold (photo + nickname card), then returns. Toggle it with **Auto-zoom** in the Cinematic
@@ -224,7 +227,7 @@ IDLE → COUNTDOWN → PLAYING (3:00) → ROUND_END → INTERMISSION (~20s) → 
 | Nations | 2–12 (default 8) |
 | Home base | 8×8 tiles (same physical size as before), spread across the arena |
 | Soldier radius / speed | 11 px / **1.1 px·frame slow default**; live slider 0.5–3.0 (persisted) |
-| Overcharge | ×2.2 speed for 6 s — the reward for gifts/interaction |
+| Overcharge | ×2.2 (pickups/hub) · gift burst ramps ×2.2→×6 for 1 s/coin up to 60 s |
 | Capture | one touch per tile (neutral or enemy) |
 | Tile hold | ~2.5 s before a captured tile can be retaken |
 | Bounce jitter | ±0.3 rad per bounce |

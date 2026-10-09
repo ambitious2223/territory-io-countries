@@ -24,6 +24,8 @@ function initialLang() {
 
 setLanguage(initialLang());
 
+let currentLang = getLanguage();
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -143,7 +145,15 @@ function ensureEmpty(show) {
 function render(payload) {
   if (!view || !root.isConnected) buildSkeleton();
 
-  const signature = overlaySignature(payload, { rows: OPTIONS.rows, lang: getLanguage() });
+  const incomingLang = payload.lang || currentLang;
+  if (incomingLang !== currentLang) {
+    currentLang = incomingLang;
+    setLanguage(incomingLang);
+    buildSkeleton();
+    lastSignature = '';
+  }
+
+  const signature = overlaySignature(payload, { rows: OPTIONS.rows, lang: currentLang });
   if (signature === lastSignature) return;
   lastSignature = signature;
 
@@ -155,7 +165,7 @@ function render(payload) {
   const time = formatTime((payload.round && payload.round.timeLeft) || 0);
   if (view.timer.textContent !== time) view.timer.textContent = time;
 
-  const models = overlayRows(payload, { rows: OPTIONS.rows, lang: getLanguage() });
+  const models = overlayRows(payload, { rows: OPTIONS.rows, lang: currentLang });
   const board = view.board;
   if (models.length > 0) ensureEmpty(false);
 

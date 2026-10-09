@@ -1,4 +1,4 @@
-import { t } from './i18n.js';
+import { t, getLanguage } from './i18n.js';
 
 const STORAGE_KEY = 'twf.debugFab';
 const DRAG_THRESHOLD = 4;
@@ -117,7 +117,8 @@ export function initOverlayLink(game) {
   const update = () => {
     const tunnel = game?.tunnel || { status: 'off' };
     const live = tunnel.status === 'on' && tunnel.url;
-    overlayUrl = live ? `${tunnel.url}/leaderboard.html` : localUrl;
+    const base = live ? `${tunnel.url}/leaderboard.html` : localUrl;
+    overlayUrl = `${base}?lang=${encodeURIComponent(getLanguage())}`;
     input.value = overlayUrl;
     if (statusEl) {
       const labels = {

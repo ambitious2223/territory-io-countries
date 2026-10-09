@@ -40,4 +40,10 @@ describe('overlaySignature', () => {
     moved.teams[0].percent = 41
     expect(overlaySignature(moved, { rows: 12, lang: 'en' })).not.toBe(a)
   })
+
+  it('changes when the language changes', () => {
+    const en = overlaySignature(payload(), { rows: 12, lang: 'en' })
+    const ar = overlaySignature(payload(), { rows: 12, lang: 'ar' })
+    expect(ar).not.toBe(en)
+  })
 })

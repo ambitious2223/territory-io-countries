@@ -173,6 +173,14 @@ const PANEL = `
         <div id="scoring-panel-body"></div>
       </div>
       <div class="debug-section">
+        <h5 data-i18n="debug.giftSpeed">Gift Speed</h5>
+        <div class="debug-row"><span data-i18n="gift.secPerCoin">Seconds per coin</span><input class="gift-input" data-key="secondsPerCoin" type="number" step="0.1" min="0" style="width:64px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
+        <div class="debug-row"><span data-i18n="gift.maxSec">Max seconds</span><input class="gift-input" data-key="maxSeconds" type="number" step="1" min="1" style="width:64px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
+        <div class="debug-row"><span data-i18n="gift.maxMult">Max multiplier</span><input class="gift-input" data-key="maxMultiplier" type="number" step="0.1" min="2" style="width:64px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
+        <div class="debug-row"><span data-i18n="gift.coinsToMax">Coins to max speed</span><input class="gift-input" data-key="coinsToMax" type="number" step="10" min="1" style="width:64px;background:#111;border:1px solid #333;color:#ddd;font-size:10px;padding:2px 4px;font-family:inherit;" /></div>
+        <button class="ctrl-btn" id="btn-gift-reset" style="width:100%;margin-top:6px;" data-i18n="debug.reset">Reset</button>
+      </div>
+      <div class="debug-section">
         <h5 data-i18n="debug.winners">All-Time Winners</h5>
         <div id="winners-panel-body"></div>
       </div>

@@ -47,7 +47,7 @@ Full rules: [GAME_DESIGN.md](./GAME_DESIGN.md). Bridge: [BRIDGE.md](./BRIDGE.md)
 | Win | **Most territory** at time-up (or 65% domination) |
 | Persistence | Server JSON stores (atomic) **+ localStorage fallback** |
 | i18n | English default, **complete Arabic** for all UI; the language switch changes **text only** — the layout stays LTR and never mirrors |
-| Gifts | Gift → power-up **mapping** lives **only in the hub**; the game declares (manifest) and executes — plus one built-in default: every gift gives the donor's ball an automatic coin-scaled **speed burst** (D-049) |
+| Gifts | Gift → power-up **mapping** lives **only in the hub**; the game declares (manifest) and executes — plus one built-in default: every gift gives the **donor's own ball** a coin-scaled **speed burst** (×2.2→×6, 1 s/coin up to 60 s; tunable in debug) (D-049/D-053) |
 
 If a change conflicts with the table above, stop and raise it — do not just implement it.
 

@@ -14,9 +14,9 @@ holding the **most land** when the timer runs out wins. Built as an **OBS browse
 
 ---
 
-## Status — v2.23.0
+## Status — v2.24.0
 
-Every gate is green: `npm run lint`, `npm test` (205 tests incl. win-screen/confetti/camera/gift/
+Every gate is green: `npm run lint`, `npm test` (213 tests incl. win-screen/confetti/camera/gift/
 anthem/tunnel/overlay suites + a headless game-loop test), `npm run build`, and `npm run smoke`.
 
 **Shipped**
@@ -64,8 +64,8 @@ anthem/tunnel/overlay suites + a headless game-loop test), `npm run build`, and 
   for a second OBS browser source — see [Standalone leaderboard overlay](#standalone-leaderboard-overlay).
   The bridge **starts a Cloudflare quick tunnel automatically** and the Overlay tab shows the public
   `https://…trycloudflare.com/leaderboard.html` link (with a Start/Stop toggle) for services that
-  reject localhost. The page **updates in place** (no per-frame redraw) and is streamed from the
-  **built** page, so it stays rock-steady on air.
+  reject localhost. The page **updates in place** (no per-frame redraw), **follows the app's
+  language (EN/AR)**, and is streamed from the **built** page, so it stays rock-steady on air.
 - **Win celebration:** every round ends with confetti (some pieces made of the winner's flag), a
   popping flag medallion with rotating rays, VICTORY + a reason headline + count-up stats, a raised
   centre podium showing the **top-3 nations** and the **top-3 supporters** (photo, name, score,
@@ -80,8 +80,9 @@ anthem/tunnel/overlay suites + a headless game-loop test), `npm run build`, and 
   color bomb, area convert, mega bomb, claim storm, spawn, summon, instant claim). Gift/trigger
   **mapping** happens **in the hub** — the web app holds no mapping UI; it just declares
   (manifest) and executes. One built-in default runs regardless: **every gift bursts the donor's
-  own ball with a coin-scaled speed boost** (2–10 s), hub or no hub. Auto-looping timed rounds
-  and persisted all-time winners.
+  own ball** — speed ramps **2.2× → 6×** with coin value and lasts `1 s per coin` up to a **60 s**
+  ceiling (all tunable in debug → **Gift Speed**). Auto-looping timed rounds and persisted
+  all-time winners.
 - Complete English + Arabic UI — switching language translates every string (test-enforced) and
   never changes layout positions.
 

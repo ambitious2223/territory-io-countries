@@ -1,4 +1,5 @@
 import { buildStandings } from './scoreboard.js';
+import { getLanguage } from './i18n.js';
 
 export function buildOverlayPayload(game) {
   const teams = buildStandings(game).map((row) => ({
@@ -17,6 +18,7 @@ export function buildOverlayPayload(game) {
 
   return {
     type: 'leaderboard',
+    lang: getLanguage(),
     round: {
       state: game.round?.state || 'idle',
       timeLeft: Math.round(game.round?.timeLeft || 0),

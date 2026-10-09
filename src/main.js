@@ -5,6 +5,8 @@ import { initSpeedControl } from './speedControl.js';
 import { initDebugFab, initDebugTabs, initOverlayLink } from './debugFab.js';
 import { initConnectionPanel, initViewersPanel, initCinematicPanel, initScoringPanel, initOnboardingPanel } from './ui.js';
 import { initCameraPanel } from './cameraPanel.js';
+import { initGiftPanel } from './giftPanel.js';
+import { initGiftTuning } from './giftTuning.js';
 import { applyLanguage, getLanguage, setLanguage } from './i18n.js';
 import { initTeamsPanel, renderTeamsPanel } from './teamsPanel.js';
 import { getTeams, loadFromServer, subscribeGame, setBaseUrl as setTeamBaseUrl } from './teamRegistry.js';
@@ -12,6 +14,7 @@ import { setBaseUrl, loadWinners } from './winnersStore.js';
 
 createDebugPanel();
 initSpeedControl();
+initGiftTuning();
 
 const canvas = document.getElementById('game-canvas');
 canvas.width = 1200;
@@ -47,6 +50,7 @@ function initLanguageSelector() {
     setLanguage(select.value);
     renderTeamsPanel();
     initScoringPanel(game);
+    updateOverlay?.();
   });
 }
 
@@ -92,6 +96,7 @@ initViewersPanel(game);
 initCinematicPanel(game);
 initOnboardingPanel(game);
 initScoringPanel(game);
+initGiftPanel();
 initTeamsPanel(game);
 initLanguageSelector();
 

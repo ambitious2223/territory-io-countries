@@ -54,8 +54,10 @@
   owns the presets + `#cam-players` (Connection no longer holds them).
 - `tests/cameraControls.test.js` — zoom-toward-cursor math + clamps, focus/follow/death-reset,
   pan/zoom/reset, Arena/Leader/nation presets, canvas-handler attach.
-- `tests/giftAutoSpeed.test.js` — coin→duration scaling + floor/cap clamps, the burst lands on
-  the donor's ball, holds via the pick-a-side prompt for nation-less donors, needs no hub.
+- `tests/giftAutoSpeed.test.js` — coin→seconds (1 s/coin, floor, 60 s cap) and coin→multiplier
+  (2.2× → 6× at N coins); the burst lands the speed+time on the donor's ball, bypasses the shared
+  30 s clamp, holds via the pick-a-side prompt for nation-less donors, needs no hub.
+- `tests/giftTuning.test.js` — gift-speed knobs apply/clamp onto CONFIG, persist, reload, and reset.
 - `tests/cameraPanel.test.js` — player list = living humans only (bots/dead/queued excluded),
   clears when the match is gone, button rebuild on roster/marble change, click-follow resolves
   the current marble, followed button highlights, presets still wired.
@@ -109,10 +111,15 @@ Simulate: `join`, `chat`, `like`, `share`, `follow`, `gift` (with `value` coins)
 - [ ] **Players list (Camera tab):** one button per living human viewer (team dot + name); a new
       viewer's button appears on join, disappears on death and on round reset, returns next match;
       clicking a name flies the camera there and follows; the followed button pulses; bots absent.
-- [ ] **Auto gift speed:** inject a Mock gift (any coins) with **no hub running** → the donor's
-      ball overcharges for a coin-scaled 2–10 s (bigger value = longer, capped); a donor with no
-      nation gets the pick-a-side prompt with the burst held; a hub-mapped gift still fires its
-      mapped effect too.
+- [ ] **Auto gift speed:** inject a Mock gift with **no hub running** → the donor's own ball speeds
+      up (2.2× → 6× by coin value) for `1 s per coin` up to 60 s; a big gift is clearly faster and
+      the ring heats yellow → orange → red; the **whole team is unaffected**; a donor with no nation
+      gets the pick-a-side prompt with the burst held; a hub-mapped gift still fires its effect too.
+- [ ] **Gift Speed tuning (debug → Advanced):** change *Seconds per coin* / *Max seconds* /
+      *Max multiplier* → the next gift reflects it immediately; **Reset** restores defaults; the
+      values survive a reload.
+- [ ] **Overlay language:** switch the app to Arabic (debug → Teams → Language) → the standalone
+      overlay switches to Arabic too (and back), without a manual reload.
 - [ ] **Win celebration:** end a round → colour wash + confetti (flag pieces if the winner has a
       photo) + medallion pop with rays and a drumroll + **the winner's own anthem** + crowd swell →
       **VICTORY** + reason headline + count-up tiles/%/duration + win-count badge → raised centre

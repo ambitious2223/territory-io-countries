@@ -142,7 +142,8 @@ public URL. Run `npm run build` first (the boot bat does) so `dist/` exists.
 - Gift → power-up **mapping** happens **only in the hub** (its Trigger → Effect mapper); the game
   declares effects in `tikora.manifest.json` and executes what the hub sends — there is no
   in-app mapping. One built-in default still runs game-side on **every** gift bridge event
-  (D-049): a coin-scaled speed `boost` on the donor's own ball, in addition to any hub effect.
+  (D-049/D-053): a coin-scaled speed `boost` on the donor's own ball (×2.2→×6, 1 s/coin up to 60 s;
+  tunable in debug), in addition to any hub effect.
 
 ---
 

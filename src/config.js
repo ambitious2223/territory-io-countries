@@ -67,9 +67,17 @@ export const CONFIG = {
   EFFECT_TILES_MAX: 200,
   EFFECT_COUNT_MAX: 8,
 
-  GIFT_SPEED_PER_COIN: 0.05,
-  GIFT_SPEED_MIN: 2,
-  GIFT_SPEED_MAX: 10,
+  GIFT_SPEED_SEC_PER_COIN: 1,
+  GIFT_SPEED_MIN_SEC: 1,
+  GIFT_SPEED_MAX_SEC: 60,
+  GIFT_SPEED_MAX_MULT: 6,
+  GIFT_SPEED_COINS_TO_MAX: 200,
+  GIFT_TUNING_LIMITS: {
+    secondsPerCoin: { min: 0, max: 10 },
+    maxSeconds: { min: 1, max: 600 },
+    maxMultiplier: { min: 2, max: 20 },
+    coinsToMax: { min: 1, max: 100000 },
+  },
 
   CAMERA_FOCUS_LERP: 0.08,
   CINEMATIC_ZOOM: 1.8,

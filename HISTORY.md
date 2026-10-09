@@ -4,6 +4,29 @@ Newest first. Log what was done, blockers, and next steps.
 
 ---
 
+## 2026-10-09 — Donor speed to 6× + overlay language (2.24.0)
+
+Owner: "make the max speed for donators 6x or 8x ... only for separate balls, not for the whole
+team", and the overlay showed English while the main app is Arabic. Chose via Q&A: 6×, linear by
+coins, no short timer cap (coins = seconds; 60 s default), donations only.
+
+**Done**
+- `src/marble.js`: numeric `speedMult`; `applyPowerup('overcharge', duration, mult)` takes max of
+  each; ring heats yellow → orange → red.
+- `src/giftEffects.js`: `giftSpeedSeconds` (1 coin = 1 s, 60 s cap) + `giftSpeedMult` (2.2 → 6 at
+  200 coins); `boost` takes a per-call `max` so the gift burst bypasses the 30 s shared clamp;
+  `instant_claim` routed through `applyPowerup`.
+- `src/config.js`: `GIFT_SPEED_*` + `GIFT_TUNING_LIMITS`; `src/giftTuning.js` (load/save/apply/reset
+  via localStorage); debug Advanced → **Gift Speed** section (`initGiftPanel`) + i18n (EN/AR).
+- Overlay language: `overlaySnapshot` sends `lang`; `overlayModel` signature includes it;
+  `leaderboard.js` adopts `payload.lang` (rebuilds on change); Overlay-tab link carries `?lang=`.
+- Tests: `giftAutoSpeed` rewrite, `giftTuning.test.js`, overlay `lang` assertions. 213 total.
+
+**Verified**
+- `npm run lint` clean · `npm test` **213 passed** · build + smoke green.
+
+---
+
 ## 2026-10-09 — Overlay flicker fix + built-overlay streaming (2.23.0)
 
 Owner: overlay "is like refreshing a lot and flashing a lot" on the streaming app. Diagnosed two

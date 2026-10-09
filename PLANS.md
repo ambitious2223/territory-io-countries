@@ -249,6 +249,21 @@ and timer change. Edit overlay code → rebuild to see it on stream.
 
 ---
 
+## Phase 35 — Donation speed to 6× + overlay language (D-053)
+- [x] `Marble` numeric `speedMult` (max-merge); ring heats yellow → orange → red
+- [x] `autoGiftSpeed`: seconds (1/coin, 60 s cap) + multiplier (2.2 → 6 at 200 coins), donor ball
+      only, bypassing the shared 30 s clamp; pickups/hub stay 2.2×
+- [x] `giftTuning.js` + debug **Gift Speed** section (sec/coin, max sec, max mult, coins-to-max,
+      reset; persisted) + i18n
+- [x] Overlay adopts the game's `lang` via the payload (+ `?lang=` on the link)
+- [x] Tests (213 total); docs; released **2.24.0**
+
+**Verify:** Inject gifts of rising coin value → the donor ball gets faster (up to 6×) and longer
+(1 s/coin, 60 s cap) with a hotter ring; tune the numbers live in debug; the overlay follows the
+app's language.
+
+---
+
 ## Phase 22 — Loose join matching + cinematic performance
 - [x] `matchTeam`: Arabic in fuzzy/prefix, `ال` article optional, any-word/first-word matching,
       length-scaled typo tolerance with lookalike negatives

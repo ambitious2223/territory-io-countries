@@ -33,6 +33,7 @@ export class Marble {
     this.alive = true;
     this.eliminated = false;
     this.overcharge = false;
+    this.speedMult = 1;
     this.frozenTimer = 0;
     this.powerupTimer = 0;
     this.conversions = 0;
@@ -44,10 +45,11 @@ export class Marble {
     this.vy = Math.sin(angle) * speed;
   }
 
-  applyPowerup(type, duration) {
+  applyPowerup(type, duration, mult) {
     if (type === 'overcharge') {
       this.overcharge = true;
-      this.powerupTimer = duration;
+      this.powerupTimer = Math.max(this.powerupTimer, duration);
+      this.speedMult = Math.max(this.speedMult, mult || CONFIG.BALL_OVERCHARGE_MULT);
     }
   }
 
@@ -62,6 +64,7 @@ export class Marble {
       this.powerupTimer -= dt / 60;
       if (this.powerupTimer <= 0) {
         this.overcharge = false;
+        this.speedMult = 1;
         this.powerupTimer = 0;
       }
     }
@@ -78,7 +81,7 @@ export class Marble {
       return null;
     }
 
-    const speedScale = this.overcharge ? CONFIG.BALL_OVERCHARGE_MULT : 1;
+    const speedScale = this.overcharge ? this.speedMult : 1;
     const travel = Math.sqrt(this.vx * this.vx + this.vy * this.vy) * dt * speedScale;
     const maxStep = grid.tileSize * CONFIG.BALL_MAX_SUBSTEP;
     const steps = Math.max(1, Math.ceil(travel / maxStep));
@@ -197,7 +200,9 @@ export class Marble {
     ctx.stroke();
 
     ctx.lineWidth = 2.5;
-    const innerRing = this.overcharge ? '#FFFF00' : this.frozenTimer > 0 ? '#9fe8ff' : '#ffffff';
+    const innerRing = this.overcharge
+      ? (this.speedMult >= CONFIG.GIFT_SPEED_MAX_MULT * 0.85 ? '#FF3B30' : this.speedMult >= 3.5 ? '#FFA500' : '#FFFF00')
+      : this.frozenTimer > 0 ? '#9fe8ff' : '#ffffff';
     ctx.strokeStyle = innerRing;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius + 1, 0, Math.PI * 2);

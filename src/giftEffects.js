@@ -7,8 +7,8 @@ function toNumber(value, fallback) {
   return Number.isFinite(number) ? number : fallback
 }
 
-function durationParam(params, fallback) {
-  return Math.min(CONFIG.EFFECT_DURATION_MAX, Math.max(0, toNumber(params.duration, fallback)))
+function durationParam(params, fallback, max = CONFIG.EFFECT_DURATION_MAX) {
+  return Math.min(max, Math.max(0, toNumber(params.duration, fallback)))
 }
 
 function radiusParam(params, fallback) {
@@ -76,12 +76,15 @@ function paint(ctx, radius) {
 const EFFECTS = {
   overcharge(ctx) {
     const marble = ensureMarble(ctx)
-    marble.applyPowerup('overcharge', durationParam(ctx.params, CONFIG.POWERUP_OVERCHARGE_DURATION))
+    const mult = toNumber(ctx.params.mult, CONFIG.BALL_OVERCHARGE_MULT)
+    marble.applyPowerup('overcharge', durationParam(ctx.params, CONFIG.POWERUP_OVERCHARGE_DURATION), mult)
     return { x: marble.x, y: marble.y }
   },
   boost(ctx) {
     const marble = ensureMarble(ctx)
-    marble.applyPowerup('overcharge', durationParam(ctx.params, CONFIG.POWERUP_FREEZE_DURATION))
+    const cap = toNumber(ctx.params.max, CONFIG.EFFECT_DURATION_MAX)
+    const mult = toNumber(ctx.params.mult, CONFIG.BALL_OVERCHARGE_MULT)
+    marble.applyPowerup('overcharge', durationParam(ctx.params, CONFIG.POWERUP_OVERCHARGE_DURATION, cap), mult)
     return { x: marble.x, y: marble.y }
   },
   colorbomb(ctx) {
@@ -97,8 +100,7 @@ const EFFECTS = {
   },
   instant_claim(ctx) {
     const marble = ensureMarble(ctx)
-    marble.overcharge = true
-    marble.powerupTimer = durationParam(ctx.params, CONFIG.POWERUP_OVERCHARGE_DURATION)
+    marble.applyPowerup('overcharge', durationParam(ctx.params, CONFIG.POWERUP_OVERCHARGE_DURATION))
     return { x: marble.x, y: marble.y }
   },
   freeze(ctx) {
@@ -152,9 +154,17 @@ const EFFECTS = {
 
 export const EFFECT_KEYS = Object.keys(EFFECTS)
 
-export function giftSpeedDuration(coins) {
-  const raw = toNumber(coins, 0) * CONFIG.GIFT_SPEED_PER_COIN
-  return Math.min(CONFIG.GIFT_SPEED_MAX, Math.max(CONFIG.GIFT_SPEED_MIN, raw))
+export function giftSpeedSeconds(coins) {
+  const raw = toNumber(coins, 0) * CONFIG.GIFT_SPEED_SEC_PER_COIN
+  return Math.min(CONFIG.GIFT_SPEED_MAX_SEC, Math.max(CONFIG.GIFT_SPEED_MIN_SEC, raw))
+}
+
+export function giftSpeedMult(coins) {
+  const value = toNumber(coins, 0)
+  const span = Math.max(0, CONFIG.GIFT_SPEED_MAX_MULT - CONFIG.BALL_OVERCHARGE_MULT)
+  const perCoin = CONFIG.GIFT_SPEED_COINS_TO_MAX > 0 ? span / CONFIG.GIFT_SPEED_COINS_TO_MAX : span
+  const mult = CONFIG.BALL_OVERCHARGE_MULT + value * perCoin
+  return Math.min(CONFIG.GIFT_SPEED_MAX_MULT, Math.max(CONFIG.BALL_OVERCHARGE_MULT, mult))
 }
 
 function setStats(game, patch) {
@@ -251,7 +261,11 @@ export function executeEffect(game, effectKey, params = {}, target = {}) {
 
 export function autoGiftSpeed(game, event) {
   if (!game || !event) return null
-  return executeEffect(game, 'boost', { duration: giftSpeedDuration(event.coins) }, {
+  return executeEffect(game, 'boost', {
+    duration: giftSpeedSeconds(event.coins),
+    mult: giftSpeedMult(event.coins),
+    max: CONFIG.GIFT_SPEED_MAX_SEC
+  }, {
     userId: event.userId ?? event.username,
     username: event.username,
     name: event.name || event.username,

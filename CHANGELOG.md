@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 this project aims to follow [Semantic Versioning](https://semver.org/).
 
+## [2.24.0] - 2026-10-09
+
+### Added / Changed — donor speed up to 6× + overlay language follows the app (D-053)
+- **Donation bursts now scale speed too, not just time.** The donor's own ball ramps from **2.2× to
+  a 6× cap** as coin value rises (6× at `GIFT_SPEED_COINS_TO_MAX`, default 200 coins), for a
+  duration of `coins × GIFT_SPEED_SEC_PER_COIN` (default **1 coin = 1 s**) up to a **60 s** ceiling.
+  Donations only — pickups and hub overcharge/`team_speed` stay at 2.2×, and the burst is never
+  applied to the whole team.
+- **Live tuning in the debug menu:** Advanced → **Gift Speed** — *Seconds per coin*, *Max seconds*,
+  *Max multiplier*, *Coins to max speed* + **Reset** (persisted; applies instantly). Set e.g.
+  *Seconds per coin* = 2, *Max seconds* = 120 for a near-match-long burst.
+- `Marble` gained a numeric `speedMult` (ring heats yellow → orange → red with intensity); the gift
+  burst bypasses the shared 30 s effect-duration clamp.
+- **Overlay language:** the game now sends its `lang` in the overlay payload, so the standalone
+  overlay (a different origin from the tunnel) matches the main app live; the Overlay-tab link also
+  carries `?lang=`.
+
 ## [2.23.0] - 2026-10-09
 
 ### Fixed — overlay flicker / constant refresh on stream (D-052)

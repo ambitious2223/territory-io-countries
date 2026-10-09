@@ -52,7 +52,7 @@
 | `grid.js` | Tile ownership, one-touch capture + hold, shield, claimFrontier, containment |
 | `map.js` | Wall/map generation |
 | `zones.js` | Home-base layout for N nations (2–12) + centroids/spawn tiles |
-| `marble.js` | Viewer ball: confined ricochet + capture; avatar with team ring/glow/tint/nameplate |
+| `marble.js` | Viewer ball: confined ricochet + capture; numeric `speedMult` overcharge; avatar with team ring/glow/tint/nameplate |
 | `bases.js` | Stronghold rendering: scaled 3D medallion + team photo + name pill |
 | `outline.js` | Marching-squares union outline + rounded-corner path (pure) |
 | `powerups.js` | Power-up entities and pickup logic |
@@ -84,6 +84,8 @@
 | `joinCinematic.js` | Camera intro queue for new joiners (tracks the moving soldier) |
 | `joinPrompt.js` | "Pick a side" pop-up + held-effect queue for non-member gifters |
 | `giftEffects.js` | Gift → power-up effect executor (runs as the activator's identity) + built-in coin-scaled gift speed burst |
+| `giftTuning.js` | Gift-speed tuning (sec/coin, max sec, max mult, coins-to-max) load/save/apply |
+| `giftPanel.js` | Debug "Gift Speed" inputs wired to `giftTuning` |
 | `tikora.js` | Tikora effect hub (manifest + served `hub-client.js`); auto-connects, hub-driven |
 | `tikoraClient.js` | Loads Tikora's `hub-client.js` over the relay |
 | `imageUtils.js` | Image load + 3:2 cover-crop |

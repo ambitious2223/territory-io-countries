@@ -4,6 +4,27 @@ Format: **D-xxx — Title**, with Context · Decision · Rationale · Alternativ
 
 ---
 
+## D-053 — Donation speed ramps to 6× (donor only); overlay language follows the app
+- **Context:** Owner: "make the max speed for donators 6x or 8x ... only for separate balls, not for
+  the whole team", and the overlay "displays English even though my main app is in Arabic". Chose:
+  **6×**, linear by coins, **no short timer cap** (coins decide the seconds; 60 s safety default,
+  tunable), and donations only.
+- **Decision (A):** `Marble` gets a numeric `speedMult`; `applyPowerup('overcharge', duration, mult)`
+  takes the max of each. `autoGiftSpeed` computes `mult = clamp(2.2 + coins·k, 2.2, GIFT_SPEED_MAX_MULT)`
+  (6× at `GIFT_SPEED_COINS_TO_MAX`=200) and `seconds = clamp(coins·GIFT_SPEED_SEC_PER_COIN, 1, 60)`,
+  applied to the **donor's own ball**. The `boost` effect accepts a per-call `max` so the gift path
+  escapes the shared `EFFECT_DURATION_MAX` (30 s) clamp; pickups/hub stay at 2.2×. All four knobs
+  (sec/coin, max sec, max mult, coins-to-max) are tuned from the debug menu and persisted
+  (`src/giftTuning.js` + Advanced → Gift Speed).
+- **Decision (B):** `overlaySnapshot` includes `lang`; the overlay adopts it (rebuild on change) and
+  the Overlay-tab link appends `?lang=`, so the standalone overlay — now a different origin from the
+  tunnelled game — matches the app's language live.
+- **Rationale:** speed is the reward donors feel; letting coins drive both intensity and time, with a
+  high but adjustable ceiling, keeps it exciting yet bounded. Deriving the overlay language from the
+  game (not its own storage) is the only origin-proof fix.
+- **Alternatives:** 8× cap (rejected — hard to follow on stream); uncapped timer (rejected in favour
+  of a tunable 60 s default); scaling every overcharge source (rejected — donations only).
+
 ## D-052 — Overlay renders in place; streamed from the built page (no HMR)
 - **Context:** Owner: overlay "is like refreshing a lot and flashing a lot" on the streaming app.
   Two causes: the overlay replaced `root.innerHTML` on every ~4 Hz broadcast while rows carried a
